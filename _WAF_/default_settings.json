@@ -5,25 +5,25 @@
 			"short_form"     : "-i",
 			"long_form"      : "--use-incredibuild",
 			"attribute"      : "use_incredibuild",
-			"default_value"  : "True",
+			"default_value"  : "False",
 			"description"    : "Use Incredibuild"
 		},
 		{
 			"long_form"      : "--use-incredibuild-win",
 			"attribute"      : "use_incredibuild_win",
-			"default_value"  : "True",
+			"default_value"  : "False",
 			"description"    : "Use Incredibuild for PC Builds"
 		},
 		{
 			"long_form"      : "--use-incredibuild-durango",
 			"attribute"      : "use_incredibuild_durango",
-			"default_value"  : "True",
+			"default_value"  : "False",
 			"description"    : "Use Incredibuild for Durango Builds"
 		},
 		{
 			"long_form"      : "--use-incredibuild-orbis",
 			"attribute"      : "use_incredibuild_orbis",
-			"default_value"  : "True",
+			"default_value"  : "False",
 			"description"    : "Use Incredibuild for Orbis Builds"
 		},
 		{
