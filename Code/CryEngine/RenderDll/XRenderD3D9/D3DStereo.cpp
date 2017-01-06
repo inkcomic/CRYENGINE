@@ -8,6 +8,7 @@
 #include "D3DOculus.h"
 #include "D3DOsvr.h"
 #include "D3DOpenVR.h"
+#include "D3DHypereal.h"
 
 #define MGPU_STEREO
 
@@ -1208,6 +1209,8 @@ IHmdRenderer* CD3DStereoRenderer::CreateHmdRenderer(IHmdDevice& device, CD3D9Ren
 		return new CD3DOpenVRRenderer(static_cast<CryVR::OpenVR::IOpenVRDevice*>(&device), pRenderer, pStereoRenderer);
 	case eHmdClass_Osvr:
 		return new CryVR::Osvr::CD3DOsvrRenderer(static_cast<CryVR::Osvr::IOsvrDevice*>(&device), pRenderer, pStereoRenderer);
+	case eHmdClass_Hypereal:
+		return new CD3DHyperealRenderer(static_cast<CryVR::Hypereal::IHyperealDevice*>(&device), pRenderer, pStereoRenderer);
 	default:
 		iLog->LogError("Tried to create HMD renderer for unknown headset!");
 		break;

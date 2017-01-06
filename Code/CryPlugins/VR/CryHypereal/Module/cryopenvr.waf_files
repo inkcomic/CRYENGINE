@@ -1,0 +1,32 @@
+{
+	"NoUberFile" :
+	{
+		"Root" :
+		[
+		  "StdAfx.cpp"
+		]
+	},
+	"CryHypereal_uber_0.cpp" :
+	{
+		"Interface" :
+		[
+		  "../Interface/IHmdOpenVRDevice.h",
+		  "../Interface/IHyperealPlugin.h"
+		],
+
+		"Root" :
+		[
+		  "PluginDll.cpp",
+		  "PluginDll.h",
+		  "HyperealController.cpp",
+		  "HyperealController.h",
+		  "HyperealDevice.cpp",
+		  "HyperealDevice.h",
+		  "HyperealResources.cpp",
+		  "HyperealResources.h",
+		  "resource.h",
+		  "StdAfx.cpp",
+		  "StdAfx.h"
+		]
+	}
+}
