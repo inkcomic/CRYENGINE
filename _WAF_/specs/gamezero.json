@@ -90,6 +90,9 @@
 		"smpeg",
 		"timidity",
 
+		"CryOculusVR",
+		"CryOpenVR",
+		"CryHypereal",
 		"CryMonoBridge",
 		"CryUserAnalytics"
 	],
