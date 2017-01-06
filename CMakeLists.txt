@@ -92,6 +92,7 @@ if(WIN32 OR WIN64)
 	option(PLUGIN_VR_OCULUS "Oculus support" ON)
 	option(PLUGIN_VR_OSVR "OSVR support" ON)
 	option(PLUGIN_VR_OPENVR "OpenVR support" ON)
+	option(PLUGIN_VR_HYPEREAL "Hypereal support" ON)
 	option(OPTION_CRYMONO "C# support" OFF)
 endif()
 
@@ -273,6 +274,8 @@ if (PLUGIN_VR_OPENVR)
 endif()	
 if (PLUGIN_VR_OSVR)	
 	add_subdirectory(Code/CryPlugins/VR/CryOSVR/Module)
+if (PLUGIN_VR_HYPEREAL)	
+	add_subdirectory(Code/CryPlugins/VR/CryHypereal/Module)
 endif()
 
 
