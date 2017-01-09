@@ -8,9 +8,9 @@ from waflib.Utils import run_once
 def build(bld) :
 
 	bld.CryEngineModule(
-	  target = 'CryOpenVR',
+	  target = 'CryHypereal',
 	  vs_filter = 'CryPlugins',
-	  file_list = 'cryopenvr.waf_files',
+	  file_list = 'cryhypereal.waf_files',
 
 	  pch = 'StdAfx.cpp',
 	  
@@ -20,12 +20,12 @@ def build(bld) :
 	  win_x86_libpath = [ Path('Code/SDKs/OpenVR/lib/win32') ],
 	  win_x64_libpath = [ Path('Code/SDKs/OpenVR/lib/win64') ],
 	  
-	  features = [ 'copy_openvr_binaries' ]
+	  features = [ 'copy_hypereal_binaries' ]
 	)
 
-@feature('copy_openvr_binaries')
+@feature('copy_hypereal_binaries')
 @run_once
-def feature_copy_openvr_binaries(self):
+def feature_copy_hypereal_binaries(self):
 	bld 		  = self.bld
 	platform	  = bld.env['PLATFORM']
 	configuration = bld.env['CONFIGURATION']

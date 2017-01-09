@@ -10,7 +10,7 @@
 	{
 		"Interface" :
 		[
-		  "../Interface/IHmdOpenVRDevice.h",
+		  "../Interface/IHmdHyperealDevice.h",
 		  "../Interface/IHyperealPlugin.h"
 		],
 

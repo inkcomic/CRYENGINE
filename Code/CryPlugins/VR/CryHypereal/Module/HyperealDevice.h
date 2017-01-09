@@ -5,8 +5,8 @@
 #include <CrySystem/VR/IHMDDevice.h>
 #include <CrySystem/VR/IHMDManager.h>
 
-#include "../Interface/IHmdOpenVRDevice.h"
-#include "OpenVRController.h"
+#include "../Interface/IHmdHyperealDevice.h"
+#include "HyperealController.h"
 
 #include <Cry3DEngine/IIndexedMesh.h>
 #include <CryRenderer/IStereoRenderer.h>
@@ -16,10 +16,10 @@ struct IRenderer;
 
 namespace CryVR
 {
-namespace OpenVR
+namespace Hypereal
 {
 class Controller;
-class Device : public IOpenVRDevice, public IHmdEventListener, public ISystemEventListener
+class Device : public IHyperealDevice, public IHmdEventListener, public ISystemEventListener
 {
 public:
 	// IHmdDevice
@@ -158,5 +158,5 @@ private:
 	ICVar*                  m_pHmdSocialScreenCVar;
 	ICVar*                  m_pTrackingOriginCVar;
 };
-} // namespace OpenVR
+} // namespace Hypereal
 } // namespace CryVR

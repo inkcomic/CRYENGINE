@@ -7,19 +7,19 @@
 namespace CryVR
 {
 namespace Hypereal {
-class CPlugin_Hypereal : public IOpenVRPlugin, public ISystemEventListener
+class CPlugin_Hypereal : public IHyperealPlugin, public ISystemEventListener
 {
 	CRYINTERFACE_BEGIN()
-	CRYINTERFACE_ADD(IOpenVRPlugin)
+	CRYINTERFACE_ADD(IHyperealPlugin)
 	CRYINTERFACE_ADD(ICryPlugin)
 	CRYINTERFACE_END()
 
-	CRYGENERATE_SINGLETONCLASS(CPlugin_OpenVR, "Plugin_OpenVR", 0x50A54ADB4BBF4068, 0x80B9EB3BFFA30C93)
+	CRYGENERATE_SINGLETONCLASS(CPlugin_Hypereal, "Plugin_Hypereal", 0x50A54ADB4BBF4068, 0x80B9EB3BFFA30C93)
 
-	virtual ~CPlugin_OpenVR();
+	virtual ~CPlugin_Hypereal();
 
 	//! Retrieve name of plugin.
-	virtual const char* GetName() const override { return "CryOpenVR"; }
+	virtual const char* GetName() const override { return "CryHypereal"; }
 
 	//! Retrieve category for the plugin.
 	virtual const char* GetCategory() const override { return "Plugin"; }
@@ -28,8 +28,8 @@ class CPlugin_Hypereal : public IOpenVRPlugin, public ISystemEventListener
 	virtual bool Initialize(SSystemGlobalEnvironment& env, const SSystemInitParams& initParams) override;
 
 public:
-	virtual IOpenVRDevice* CreateDevice() override;
-	virtual IOpenVRDevice* GetDevice() const override;
+	virtual IHyperealDevice* CreateDevice() override;
+	virtual IHyperealDevice* GetDevice() const override;
 
 	// ISystemEventListener
 	virtual void OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam) override;

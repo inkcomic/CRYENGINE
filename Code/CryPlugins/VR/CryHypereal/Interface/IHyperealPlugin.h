@@ -14,8 +14,8 @@ struct IHyperealPlugin : public ICryPlugin
 	CRYINTERFACE_DECLARE(IHyperealPlugin, 0xCD1389A9B37547F9, 0xBC45D382D18B21B1);
 
 public:
-	virtual IOpenVRDevice* CreateDevice() = 0;
-	virtual IOpenVRDevice* GetDevice() const = 0;
+	virtual IHyperealDevice* CreateDevice() = 0;
+	virtual IHyperealDevice* GetDevice() const = 0;
 };
 
 }      // namespace Hypereal

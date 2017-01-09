@@ -3,23 +3,23 @@
 #include "StdAfx.h"
 #include "PluginDll.h"
 
-#include "OpenVRResources.h"
-#include "OpenVRDevice.h"
+#include "HyperealResources.h"
+#include "HyperealDevice.h"
 
 // Included only once per DLL module.
 #include <CryCore/Platform/platform_impl.inl>
 
 namespace CryVR
 {
-namespace OpenVR {
+namespace Hypereal {
 
-	float CPlugin_OpenVR::s_hmd_quad_distance = 0.25f;
-	float CPlugin_OpenVR::s_hmd_quad_width = 1.0f;
-	int CPlugin_OpenVR::s_hmd_quad_absolute = 1;
+	float CPlugin_Hypereal::s_hmd_quad_distance = 0.25f;
+	float CPlugin_Hypereal::s_hmd_quad_width = 1.0f;
+	int CPlugin_Hypereal::s_hmd_quad_absolute = 1;
 
-CPlugin_OpenVR::~CPlugin_OpenVR()
+CPlugin_Hypereal::~CPlugin_Hypereal()
 {
-	CryVR::OpenVR::Resources::Shutdown();
+	CryVR::Hypereal::Resources::Shutdown();
 
 	if (IConsole* const pConsole = gEnv->pConsole)
 	{
@@ -31,7 +31,7 @@ CPlugin_OpenVR::~CPlugin_OpenVR()
 	GetISystem()->GetISystemEventDispatcher()->RemoveListener(this);
 }
 
-bool CPlugin_OpenVR::Initialize(SSystemGlobalEnvironment& env, const SSystemInitParams& initParams)
+bool CPlugin_Hypereal::Initialize(SSystemGlobalEnvironment& env, const SSystemInitParams& initParams)
 {
 	GetISystem()->GetISystemEventDispatcher()->RegisterListener(this);
 
@@ -44,14 +44,14 @@ bool CPlugin_OpenVR::Initialize(SSystemGlobalEnvironment& env, const SSystemInit
 	return true;
 }
 
-void CPlugin_OpenVR::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam)
+void CPlugin_Hypereal::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam)
 {
 	switch (event)
 	{
 	case ESYSTEM_EVENT_PRE_RENDERER_INIT:
 		{
 			// Initialize resources to make sure we query available VR devices
-			CryVR::OpenVR::Resources::Init();
+			CryVR::Hypereal::Resources::Init();
 
 			if (auto *pDevice = GetDevice())
 			{
@@ -62,18 +62,18 @@ void CPlugin_OpenVR::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR
 	}
 }
 
-IOpenVRDevice* CPlugin_OpenVR::CreateDevice()
+IHyperealDevice* CPlugin_Hypereal::CreateDevice()
 {
 	return GetDevice();
 }
 
-IOpenVRDevice* CPlugin_OpenVR::GetDevice() const
+IHyperealDevice* CPlugin_Hypereal::GetDevice() const
 {
-	return CryVR::OpenVR::Resources::GetAssociatedDevice();
+	return CryVR::Hypereal::Resources::GetAssociatedDevice();
 }
 
-CRYREGISTER_SINGLETON_CLASS(CPlugin_OpenVR)
-}      // namespace OpenVR
+CRYREGISTER_SINGLETON_CLASS(CPlugin_Hypereal)
+}      // namespace Hypereal
 }      // namespace CryVR
 
 #include <CryCore/CrtDebugStats.h>

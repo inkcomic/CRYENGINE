@@ -17,8 +17,8 @@ class Controller : public IHmdController
 public:
 	// IHmdController
 	virtual bool                    IsConnected(EHmdController id) const override;
-	virtual bool                    IsButtonPressed(EHmdController controllerId, EKeyId id) const override { return (id < OPENVR_BASE || id > eKI_Motion_OpenVR_TouchPadBtn) ? false : (m_state[controllerId].buttonsPressed & vr::ButtonMaskFromId((vr::EVRButtonId)(m_symbols[id - OPENVR_BASE]->devSpecId & (~OPENVR_SPECIAL)))) > 0; }
-	virtual bool                    IsButtonTouched(EHmdController controllerId, EKeyId id) const override { return (id < OPENVR_BASE || id > eKI_Motion_OpenVR_TouchPadBtn) ? false : (m_state[controllerId].buttonsTouched & vr::ButtonMaskFromId((vr::EVRButtonId)(m_symbols[id - OPENVR_BASE]->devSpecId & (~OPENVR_SPECIAL)))) > 0; }
+	virtual bool                    IsButtonPressed(EHmdController controllerId, EKeyId id) const override { return (id < HYPEREAL_BASE || id > eKI_Motion_OpenVR_TouchPadBtn) ? false : (m_state[controllerId].buttonsPressed & vr::ButtonMaskFromId((vr::EVRButtonId)(m_symbols[id - HYPEREAL_BASE]->devSpecId & (~HYPEREAL_SPECIAL)))) > 0; }
+	virtual bool                    IsButtonTouched(EHmdController controllerId, EKeyId id) const override { return (id < HYPEREAL_BASE || id > eKI_Motion_OpenVR_TouchPadBtn) ? false : (m_state[controllerId].buttonsTouched & vr::ButtonMaskFromId((vr::EVRButtonId)(m_symbols[id - HYPEREAL_BASE]->devSpecId & (~HYPEREAL_SPECIAL)))) > 0; }
 	virtual bool                    IsGestureTriggered(EHmdController controllerId, EKeyId id) const override { return false; }                           // OpenVR does not have gesture support (yet?)
 	virtual float                   GetTriggerValue(EHmdController controllerId, EKeyId id) const override { return m_state[controllerId].trigger; }   // we only have one trigger => ignore trigger id
 	virtual Vec2                    GetThumbStickValue(EHmdController controllerId, EKeyId id)const override { return m_state[controllerId].touchPad; }  // we only have one 'stick' (/the touch pad) => ignore thumb stick id

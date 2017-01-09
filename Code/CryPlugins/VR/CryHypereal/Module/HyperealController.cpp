@@ -12,7 +12,7 @@ namespace Hypereal {
 
 #define VRC_AXIS_THRESHOLD 0.5f
 
-#define MAPSYMBOL(EKI, DEV_KEY_ID, KEY_NAME, KEY_TYPE) m_symbols[EKI - OPENVR_BASE] = MapSymbol(DEV_KEY_ID, EKI, KEY_NAME, KEY_TYPE, 0);
+#define MAPSYMBOL(EKI, DEV_KEY_ID, KEY_NAME, KEY_TYPE) m_symbols[EKI - HYPEREAL_BASE] = MapSymbol(DEV_KEY_ID, EKI, KEY_NAME, KEY_TYPE, 0);
 
 // -------------------------------------------------------------------------
 Controller::Controller(vr::IVRSystem* pSystem)
@@ -33,9 +33,9 @@ bool Controller::Init()
 	MAPSYMBOL(eKI_Motion_OpenVR_ApplicationMenu, vr::k_EButton_ApplicationMenu, "openvr_appmenu", SInputSymbol::Button);
 	MAPSYMBOL(eKI_Motion_OpenVR_Grip, vr::k_EButton_Grip, "openvr_grip", SInputSymbol::Button);
 	MAPSYMBOL(eKI_Motion_OpenVR_TouchPad_X, vr::k_EButton_SteamVR_Touchpad, "openvr_touch_x", SInputSymbol::Axis);
-	MAPSYMBOL(eKI_Motion_OpenVR_TouchPad_Y, vr::k_EButton_SteamVR_Touchpad | OPENVR_SPECIAL, "openvr_touch_y", SInputSymbol::Axis);
+	MAPSYMBOL(eKI_Motion_OpenVR_TouchPad_Y, vr::k_EButton_SteamVR_Touchpad | HYPEREAL_SPECIAL, "openvr_touch_y", SInputSymbol::Axis);
 	MAPSYMBOL(eKI_Motion_OpenVR_Trigger, vr::k_EButton_SteamVR_Trigger, "openvr_trigger", SInputSymbol::Trigger);
-	MAPSYMBOL(eKI_Motion_OpenVR_TriggerBtn, vr::k_EButton_SteamVR_Trigger | OPENVR_SPECIAL, "openvr_trigger_btn", SInputSymbol::Button);
+	MAPSYMBOL(eKI_Motion_OpenVR_TriggerBtn, vr::k_EButton_SteamVR_Trigger | HYPEREAL_SPECIAL, "openvr_trigger_btn", SInputSymbol::Button);
 	MAPSYMBOL(eKI_Motion_OpenVR_TouchPadBtn, vr::k_EButton_SteamVR_Touchpad, "openvr_touch_btn", SInputSymbol::Button);
 	return true;
 }
@@ -106,7 +106,7 @@ void Controller::Update(vr::TrackedDeviceIndex_t controllerId, HmdTrackingState 
 		if (m_state[index].trigger != m_previousState[index].trigger)
 		{
 			SInputEvent event;
-			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - OPENVR_BASE];
+			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
 			pSymbol->ChangeEvent(m_state[index].trigger);
 			pSymbol->AssignTo(event);
 			event.deviceIndex = controllerId;
@@ -118,7 +118,7 @@ void Controller::Update(vr::TrackedDeviceIndex_t controllerId, HmdTrackingState 
 		if (m_state[index].touchPad.x != m_previousState[index].touchPad.x)
 		{
 			SInputEvent event;
-			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_TouchPad_X - OPENVR_BASE];
+			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_TouchPad_X - HYPEREAL_BASE];
 			pSymbol->ChangeEvent(m_state[index].touchPad.x);
 			pSymbol->AssignTo(event);
 			event.deviceIndex = controllerId;
@@ -128,7 +128,7 @@ void Controller::Update(vr::TrackedDeviceIndex_t controllerId, HmdTrackingState 
 		if (m_state[index].touchPad.y != m_previousState[index].touchPad.y)
 		{
 			SInputEvent event;
-			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_TouchPad_Y - OPENVR_BASE];
+			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_TouchPad_Y - HYPEREAL_BASE];
 			pSymbol->ChangeEvent(m_state[index].touchPad.y);
 			pSymbol->AssignTo(event);
 			event.deviceIndex = controllerId;
@@ -143,8 +143,8 @@ void Controller::Update(vr::TrackedDeviceIndex_t controllerId, HmdTrackingState 
 // -------------------------------------------------------------------------
 void Controller::PostButtonIfChanged(EHmdController controllerId, EKeyId keyID)
 {
-	SInputSymbol* pSymbol = m_symbols[keyID - OPENVR_BASE];
-	vr::EVRButtonId vrBtn = static_cast<vr::EVRButtonId>((pSymbol->devSpecId & (~OPENVR_SPECIAL)));
+	SInputSymbol* pSymbol = m_symbols[keyID - HYPEREAL_BASE];
+	vr::EVRButtonId vrBtn = static_cast<vr::EVRButtonId>((pSymbol->devSpecId & (~HYPEREAL_SPECIAL)));
 
 	bool wasPressed = m_previousState[controllerId].Pressed(vrBtn);
 	bool isPressed = m_state[controllerId].Pressed(vrBtn);
