@@ -1,5 +1,3 @@
-// Copyright 2001-2016 Crytek GmbH / Crytek Group. All rights reserved.
-
 #pragma once
 
 #include "../Interface/IHyperealPlugin.h"
@@ -14,7 +12,7 @@ class CPlugin_Hypereal : public IHyperealPlugin, public ISystemEventListener
 	CRYINTERFACE_ADD(ICryPlugin)
 	CRYINTERFACE_END()
 
-	CRYGENERATE_SINGLETONCLASS(CPlugin_Hypereal, "Plugin_Hypereal", 0x50A54ADB4BBF4068, 0x80B9EB3BFFA30C93)
+	CRYGENERATE_SINGLETONCLASS(CPlugin_Hypereal, "Plugin_Hypereal", 0x2F80BAC2A4B94114, 0x94999C8D93D76B39)
 
 	virtual ~CPlugin_Hypereal();
 

@@ -1,5 +1,3 @@
-// Copyright 2001-2016 Crytek GmbH / Crytek Group. All rights reserved.
-
 #pragma once
 
 #include <CrySystem/ICryPlugin.h>
@@ -11,7 +9,7 @@ namespace CryVR
 namespace Hypereal {
 struct IHyperealPlugin : public ICryPlugin
 {
-	CRYINTERFACE_DECLARE(IHyperealPlugin, 0xCD1389A9B37547F9, 0xBC45D382D18B21B1);
+	CRYINTERFACE_DECLARE(IHyperealPlugin, 0x7BE372D29A434E48, 0x9A3836FB8EF3EB50);
 
 public:
 	virtual IHyperealDevice* CreateDevice() = 0;
