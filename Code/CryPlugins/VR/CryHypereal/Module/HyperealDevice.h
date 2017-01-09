@@ -40,12 +40,12 @@ public:
 	virtual Vec2                    GetPlayAreaSize() const override;
 	virtual const IHmdController*   GetController() const override      { return &m_controller; }
 	virtual const EHmdSocialScreen  GetSocialScreenType(bool* pKeepAspect = nullptr) const override;
-	virtual int                     GetControllerCount() const override { __debugbreak(); return 2; /* OPENVR_TODO */ }
+	virtual int                     GetControllerCount() const override { __debugbreak(); return 2; /* Hypereal_TODO */ }
 	virtual void                    GetPreferredRenderResolution(unsigned int& width, unsigned int& height) override;
 	virtual void                    DisableHMDTracking(bool disable) override;
 	// ~IHmdDevice
 
-	// IOpenVRDevice
+	// IHyperealDevice
 	virtual void SubmitOverlay(int id);
 	virtual void SubmitFrame();
 	virtual void OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, void* leftEyeHandle, void* rightEyeHandle);
@@ -53,7 +53,7 @@ public:
 	virtual void OnDeleteOverlay(int id);
 	virtual void GetRenderTargetSize(uint& w, uint& h);
 	virtual void GetMirrorImageView(EEyeType eye, void* resource, void** mirrorTextureView) override;
-	// ~IOpenVRDevice
+	// ~IHyperealDevice
 
 	// ISystemEventListener
 	virtual void OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam);
