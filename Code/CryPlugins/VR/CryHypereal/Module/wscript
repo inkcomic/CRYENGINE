@@ -20,25 +20,25 @@ def build(bld) :
 	  win_x86_libpath = [ Path('Code/SDKs/hvrSDK/Libs/Win32') ],
 	  win_x64_libpath = [ Path('Code/SDKs/hvrSDK/Libs/Win64') ],
 	  
-	  features = [ 'copy_hypereal_binaries' ]
+	  #features = [ 'copy_hypereal_binaries' ]
 	)
 
-@feature('copy_hypereal_binaries')
-@run_once
-def feature_copy_hypereal_binaries(self):
-	bld 		  = self.bld
-	platform	  = bld.env['PLATFORM']
-	configuration = bld.env['CONFIGURATION']
+#@feature('copy_hypereal_binaries')
+#@run_once
+#def feature_copy_hypereal_binaries(self):
+#	bld 		  = self.bld
+#	platform	  = bld.env['PLATFORM']
+#	configuration = bld.env['CONFIGURATION']
 		
-	if platform  == 'project_generator':
-		return
+#	if platform  == 'project_generator':
+#		return
 		
-	bin_location = {'win_x86' : '/win32/openvr_api.dll'	, 'win_x64' : '/win64/openvr_api.dll'}
+#	bin_location = {'win_x86' : '/win32/openvr_api.dll'	, 'win_x64' : '/win64/openvr_api.dll'}
 			
-	if not platform in bin_location:
-		Logs.error('[ERROR] OpenVR is not supported on plaform by WAF: %s' % platform)
+#	if not platform in bin_location:
+#		Logs.error('[ERROR] OpenVR is not supported on plaform by WAF: %s' % platform)
 		
-	output_folder = bld.get_output_folders(platform, configuration)[0]			
-	openvr_bin = bld.CreateRootRelativePath('Code/SDKs/OpenVR/bin') + bin_location[platform]
- 	self.create_task('copy_outputs', bld.root.make_node(openvr_bin), output_folder.make_node(os.path.basename(openvr_bin)))
+#	output_folder = bld.get_output_folders(platform, configuration)[0]			
+#	openvr_bin = bld.CreateRootRelativePath('Code/SDKs/OpenVR/bin') + bin_location[platform]
+# 	self.create_task('copy_outputs', bld.root.make_node(openvr_bin), output_folder.make_node(os.path.basename(openvr_bin)))
 	
