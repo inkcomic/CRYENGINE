@@ -42,12 +42,12 @@ if(WIN32 OR WIN64 OR APPLE OR LINUX)
 	)
 
 	if(WIN64)
-		find_library(hypereal_api openvr_api PATHS "${SDK_DIR}/hvrSDK/Libs/win64")
+		find_library(HvrAPI HvrAPI PATHS "${SDK_DIR}/hvrSDK/Libs/Win64")
 	elseif(WIN32)
-		find_library(hypereal_api openvr_api PATHS "${SDK_DIR}/hvrSDK/Libs/win32")
+		find_library(HvrAPI HvrAPI PATHS "${SDK_DIR}/hvrSDK/Libs/Win32")
 	endif()
 
-	target_link_libraries(${THIS_PROJECT} PRIVATE ${hypereal_api})
+	target_link_libraries(${THIS_PROJECT} PRIVATE ${HvrAPI})
 	
 	if(LINUX)
 		target_compile_options(${THIS_PROJECT} PRIVATE -fPIC)

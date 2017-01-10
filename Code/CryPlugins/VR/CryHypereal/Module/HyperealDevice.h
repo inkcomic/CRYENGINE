@@ -67,28 +67,28 @@ public:
 	int GetRefCount() const { return m_refCount; }
 
 public:
-	static Device* CreateInstance(vr::IVRSystem* pSystem);
+	static Device* CreateInstance();
 	void           SetupRenderModels();
 	void           CaptureInputFocus(bool capture);
 	bool           HasInputFocus() { return m_hasInputFocus; }
 
 private:
-	Device(vr::IVRSystem* pSystem);
+	Device();
 	virtual ~Device();
 
 	void                   CreateDevice();
 	void                   PrintHmdInfo();
 	void                   DebugDraw(float& xPosLabel, float& yPosLabel) const;
 
-	string                 GetTrackedDeviceString(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError = NULL);
-	const char*            GetTrackedDeviceCharPointer(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError = NULL);
-	static inline Matrix34 BuildMatrix(const vr::HmdMatrix34_t& in);
-	static inline Matrix44 BuildMatrix(const vr::HmdMatrix44_t& in);
-	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
-	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
-	inline void            CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, vr::TrackedDevicePose_t& source);
-	void                   LoadDeviceRenderModel(int deviceIndex);
-	void                   DumpDeviceRenderModel(int deviceIndex);
+// 	string                 GetTrackedDeviceString(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError = NULL);
+// 	const char*            GetTrackedDeviceCharPointer(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError = NULL);
+// 	static inline Matrix34 BuildMatrix(const vr::HmdMatrix34_t& in);
+// 	static inline Matrix44 BuildMatrix(const vr::HmdMatrix44_t& in);
+// 	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
+// 	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
+// 	inline void            CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, vr::TrackedDevicePose_t& source);
+// 	void                   LoadDeviceRenderModel(int deviceIndex);
+// 	void                   DumpDeviceRenderModel(int deviceIndex);
 
 private:
 	enum ERenderModelState
@@ -104,7 +104,7 @@ private:
 		   PodArray<Vec2> uvs;
 		   PodArray<vtx_idx> indices;*/
 
-		RenderModel(vr::IVRRenderModels* renderModels, string name);
+		RenderModel(/*vr::IVRRenderModels* renderModels, string name*/);
 		~RenderModel();
 		void Update();
 		bool IsValid()   { return m_modelState != eRMS_Failed && m_textureState != eRMS_Failed; }
@@ -112,26 +112,26 @@ private:
 
 	private:
 		string                        m_name;
-		vr::IVRRenderModels*          m_renderModels;
-		vr::RenderModel_t*            m_model;
+// 		vr::IVRRenderModels*          m_renderModels;
+// 		vr::RenderModel_t*            m_model;
 		ERenderModelState             m_modelState;
-		vr::RenderModel_TextureMap_t* m_texture;
+/*		vr::RenderModel_TextureMap_t* m_texture;*/
 		ERenderModelState             m_textureState;
 	};
 	struct SOverlay
 	{
 		bool                  visible;
 		bool                  submitted;
-		vr::VROverlayHandle_t handle;
-		vr::Texture_t*        vrTexture;
-		vr::HmdMatrix34_t     pos;
+// 		vr::VROverlayHandle_t handle;
+// 		vr::Texture_t*        vrTexture;
+// 		vr::HmdMatrix34_t     pos;
 	};
 	// OpenVR Pointers
-	vr::IVRSystem*          m_system;
-	vr::IVRCompositor*      m_compositor;
-	vr::IVRRenderModels*    m_renderModels;
-	vr::IVROverlay*         m_overlay;
-	vr::Texture_t*          m_eyeTargets[EEyeType::eEyeType_NumEyes];
+// 	vr::IVRSystem*          m_system;
+// 	vr::IVRCompositor*      m_compositor;
+// 	vr::IVRRenderModels*    m_renderModels;
+// 	vr::IVROverlay*         m_overlay;
+// 	vr::Texture_t*          m_eyeTargets[EEyeType::eEyeType_NumEyes];
 	SOverlay                m_overlays[RenderLayer::eQuadLayers_Total];
 	// General device fields:
 	bool                    m_bLoadingScreenActive;
@@ -140,13 +140,13 @@ private:
 	HmdDeviceInfo           m_devInfo;
 	EHmdSocialScreen        m_defaultSocialScreenBehavior;
 	// Tracking related:
-	vr::TrackedDevicePose_t m_rTrackedDevicePose[vr::k_unMaxTrackedDeviceCount];
-	HmdTrackingState        m_nativeStates[vr::k_unMaxTrackedDeviceCount];
-	HmdTrackingState        m_localStates[vr::k_unMaxTrackedDeviceCount];
+	//vr::TrackedDevicePose_t m_rTrackedDevicePose[vr::k_unMaxTrackedDeviceCount];
+	HmdTrackingState        m_nativeStates[1/*vr::k_unMaxTrackedDeviceCount*/];
+	HmdTrackingState        m_localStates[1/*vr::k_unMaxTrackedDeviceCount*/];
 	HmdTrackingState        m_disabledTrackingState;
 	// Controller related:
 	Controller              m_controller;
-	RenderModel*            m_deviceModels[vr::k_unMaxTrackedDeviceCount];
+	RenderModel*            m_deviceModels[1/*vr::k_unMaxTrackedDeviceCount*/];
 	bool                    m_hasInputFocus;
 	bool                    m_hmdTrackingDisabled;
 	float                   m_hmdQuadDistance;

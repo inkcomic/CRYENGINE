@@ -5,6 +5,8 @@
 #include "HyperealResources.h"
 #include "HyperealDevice.h"
 
+
+#define HY_RELEASE(p) {if(p != nullptr) p->Release(); p = nullptr;}
 namespace CryVR {
 namespace Hypereal {
 
@@ -26,29 +28,51 @@ Resources::Resources()
 	}
 
 
-	CryLogAlways("[HMD][Hypereal] Initialising Resources - Using Hypereal %s", vr::IVRSystem_Version);
-
-	vr::EVRInitError eError = vr::EVRInitError::VRInitError_None;
-	vr::IVRSystem* pSystem = vr::VR_Init(&eError, vr::EVRApplicationType::VRApplication_Scene);
-
-	if (eError != vr::EVRInitError::VRInitError_None)
-	{
-		pSystem = NULL;
-		CryLogAlways("[HMD][Hypereal] Unable to initialize VR runtime: %s", vr::VR_GetVRInitErrorAsEnglishDescription(eError));
-		return;
-	}
+	CryLogAlways("[HMD][Hypereal] Initialising Resources - Using Hypereal %s", sch_HyDevice_Version);
+// 
+// 	vr::EVRInitError eError = vr::EVRInitError::VRInitError_None;
+// 	vr::IVRSystem* pSystem = vr::VR_Init(&eError, vr::EVRApplicationType::VRApplication_Scene);
+// 
+// 	if (eError != vr::EVRInitError::VRInitError_None)
+// 	{
+// 		pSystem = NULL;
+// 		CryLogAlways("[HMD][Hypereal] Unable to initialize VR runtime: %s", vr::VR_GetVRInitErrorAsEnglishDescription(eError));
+// 		return;
+// 	}
 
 	ms_libInitialized = true;
+	{
+		HyResult hr = HyStartup();
 
-	if (!vr::VR_IsHmdPresent())
-	{
-		CryLogAlways("[HMD][Hypereal] No HMD Connected!");
-		return;
+		if (hySucceeded(hr))
+		{
+			HyDevice *VrDevice = nullptr;
+			hr = HyCreateInterface(sch_HyDevice_Version, 0, (void**)&VrDevice);
+			if (hySucceeded(hr))
+			{
+				bool value = false;
+				///connected = ((VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, value) == hySuccess) && value);
+
+				//if (connected)
+				{
+					//UE_LOG(LogHyHMD, Log, TEXT("HyperealVR HMD is Connected."));
+				}
+				//else
+				{
+					//UE_LOG(LogHyHMD, Log, TEXT("HyperealVR HMD is Disconnected."));
+				}
+			}
+			HY_RELEASE(VrDevice);
+			HyShutdown();
+		}
 	}
-	else
-	{
-		m_pDevice = Device::CreateInstance(pSystem);
-	}
+	//HyResult hr = HyStartup();
+ 	//if (hr == HyResult::hySuccess)
+ 	{
+ 		m_pDevice = Device::CreateInstance();
+ 	}
+ //	else
+ 		CryLogAlways("[HMD][Hypereal] HyperealVR Failed to Startup.!");
 }
 
 // ------------------------------------------------------------------------
@@ -71,7 +95,7 @@ Resources::~Resources()
 
 	if (ms_libInitialized)
 	{
-		vr::VR_Shutdown();
+		HyShutdown();
 		CryLogAlways("[HMD][Hypereal] Shutdown finished");
 	}
 }
