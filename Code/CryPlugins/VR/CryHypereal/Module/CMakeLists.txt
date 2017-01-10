@@ -47,7 +47,9 @@ if(WIN32 OR WIN64 OR APPLE OR LINUX)
 		find_library(HvrAPI HvrAPI PATHS "${SDK_DIR}/hvrSDK/Libs/Win32")
 	endif()
 
-	target_link_libraries(${THIS_PROJECT} PRIVATE ${HvrAPI})
+	set_target_properties(${THIS_PROJECT} PROPERTIES LINK_FLAGS /NODEFAULTLIB:libcmt.lib)
+
+	target_link_libraries(${THIS_PROJECT} PRIVATE ${HvrAPI} Ole32)
 	
 	if(LINUX)
 		target_compile_options(${THIS_PROJECT} PRIVATE -fPIC)
