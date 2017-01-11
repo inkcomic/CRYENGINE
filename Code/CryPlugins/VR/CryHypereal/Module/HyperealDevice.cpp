@@ -16,6 +16,9 @@
 
 #include "..\CryAction\IViewSystem.h"
 #include <CryCore/Platform/CryWindows.h>
+
+#define HY_RELEASE(p) {if(p != nullptr) p->Release(); p = nullptr;}
+
 // 
 // // -------------------------------------------------------------------------
 // namespace vr
@@ -190,13 +193,23 @@ Device::Device()
 	, m_hmdQuadDistance(CPlugin_Hypereal::s_hmd_quad_distance)
 	, m_hmdQuadWidth(CPlugin_Hypereal::s_hmd_quad_width)
 	, m_hmdQuadAbsolute(CPlugin_Hypereal::s_hmd_quad_absolute)
+	, VrDevice(nullptr)
+	, VrGraphicsCxt(nullptr)
+	, PlayAreaVertices(nullptr)
+	, bPlayAreaValid(false)
+	, PixelDensity(1.0f)
 {
-// 	CreateDevice();
-// 
-// 	gEnv->pSystem->GetHmdManager()->AddEventListener(this);
-// 
-// 	pParallax = gEnv->pConsole->GetCVar("sys_flash_stereo_maxparallax");
-// 
+	m_pHmdInfoCVar = gEnv->pConsole->GetCVar("hmd_info");
+	m_pHmdSocialScreenKeepAspectCVar = gEnv->pConsole->GetCVar("hmd_social_screen_keep_aspect");
+	m_pHmdSocialScreenCVar = gEnv->pConsole->GetCVar("hmd_social_screen");
+	m_pTrackingOriginCVar = gEnv->pConsole->GetCVar("hmd_tracking_origin");
+
+ 	CreateDevice();
+ 
+ 	gEnv->pSystem->GetHmdManager()->AddEventListener(this);
+ 
+ 	pParallax = gEnv->pConsole->GetCVar("sys_flash_stereo_maxparallax");
+ 
 // 	memset(m_rTrackedDevicePose, 0, sizeof(vr::TrackedDevicePose_t) * vr::k_unMaxTrackedDeviceCount);
 // 	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
 // 	{
@@ -206,8 +219,8 @@ Device::Device()
 // 	for (int i = 0; i < EEyeType::eEyeType_NumEyes; i++)
 // 		m_eyeTargets[i] = nullptr;
 // 
-// 	if (GetISystem()->GetISystemEventDispatcher())
-// 		GetISystem()->GetISystemEventDispatcher()->RegisterListener(this);
+ 	if (GetISystem()->GetISystemEventDispatcher())
+ 		GetISystem()->GetISystemEventDispatcher()->RegisterListener(this);
 // 
 // 	m_controller.Init();
 // 
@@ -215,10 +228,7 @@ Device::Device()
 // 		if (m_system->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_Controller)
 // 			m_controller.OnControllerConnect(i);
 // 
-// 	m_pHmdInfoCVar = gEnv->pConsole->GetCVar("hmd_info");
-// 	m_pHmdSocialScreenKeepAspectCVar = gEnv->pConsole->GetCVar("hmd_social_screen_keep_aspect");
-// 	m_pHmdSocialScreenCVar = gEnv->pConsole->GetCVar("hmd_social_screen");
-// 	m_pTrackingOriginCVar = gEnv->pConsole->GetCVar("hmd_tracking_origin");
+
 }
 
 // -------------------------------------------------------------------------
@@ -283,12 +293,12 @@ Device::~Device()
 // 	return Quat::CreateRotationX(gf_PI * 0.5f) * Quat(m33);
 // }
 // 
-// // -------------------------------------------------------------------------
-// Vec3 Device::HmdVec3ToWorldVec3(const Vec3& vec)
-// {
-// 	return Vec3(vec.x, -vec.z, vec.y);
-// }
-// 
+ // -------------------------------------------------------------------------
+ Vec3 Device::HmdVec3ToWorldVec3(const Vec3& vec)
+ {
+ 	return Vec3(vec.x, -vec.z, vec.y);
+ }
+ 
 // // -------------------------------------------------------------------------
 // void Device::CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, vr::TrackedDevicePose_t& src)
 // {
@@ -635,6 +645,103 @@ void Device::UpdateInternal(EInternalUpdate type)
 // -------------------------------------------------------------------------
 void Device::CreateDevice()
 {
+	HyResult startResult = HyStartup();
+	bool bVRInitialized = hySucceeded(startResult);
+	if (!bVRInitialized)
+	{
+		gEnv->pLog->Log("[HMD][Hypereal] HyperealVR Failed to Startup.");
+		return;
+	}
+
+	gEnv->pLog->Log("[HMD][Hypereal] HyperealVR Startup sucessfully.");
+	
+	bPlayAreaValid = false;
+	PlayAreaVertexCount = 0;
+
+	HyGraphicsAPI graphicsAPI = HY_GRAPHICS_UNKNOWN;
+
+	graphicsAPI = HY_GRAPHICS_D3D11;
+
+	void *graphicsDevice = nullptr;
+	
+
+	{
+		VrGraphicsCxtDesc.m_mirrorWidth = gEnv->pRenderer->GetWidth();
+		VrGraphicsCxtDesc.m_mirrorHeight = gEnv->pRenderer->GetHeight();
+	}
+
+	VrGraphicsCxtDesc.m_graphicsDevice = graphicsDevice;
+	VrGraphicsCxtDesc.m_graphicsAPI = graphicsAPI;
+	VrGraphicsCxtDesc.m_pixelFormat = HY_TEXTURE_R8G8B8A8_UNORM_SRGB;
+	VrGraphicsCxtDesc.m_pixelDensity = PixelDensity;
+	VrGraphicsCxtDesc.m_flags = 0;
+	HyResult hr = HyCreateInterface(sch_HyDevice_Version, 0, (void**)&VrDevice);
+
+	if (!hySucceeded(hr))
+	{
+		gEnv->pLog->Log("[HMD][Hypereal] HyCreateInterface failed.");
+		return ;
+	}
+
+	hr = VrDevice->CreateGraphicsContext(VrGraphicsCxtDesc, &VrGraphicsCxt);
+	if (!hySucceeded(hr))
+	{
+		gEnv->pLog->Log("[HMD][Hypereal] CreateGraphicsContext failed.");
+		return;
+	}
+
+	memset(&VrDeviceInfo,0, sizeof(DeviceInfo));
+
+	VrDevice->GetIntValue(HY_PROPERTY_DEVICE_RESOLUTION_X_INT, VrDeviceInfo.DeviceResolutionX);
+	VrDevice->GetIntValue(HY_PROPERTY_DEVICE_RESOLUTION_Y_INT, VrDeviceInfo.DeviceResolutionY);
+	VrDevice->GetFloatArray(HY_PROPERTY_DEVICE_LEFT_EYE_FOV_FLOAT4_ARRAY, VrDeviceInfo.Fov[HY_EYE_LEFT].val, 4);
+	VrDevice->GetFloatArray(HY_PROPERTY_DEVICE_RIGHT_EYE_FOV_FLOAT4_ARRAY, VrDeviceInfo.Fov[HY_EYE_RIGHT].val, 4);
+
+	bool isConnected = false;
+	hr = VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, isConnected);
+	if (hySucceeded(hr) && isConnected)
+	{
+	//	CustomPresent = new FHyperealCustomPresent(nullptr, this, VrGraphicsCxt);
+		
+		VrDevice->ConfigureTrackingOrigin(m_pTrackingOriginCVar->GetIVal() == (int)EHmdTrackingOrigin::Floor == 1 ? HY_TRACKING_ORIGIN_FLOOR : HY_TRACKING_ORIGIN_EYE);
+
+		RebuildPlayArea();
+		gEnv->pLog->Log("[HMD][Hypereal] EnableStereo successfully.");
+		
+	}
+	else
+	{
+		gEnv->pLog->Log("[HMD][Hypereal] HyperealVR HMD is Disconnected.");
+	}
+
+	bool bVRSystemValid = isConnected;
+
+	{
+		bool connected = false;
+		HyResult hr = HyStartup();
+
+		if (hySucceeded(hr))
+		{
+			HyDevice *VrDevice = nullptr;
+			hr = HyCreateInterface(sch_HyDevice_Version, 0, (void**)&VrDevice);
+			if (hySucceeded(hr))
+			{
+				bool value = false;
+				connected = ((VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, value) == hySuccess) && value);
+
+				if (connected)
+				{
+					gEnv->pLog->Log("[HMD][Hypereal] HyperealVR HMD is Connected.");
+									}
+				else
+				{
+					gEnv->pLog->Log("[HMD][Hypereal] HyperealVR HMD is Disconnected.");
+				}
+			}
+			HY_RELEASE(VrDevice);
+			HyShutdown();
+		}
+	}
 // 	vr::EVRInitError eError = vr::EVRInitError::VRInitError_None;
 // 	m_compositor = (vr::IVRCompositor*)vr::VR_GetGenericInterface(vr::IVRCompositor_Version, &eError);
 // 	if (eError != vr::EVRInitError::VRInitError_None)
@@ -760,21 +867,13 @@ const HmdTrackingState& Device::GetLocalTrackingState() const
 // -------------------------------------------------------------------------
 Quad Device::GetPlayArea() const
 {
-// 	if (auto* pChaperone = vr::VRChaperone())
-// 	{
-// 		vr::HmdQuad_t hmdQuad;
-// 		if (pChaperone->GetPlayAreaRect(&hmdQuad))
-// 		{
-// 			Quad result;
-// 			result.vCorners[0] = HmdVec3ToWorldVec3(Vec3(hmdQuad.vCorners[0].v[0], hmdQuad.vCorners[0].v[1], hmdQuad.vCorners[0].v[2]));
-// 			result.vCorners[1] = HmdVec3ToWorldVec3(Vec3(hmdQuad.vCorners[1].v[0], hmdQuad.vCorners[1].v[1], hmdQuad.vCorners[1].v[2]));
-// 			result.vCorners[2] = HmdVec3ToWorldVec3(Vec3(hmdQuad.vCorners[2].v[0], hmdQuad.vCorners[2].v[1], hmdQuad.vCorners[2].v[2]));
-// 			result.vCorners[3] = HmdVec3ToWorldVec3(Vec3(hmdQuad.vCorners[3].v[0], hmdQuad.vCorners[3].v[1], hmdQuad.vCorners[3].v[2]));
-// 			return result;
-// 		}
-// 	}
+	Quad result;
+	result.vCorners[0] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[0].x, PlayAreaVertices[0].y, 0));
+	result.vCorners[1] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[1].x, PlayAreaVertices[1].y, 0));
+	result.vCorners[2] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[2].x, PlayAreaVertices[2].y, 0));
+	result.vCorners[3] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[3].x, PlayAreaVertices[3].y, 0));
+	return result;
 
-	return Quad(ZERO);
 }
 
 // -------------------------------------------------------------------------
@@ -1012,6 +1111,37 @@ void Device::OnDeleteOverlay(int id)
 // 	SAFE_DELETE(m_overlays[id].vrTexture);
 // 	m_overlays[id].visible = false;
 // 	m_overlays[id].submitted = false;
+}
+
+
+void Device::RebuildPlayArea()
+{
+	if (PlayAreaVertices)
+	{
+		delete[] PlayAreaVertices;
+		PlayAreaVertices = nullptr;
+	}
+
+	if (hySucceeded(VrDevice->GetIntValue(HY_PROPERTY_CHAPERONE_VERTEX_COUNT_INT, PlayAreaVertexCount)) && PlayAreaVertexCount != 0)
+	{
+		PlayAreaVertices = new HyVec2[PlayAreaVertexCount];
+		HyResult r = VrDevice->GetFloatArray(HY_PROPERTY_CHAPERONE_VERTEX_VEC2_ARRAY, reinterpret_cast<float*>(PlayAreaVertices), PlayAreaVertexCount * 2);
+
+		bPlayAreaValid = hySucceeded(r);
+
+		if (!bPlayAreaValid)
+		{
+			delete[] PlayAreaVertices;
+			PlayAreaVertices = nullptr;
+		}
+	}
+}
+
+float Device::GetDistance(const HyVec2& P, const HyVec2& PA, const HyVec2& PB)
+{
+	float xx = PB.x - PA.x;
+	float yy = PB.y - PA.y;
+	return (-(yy * P.x - xx * P.y + PB.x * PA.y - PB.y * PA.x) / sqrt(xx * xx + yy * yy));
 }
 
 } // namespace Hypereal

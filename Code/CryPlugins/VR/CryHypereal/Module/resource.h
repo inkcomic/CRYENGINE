@@ -1,5 +1,3 @@
-// Copyright 2001-2016 Crytek GmbH / Crytek Group. All rights reserved.
-
 // Next default values for new objects
 //
 #ifdef APSTUDIO_INVOKED

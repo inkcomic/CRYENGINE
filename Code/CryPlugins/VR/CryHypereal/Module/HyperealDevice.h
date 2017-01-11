@@ -1,5 +1,3 @@
-// Copyright 2001-2016 Crytek GmbH / Crytek Group. All rights reserved.
-
 #pragma once
 
 #include <CrySystem/VR/IHMDDevice.h>
@@ -85,7 +83,7 @@ private:
 // 	static inline Matrix34 BuildMatrix(const vr::HmdMatrix34_t& in);
 // 	static inline Matrix44 BuildMatrix(const vr::HmdMatrix44_t& in);
 // 	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
-// 	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
+ 	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
 // 	inline void            CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, vr::TrackedDevicePose_t& source);
 // 	void                   LoadDeviceRenderModel(int deviceIndex);
 // 	void                   DumpDeviceRenderModel(int deviceIndex);
@@ -157,6 +155,33 @@ private:
 	ICVar*                  m_pHmdSocialScreenKeepAspectCVar;
 	ICVar*                  m_pHmdSocialScreenCVar;
 	ICVar*                  m_pTrackingOriginCVar;
+
+
+
+	//////////////////////////////////////////////////////////////////////////
+	//HVR device member
+	struct DeviceInfo
+	{
+		int64 DeviceResolutionX;
+		int64 DeviceResolutionY;
+		HyFov Fov[HY_EYE_MAX];
+	};
+
+	HyDevice *VrDevice;
+	DeviceInfo VrDeviceInfo;
+	HyGraphicsContext *VrGraphicsCxt;
+	HyGraphicsContextDesc VrGraphicsCxtDesc;
+	HyVec2 *PlayAreaVertices;
+	int64 PlayAreaVertexCount;
+	bool bPlayAreaValid;
+
+	float PixelDensity;
+	
+	//////////////////////////////////////////////////////////////////////////
+
+	//member func
+	void RebuildPlayArea();
+	float GetDistance(const HyVec2& P, const HyVec2& PA, const HyVec2& PB);
 };
 } // namespace Hypereal
 } // namespace CryVR
