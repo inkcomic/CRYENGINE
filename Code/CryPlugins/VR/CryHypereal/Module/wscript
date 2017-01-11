@@ -14,6 +14,7 @@ def build(bld) :
 
 	  pch = 'StdAfx.cpp',
 	  
+	  win_lib         = [ 'Ole32', 'oleaut32'],	
 	  win_linkflags   = [ '/NODEFAULTLIB:libcmt.lib' ], ## AMD AGS static lib references this
 	  
 	  includes  = Path('Code/SDKs/hvrSDK/Includes'),

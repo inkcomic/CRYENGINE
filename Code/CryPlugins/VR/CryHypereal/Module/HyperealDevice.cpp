@@ -1125,7 +1125,7 @@ void Device::RebuildPlayArea()
 	if (hySucceeded(VrDevice->GetIntValue(HY_PROPERTY_CHAPERONE_VERTEX_COUNT_INT, PlayAreaVertexCount)) && PlayAreaVertexCount != 0)
 	{
 		PlayAreaVertices = new HyVec2[PlayAreaVertexCount];
-		HyResult r = VrDevice->GetFloatArray(HY_PROPERTY_CHAPERONE_VERTEX_VEC2_ARRAY, reinterpret_cast<float*>(PlayAreaVertices), PlayAreaVertexCount * 2);
+		HyResult r = VrDevice->GetFloatArray(HY_PROPERTY_CHAPERONE_VERTEX_VEC2_ARRAY, reinterpret_cast<float*>(PlayAreaVertices),(uint) PlayAreaVertexCount * 2);
 
 		bPlayAreaValid = hySucceeded(r);
 
