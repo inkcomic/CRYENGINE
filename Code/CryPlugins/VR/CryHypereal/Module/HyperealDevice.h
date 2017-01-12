@@ -24,7 +24,7 @@ public:
 	virtual void                    AddRef() override;
 	virtual void                    Release() override;
 
-	virtual EHmdClass               GetClass() const override                         { return eHmdClass_OpenVR; }
+	virtual EHmdClass               GetClass() const override                         { return eHmdClass_Hypereal; }
 	virtual void                    GetDeviceInfo(HmdDeviceInfo& info) const override { info = m_devInfo; }
 
 	virtual void                    GetCameraSetupInfo(float& fov, float& aspectRatioFactor) const override;
