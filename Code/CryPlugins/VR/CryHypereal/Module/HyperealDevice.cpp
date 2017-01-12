@@ -198,6 +198,8 @@ Device::Device()
 	, PlayAreaVertices(nullptr)
 	, bPlayAreaValid(false)
 	, PixelDensity(1.0f)
+	, bVRInitialized(nullptr)
+	, bVRSystemValid(nullptr)
 {
 	m_pHmdInfoCVar = gEnv->pConsole->GetCVar("hmd_info");
 	m_pHmdSocialScreenKeepAspectCVar = gEnv->pConsole->GetCVar("hmd_social_screen_keep_aspect");
@@ -646,7 +648,7 @@ void Device::UpdateInternal(EInternalUpdate type)
 void Device::CreateDevice()
 {
 	HyResult startResult = HyStartup();
-	bool bVRInitialized = hySucceeded(startResult);
+	bVRInitialized = hySucceeded(startResult);
 	if (!bVRInitialized)
 	{
 		gEnv->pLog->Log("[HMD][Hypereal] HyperealVR Failed to Startup.");
@@ -658,23 +660,7 @@ void Device::CreateDevice()
 	bPlayAreaValid = false;
 	PlayAreaVertexCount = 0;
 
-	HyGraphicsAPI graphicsAPI = HY_GRAPHICS_UNKNOWN;
-
-	graphicsAPI = HY_GRAPHICS_D3D11;
-
-	void *graphicsDevice = nullptr;
 	
-
-	{
-		VrGraphicsCxtDesc.m_mirrorWidth = gEnv->pRenderer->GetWidth();
-		VrGraphicsCxtDesc.m_mirrorHeight = gEnv->pRenderer->GetHeight();
-	}
-
-	VrGraphicsCxtDesc.m_graphicsDevice = graphicsDevice;
-	VrGraphicsCxtDesc.m_graphicsAPI = graphicsAPI;
-	VrGraphicsCxtDesc.m_pixelFormat = HY_TEXTURE_R8G8B8A8_UNORM_SRGB;
-	VrGraphicsCxtDesc.m_pixelDensity = PixelDensity;
-	VrGraphicsCxtDesc.m_flags = 0;
 	HyResult hr = HyCreateInterface(sch_HyDevice_Version, 0, (void**)&VrDevice);
 
 	if (!hySucceeded(hr))
@@ -683,12 +669,7 @@ void Device::CreateDevice()
 		return ;
 	}
 
-	hr = VrDevice->CreateGraphicsContext(VrGraphicsCxtDesc, &VrGraphicsCxt);
-	if (!hySucceeded(hr))
-	{
-		gEnv->pLog->Log("[HMD][Hypereal] CreateGraphicsContext failed.");
-		return;
-	}
+	
 
 	memset(&VrDeviceInfo,0, sizeof(DeviceInfo));
 
@@ -707,41 +688,12 @@ void Device::CreateDevice()
 
 		RebuildPlayArea();
 		gEnv->pLog->Log("[HMD][Hypereal] EnableStereo successfully.");
-		
 	}
 	else
 	{
 		gEnv->pLog->Log("[HMD][Hypereal] HyperealVR HMD is Disconnected.");
 	}
 
-	bool bVRSystemValid = isConnected;
-
-	{
-		bool connected = false;
-		HyResult hr = HyStartup();
-
-		if (hySucceeded(hr))
-		{
-			HyDevice *VrDevice = nullptr;
-			hr = HyCreateInterface(sch_HyDevice_Version, 0, (void**)&VrDevice);
-			if (hySucceeded(hr))
-			{
-				bool value = false;
-				connected = ((VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, value) == hySuccess) && value);
-
-				if (connected)
-				{
-					gEnv->pLog->Log("[HMD][Hypereal] HyperealVR HMD is Connected.");
-									}
-				else
-				{
-					gEnv->pLog->Log("[HMD][Hypereal] HyperealVR HMD is Disconnected.");
-				}
-			}
-			HY_RELEASE(VrDevice);
-			HyShutdown();
-		}
-	}
 // 	vr::EVRInitError eError = vr::EVRInitError::VRInitError_None;
 // 	m_compositor = (vr::IVRCompositor*)vr::VR_GetGenericInterface(vr::IVRCompositor_Version, &eError);
 // 	if (eError != vr::EVRInitError::VRInitError_None)
@@ -811,6 +763,18 @@ void Device::CreateDevice()
 // #endif
 }
 
+void Device::ReleaseDevice() 
+{
+	HY_RELEASE(VrDevice);
+
+	bVRSystemValid = false;
+
+	if (bVRInitialized)
+	{
+		bVRInitialized = false;
+		HyShutdown();
+	}
+}
 // -------------------------------------------------------------------------
 void Device::DebugDraw(float& xPosLabel, float& yPosLabel) const
 {
@@ -1142,6 +1106,37 @@ float Device::GetDistance(const HyVec2& P, const HyVec2& PA, const HyVec2& PB)
 	float xx = PB.x - PA.x;
 	float yy = PB.y - PA.y;
 	return (-(yy * P.x - xx * P.y + PB.x * PA.y - PB.y * PA.x) / sqrt(xx * xx + yy * yy));
+}
+
+void Device::CreateGraphicsContext(void* graphicsDevice)
+{
+	//graphic ctx should be ready
+	HyGraphicsAPI graphicsAPI = HY_GRAPHICS_UNKNOWN;
+
+	graphicsAPI = HY_GRAPHICS_D3D11;
+
+	{
+		VrGraphicsCxtDesc.m_mirrorWidth = gEnv->pRenderer->GetWidth();
+		VrGraphicsCxtDesc.m_mirrorHeight = gEnv->pRenderer->GetHeight();
+	}
+
+	VrGraphicsCxtDesc.m_graphicsDevice = graphicsDevice;
+	VrGraphicsCxtDesc.m_graphicsAPI = graphicsAPI;
+	VrGraphicsCxtDesc.m_pixelFormat = HY_TEXTURE_R8G8B8A8_UNORM_SRGB;
+	VrGraphicsCxtDesc.m_pixelDensity = PixelDensity;
+	VrGraphicsCxtDesc.m_flags = 0;
+
+	HyResult hr = VrDevice->CreateGraphicsContext(VrGraphicsCxtDesc, &VrGraphicsCxt);
+	if (!hySucceeded(hr))
+	{
+		gEnv->pLog->Log("[HMD][Hypereal] CreateGraphicsContext failed.");
+		return;
+	}
+}
+
+void Device::ReleaseGraphicsContext()
+{
+	HY_RELEASE(VrGraphicsCxt);
 }
 
 } // namespace Hypereal

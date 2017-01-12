@@ -39,6 +39,9 @@ public:
 	virtual void SubmitFrame() = 0;
 	virtual void GetRenderTargetSize(uint& w, uint& h) = 0;
 	virtual void GetMirrorImageView(EEyeType eye, void* resource, void** mirrorTextureView) = 0;
+
+	virtual void CreateGraphicsContext(void* graphicsDevice) = 0;
+	virtual void ReleaseGraphicsContext() = 0;
 protected:
 	virtual ~IHyperealDevice() {}
 };

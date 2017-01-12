@@ -49,6 +49,8 @@ bool CD3DHyperealRenderer::Initialize()
 {
 	D3DDevice* d3d11Device = m_pRenderer->GetDevice_Unsynchronized().GetRealDevice();
 
+	m_pHyperealDevice->CreateGraphicsContext(d3d11Device);
+
 	m_eyeWidth = m_pRenderer->GetWidth();
 	m_eyeHeight = m_pRenderer->GetHeight();
 
@@ -212,6 +214,8 @@ void CD3DHyperealRenderer::Shutdown()
 	}
 
 	ReleaseBuffers();
+
+	m_pHyperealDevice->ReleaseGraphicsContext();
 }
 
 void CD3DHyperealRenderer::OnResolutionChanged()

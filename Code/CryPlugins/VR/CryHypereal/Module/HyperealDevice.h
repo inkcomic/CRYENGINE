@@ -176,12 +176,17 @@ private:
 	bool bPlayAreaValid;
 
 	float PixelDensity;
-	
+	bool bVRInitialized;
+	bool bVRSystemValid;
 	//////////////////////////////////////////////////////////////////////////
 
 	//member func
 	void RebuildPlayArea();
 	float GetDistance(const HyVec2& P, const HyVec2& PA, const HyVec2& PB);
+	void ReleaseDevice();
+public:
+	virtual void CreateGraphicsContext(void* graphicsDevice);
+	virtual void ReleaseGraphicsContext();
 };
 } // namespace Hypereal
 } // namespace CryVR
