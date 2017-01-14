@@ -19,6 +19,29 @@
 
 #define HY_RELEASE(p) {if(p != nullptr) p->Release(); p = nullptr;}
 
+HyFov ComputeSymmetricalFov(const HyFov& fovLeftEye, const HyFov& fovRightEye)
+{
+	const float stereoDeviceAR = 1.7777f;
+
+	HyFov fovMax;
+	fovMax.m_upTan = max(fovLeftEye.m_upTan, fovRightEye.m_upTan);
+	fovMax.m_downTan = max(fovLeftEye.m_downTan, fovRightEye.m_downTan);
+	fovMax.m_leftTan = max(fovLeftEye.m_leftTan, fovRightEye.m_leftTan);
+	fovMax.m_rightTan = max(fovLeftEye.m_rightTan, fovRightEye.m_rightTan);
+
+	const float combinedTanHalfFovHorizontal = max(fovMax.m_leftTan, fovMax.m_rightTan);
+	const float combinedTanHalfFovVertical = max(fovMax.m_upTan, fovMax.m_downTan);
+
+	HyFov fovSym;
+	fovSym.m_upTan = fovSym.m_downTan = combinedTanHalfFovVertical * 1.f;
+	
+	fovSym.m_leftTan = fovSym.m_rightTan = fovSym.m_upTan / (2.f / stereoDeviceAR);
+
+	CryLog("[Hypereal] Fov: Up/Down tans [%f] Left/Right tans [%f]", fovSym.m_upTan, fovSym.m_leftTan);
+	return fovSym;
+}
+
+
 // 
 // // -------------------------------------------------------------------------
 // namespace vr
@@ -200,6 +223,7 @@ Device::Device()
 	, PixelDensity(1.0f)
 	, bVRInitialized(nullptr)
 	, bVRSystemValid(nullptr)
+	, nFrameId(0)
 {
 	m_pHmdInfoCVar = gEnv->pConsole->GetCVar("hmd_info");
 	m_pHmdSocialScreenKeepAspectCVar = gEnv->pConsole->GetCVar("hmd_social_screen_keep_aspect");
@@ -256,17 +280,19 @@ Device::~Device()
 // 	return result;
 // }
 // 
-// // -------------------------------------------------------------------------
-// const char* Device::GetTrackedDeviceCharPointer(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError)
-// {
-// 	uint32_t unRequiredBufferLen = m_system->GetStringTrackedDeviceProperty(unDevice, prop, nullptr, 0, peError);
-// 	if (unRequiredBufferLen == 0)
-// 		return nullptr;
-// 
-// 	char* pBuffer = new char[unRequiredBufferLen];
-// 	m_system->GetStringTrackedDeviceProperty(unDevice, prop, pBuffer, unRequiredBufferLen, peError);
-// 	return const_cast<char*>(pBuffer);
-// }
+// -------------------------------------------------------------------------
+const char* Device::GetTrackedDeviceCharPointer(int nProperty)
+{
+	int realStrLen = 512;
+	//VrDevice->GetStringValue(HY_PROPERTY_DEVICE_MANUFACTURER_STRING, 0, 0, &realStrLen);
+
+	//if (realStrLen == 0)
+	//	return nullptr;
+
+	char* pBuffer = new char[realStrLen];
+	VrDevice->GetStringValue(HY_PROPERTY_DEVICE_MANUFACTURER_STRING, pBuffer, realStrLen, &realStrLen);
+	return const_cast<char*>(pBuffer);
+}
 // 
 // // -------------------------------------------------------------------------
 // Matrix34 Device::BuildMatrix(const vr::HmdMatrix34_t& in)
@@ -647,6 +673,13 @@ void Device::UpdateInternal(EInternalUpdate type)
 // -------------------------------------------------------------------------
 void Device::CreateDevice()
 {
+	nFrameId = 0;
+	for (int i = 0; i < 2; ++i)
+	{
+		RTDesc[i].m_uvSize = HyVec2{ 1.f, 1.f };
+		RTDesc[i].m_uvOffset = HyVec2{ 0.f, 0.f };
+	}
+
 	HyResult startResult = HyStartup();
 	bVRInitialized = hySucceeded(startResult);
 	if (!bVRInitialized)
@@ -677,6 +710,17 @@ void Device::CreateDevice()
 	VrDevice->GetIntValue(HY_PROPERTY_DEVICE_RESOLUTION_Y_INT, VrDeviceInfo.DeviceResolutionY);
 	VrDevice->GetFloatArray(HY_PROPERTY_DEVICE_LEFT_EYE_FOV_FLOAT4_ARRAY, VrDeviceInfo.Fov[HY_EYE_LEFT].val, 4);
 	VrDevice->GetFloatArray(HY_PROPERTY_DEVICE_RIGHT_EYE_FOV_FLOAT4_ARRAY, VrDeviceInfo.Fov[HY_EYE_RIGHT].val, 4);
+
+
+
+	HyFov eyeFovSym = ComputeSymmetricalFov( VrDeviceInfo.Fov[HY_EYE_LEFT], VrDeviceInfo.Fov[HY_EYE_RIGHT]);
+	//set for  generic HMD device
+	GetRenderTargetSize(m_devInfo.screenWidth, m_devInfo.screenHeight);
+	m_devInfo.manufacturer = GetTrackedDeviceCharPointer(HY_PROPERTY_DEVICE_MANUFACTURER_STRING);
+	m_devInfo.productName = GetTrackedDeviceCharPointer(HY_PROPERTY_DEVICE_PRODUCT_NAME_STRING);
+	m_devInfo.fovH = 2.0f * atanf(eyeFovSym.m_leftTan);
+	m_devInfo.fovV = 2.0f * atanf(eyeFovSym.m_upTan);
+
 
 	bool isConnected = false;
 	hr = VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, isConnected);
@@ -903,6 +947,20 @@ void Device::SubmitOverlay(int id)
 // -------------------------------------------------------------------------
 void Device::SubmitFrame()
 {
+	if (VrGraphicsCxt)
+	{
+		//HyTextureDesc RTDesc[2];
+
+
+
+		HyResult hr = hySuccess;
+		
+// 		RTDesc[0].m_texture = resL->RenderTex;
+// 		RTDesc[1].m_texture = resR->RenderTex;
+		hr = VrGraphicsCxt->Submit(nFrameId, RTDesc, 2);
+		nFrameId++;
+	}
+
 // 	FRAME_PROFILER("Device::SubmitFrame", gEnv->pSystem, PROFILE_SYSTEM);
 // 
 // 	if (m_compositor && m_eyeTargets[EEyeType::eEyeType_LeftEye] && m_eyeTargets[EEyeType::eEyeType_RightEye])
@@ -935,7 +993,8 @@ void Device::SubmitFrame()
 // -------------------------------------------------------------------------
 void Device::GetRenderTargetSize(uint& w, uint& h)
 {
-	//m_system->GetRecommendedRenderTargetSize(&w, &h);
+	w = (uint)VrDeviceInfo.DeviceResolutionX;
+	h = (uint)VrDeviceInfo.DeviceResolutionY;
 }
 
 // -------------------------------------------------------------------------
@@ -947,6 +1006,8 @@ void Device::GetMirrorImageView(EEyeType eye, void* resource, void** mirrorTextu
 // -------------------------------------------------------------------------
 void Device::OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, void* leftEyeHandle, void* rightEyeHandle)
 {
+	RTDesc[EEyeType::eEyeType_LeftEye].m_texture = leftEyeHandle;
+	RTDesc[EEyeType::eEyeType_RightEye].m_texture = rightEyeHandle;
 // 	m_eyeTargets[EEyeType::eEyeType_LeftEye] = new vr::Texture_t();
 // 	m_eyeTargets[EEyeType::eEyeType_RightEye] = new vr::Texture_t();
 // 

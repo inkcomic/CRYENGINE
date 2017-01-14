@@ -79,7 +79,7 @@ private:
 	void                   DebugDraw(float& xPosLabel, float& yPosLabel) const;
 
 // 	string                 GetTrackedDeviceString(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError = NULL);
-// 	const char*            GetTrackedDeviceCharPointer(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError = NULL);
+ 	const char*            GetTrackedDeviceCharPointer(int nProperty);
 // 	static inline Matrix34 BuildMatrix(const vr::HmdMatrix34_t& in);
 // 	static inline Matrix44 BuildMatrix(const vr::HmdMatrix44_t& in);
 // 	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
@@ -178,6 +178,9 @@ private:
 	float PixelDensity;
 	bool bVRInitialized;
 	bool bVRSystemValid;
+
+	HyTextureDesc RTDesc[2];
+	uint nFrameId;
 	//////////////////////////////////////////////////////////////////////////
 
 	//member func
