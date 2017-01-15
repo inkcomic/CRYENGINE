@@ -82,9 +82,9 @@ private:
  	const char*            GetTrackedDeviceCharPointer(int nProperty);
 // 	static inline Matrix34 BuildMatrix(const vr::HmdMatrix34_t& in);
 // 	static inline Matrix44 BuildMatrix(const vr::HmdMatrix44_t& in);
-// 	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
+ 	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
  	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
-// 	inline void            CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, vr::TrackedDevicePose_t& source);
+ 	inline void            CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, HyTrackingState& source);
 // 	void                   LoadDeviceRenderModel(int deviceIndex);
 // 	void                   DumpDeviceRenderModel(int deviceIndex);
 
@@ -138,9 +138,16 @@ private:
 	HmdDeviceInfo           m_devInfo;
 	EHmdSocialScreen        m_defaultSocialScreenBehavior;
 	// Tracking related:
-	//vr::TrackedDevicePose_t m_rTrackedDevicePose[vr::k_unMaxTrackedDeviceCount];
-	HmdTrackingState        m_nativeStates[1/*vr::k_unMaxTrackedDeviceCount*/];
-	HmdTrackingState        m_localStates[1/*vr::k_unMaxTrackedDeviceCount*/];
+	enum EDevice
+	{
+		Hmd,
+		Left_Controller,
+		Right_Controller,
+		Total_Count
+	};
+	HyTrackingState			m_rTrackedDevicePose[Total_Count];
+	HmdTrackingState        m_nativeStates[Total_Count];
+	HmdTrackingState        m_localStates[Total_Count];
 	HmdTrackingState        m_disabledTrackingState;
 	// Controller related:
 	Controller              m_controller;
@@ -167,6 +174,8 @@ private:
 		HyFov Fov[HY_EYE_MAX];
 	};
 
+
+
 	HyDevice *VrDevice;
 	DeviceInfo VrDeviceInfo;
 	HyGraphicsContext *VrGraphicsCxt;
@@ -178,9 +187,13 @@ private:
 	float PixelDensity;
 	bool bVRInitialized;
 	bool bVRSystemValid;
-
+	bool bIsQuitting;
 	HyTextureDesc RTDesc[2];
-	uint nFrameId;
+
+	HyPose	m_CurEyePoses[HY_EYE_MAX];
+	HyPose	m_CurDevicePose[EDevice::Total_Count];
+	bool	m_IsDevicePositionTracked[EDevice::Total_Count];
+	bool	m_IsDeviceRotationTracked[EDevice::Total_Count];
 	//////////////////////////////////////////////////////////////////////////
 
 	//member func

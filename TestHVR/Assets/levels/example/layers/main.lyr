@@ -361,6 +361,42 @@
      <GraphTokens />
     </FlowGraph>
    </Object>
+   <Object Type="Camera" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{AC3391E3-281A-213A-9062-01DA1BD64FEF}" Name="Camera1" Pos="286.11496,260.23608,25.210831" FloorNumber="-1" Rotate="0.86350501,-0.50434029,0,0" ColorRGB="16776960" FOV="1.0472" NearZ="0.25" FarZ="1024" EntityClass="CameraSource" HasEntity="1">
+    <ShakeParams AmplitudeA="1,1,1" AmplitudeAMult="0" FrequencyA="1,1,1" FrequencyAMult="0" NoiseAAmpMult="0" NoiseAFreqMult="0" TimeOffsetA="0" AmplitudeB="1,1,1" AmplitudeBMult="0" FrequencyB="1,1,1" FrequencyBMult="0" NoiseBAmpMult="0" NoiseBFreqMult="0" TimeOffsetB="0" CameraShakeSeed="0"/>
+    <Properties />
+    <Components>
+     <Component typeId="{9DA92DF2-37D7-4D2F-B64F-B827FCECFDD3}"/>
+     <Component typeId="{17E5EBA7-57E4-4662-A1C2-1F41DE946CDA}"/>
+     <Component typeId="{19D1AD13-1867-49A0-A93E-A7CA58B1F698}"/>
+    </Components>
+    <FlowGraph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
+     <Nodes>
+      <Node Id="1" Class="VR:TransformInfo" pos="-430,-300,0" flags="1">
+       <Inputs Enabled="1"/>
+      </Node>
+      <Node Id="2" Class="Camera:View" pos="100,-410,0" flags="0" GraphEntity="0">
+       <Inputs entityId="0" Enable="0" Disable="0" FOV="60" Blend="0" BlendFOVSpeed="5" BlendFOVOffset="0" BlendPosSpeed="5" BlendPosOffset="0,0,0" BlendRotSpeed="1" BlendRotOffset="0,0,0"/>
+      </Node>
+      <Node Id="4" Class="Game:Start" pos="-460,-570,0" flags="0">
+       <Inputs InGame="1" InEditor="1"/>
+      </Node>
+      <Node Id="5" Class="VR:Tools" pos="-460,-470,0" flags="0">
+       <Inputs />
+      </Node>
+      <Node Id="10" Class="VR:ControllerTracking" pos="-150,-610,0" flags="0">
+       <Inputs entityId="0" Enabled="1" OffseLS="0,0,0" Scale="1"/>
+      </Node>
+     </Nodes>
+     <Edges>
+      <Edge nodeIn="2" nodeOut="1" portIn="BlendPosOffset" portOut="HMD pos" enabled="1"/>
+      <Edge nodeIn="2" nodeOut="1" portIn="BlendRotOffset" portOut="HMD rot (PRY)" enabled="1"/>
+      <Edge nodeIn="5" nodeOut="4" portIn="RecentrePose" portOut="output" enabled="1"/>
+      <Edge nodeIn="2" nodeOut="5" portIn="Blend" portOut="Done" enabled="1"/>
+      <Edge nodeIn="2" nodeOut="5" portIn="Enable" portOut="Done" enabled="1"/>
+     </Edges>
+     <GraphTokens />
+    </FlowGraph>
+   </Object>
    <Object Type="EnvironmentProbe" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{D394A1C3-3AE0-4C33-A18F-AA32FA5EBBA4}" Name="EnvironmentProbe" Pos="269.62994,256.18665,50.870579" FloorNumber="-1" Rotate="1,0,0,0" ColorRGB="65535" cubemap_resolution="256" preview_cubemap="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="EnvironmentLight" HasEntity="1">
     <Properties bActive="0" BoxSizeX="10" BoxSizeY="10" BoxSizeZ="10" _nVersion="-1">
      <Color clrDiffuse="1,1,1" fDiffuseMultiplier="1" fSpecularMultiplier="1"/>

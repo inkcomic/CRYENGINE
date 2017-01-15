@@ -51,8 +51,8 @@ bool CD3DHyperealRenderer::Initialize()
 
 	m_pHyperealDevice->CreateGraphicsContext(d3d11Device);
 
-	m_eyeWidth = m_pRenderer->GetWidth();
-	m_eyeHeight = m_pRenderer->GetHeight();
+	m_eyeWidth = 960;// m_pRenderer->GetWidth();
+	m_eyeHeight = 1080;// m_pRenderer->GetHeight();
 
 	CryVR::Hypereal::TextureDesc eyeTextureDesc;
 	eyeTextureDesc.width = m_eyeWidth;
@@ -65,7 +65,7 @@ bool CD3DHyperealRenderer::Initialize()
 	quadTextureDesc.format = (uint32)DXGI_FORMAT_R8G8B8A8_UNORM;
 
 	CryVR::Hypereal::TextureDesc mirrorTextureDesc;
-	mirrorTextureDesc.width = m_eyeWidth;
+	mirrorTextureDesc.width = m_eyeWidth * 2;
 	mirrorTextureDesc.height = m_eyeHeight;
 	mirrorTextureDesc.format = (uint32)DXGI_FORMAT_R8G8B8A8_UNORM;
 
@@ -240,6 +240,7 @@ void CD3DHyperealRenderer::PrepareFrame()
 	// Quad layers
 	for (int i = 0; i < RenderLayer::eQuadLayers_Total; i++)
 		m_pStereoRenderer->SetVrQuadLayerTexture(static_cast<RenderLayer::EQuadLayers>(i), m_quadLayerRenderData[i].texture);
+
 }
 
 void CD3DHyperealRenderer::SubmitFrame()
