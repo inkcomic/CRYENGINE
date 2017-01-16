@@ -120,8 +120,11 @@ private:
 	{
 		bool                  visible;
 		bool                  submitted;
+		HyViewLayer			* layerHandle;
+		void				* overlayTexture;
+		HyTextureDesc		textureDesc;
 // 		vr::VROverlayHandle_t handle;
-// 		vr::Texture_t*        vrTexture;
+// 		
 // 		vr::HmdMatrix34_t     pos;
 	};
 	// OpenVR Pointers
@@ -130,6 +133,9 @@ private:
 // 	vr::IVRRenderModels*    m_renderModels;
 // 	vr::IVROverlay*         m_overlay;
 // 	vr::Texture_t*          m_eyeTargets[EEyeType::eEyeType_NumEyes];
+
+	typedef std::map<uint, SOverlay> MapOverlayer;
+	MapOverlayer			m_mapOverlayers;
 	SOverlay                m_overlays[RenderLayer::eQuadLayers_Total];
 	// General device fields:
 	bool                    m_bLoadingScreenActive;
@@ -145,9 +151,9 @@ private:
 		Right_Controller,
 		Total_Count
 	};
-	HyTrackingState			m_rTrackedDevicePose[Total_Count];
-	HmdTrackingState        m_nativeStates[Total_Count];
-	HmdTrackingState        m_localStates[Total_Count];
+	HyTrackingState			m_rTrackedDevicePose[EDevice::Total_Count];
+	HmdTrackingState        m_nativeStates[EDevice::Total_Count];
+	HmdTrackingState        m_localStates[EDevice::Total_Count];
 	HmdTrackingState        m_disabledTrackingState;
 	// Controller related:
 	Controller              m_controller;
