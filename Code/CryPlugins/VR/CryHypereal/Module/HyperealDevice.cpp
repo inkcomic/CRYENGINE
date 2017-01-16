@@ -230,31 +230,35 @@ Device::Device()
 	m_pHmdSocialScreenCVar = gEnv->pConsole->GetCVar("hmd_social_screen");
 	m_pTrackingOriginCVar = gEnv->pConsole->GetCVar("hmd_tracking_origin");
 
- 	CreateDevice();
- 
- 	gEnv->pSystem->GetHmdManager()->AddEventListener(this);
- 
- 	pParallax = gEnv->pConsole->GetCVar("sys_flash_stereo_maxparallax");
- 
-// 	memset(m_rTrackedDevicePose, 0, sizeof(vr::TrackedDevicePose_t) * vr::k_unMaxTrackedDeviceCount);
-// 	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
-// 	{
-// 		m_deviceModels[i] = nullptr;
-// 		vr::SetIdentity(m_rTrackedDevicePose[i].mDeviceToAbsoluteTracking);
-// 	}
-// 	for (int i = 0; i < EEyeType::eEyeType_NumEyes; i++)
-// 		m_eyeTargets[i] = nullptr;
-// 
- 	if (GetISystem()->GetISystemEventDispatcher())
- 		GetISystem()->GetISystemEventDispatcher()->RegisterListener(this);
-// 
-// 	m_controller.Init();
-// 
-// 	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
-// 		if (m_system->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_Controller)
-// 			m_controller.OnControllerConnect(i);
-// 
+	CreateDevice();
 
+	gEnv->pSystem->GetHmdManager()->AddEventListener(this);
+
+	pParallax = gEnv->pConsole->GetCVar("sys_flash_stereo_maxparallax");
+
+	// 	memset(m_rTrackedDevicePose, 0, sizeof(vr::TrackedDevicePose_t) * vr::k_unMaxTrackedDeviceCount);
+	// 	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
+	// 	{
+	// 		m_deviceModels[i] = nullptr;
+	// 		vr::SetIdentity(m_rTrackedDevicePose[i].mDeviceToAbsoluteTracking);
+	// 	}
+	// 	for (int i = 0; i < EEyeType::eEyeType_NumEyes; i++)
+	// 		m_eyeTargets[i] = nullptr;
+	// 
+	if (GetISystem()->GetISystemEventDispatcher())
+		GetISystem()->GetISystemEventDispatcher()->RegisterListener(this);
+	// 
+	// 	m_controller.Init();
+	// 
+	// 	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
+	// 		if (m_system->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_Controller)
+	// 			m_controller.OnControllerConnect(i);
+	// 
+	for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
+	{
+		memset(&m_overlays[id], 0, sizeof(m_overlays[id]));
+	}
+	
 }
 
 // -------------------------------------------------------------------------
@@ -495,7 +499,11 @@ void Device::GetAsymmetricCameraSetupInfo(int nEye, float& fov, float& aspectRat
 	aspectRatio = (fRight + fLeft) / (fBottom + fTop);
 	asymH = (fRight + fLeft) / 2;
 	asymV = (fBottom + fTop) / 2;
-	VrDevice->GetFloatValue(HY_PROPERTY_IPD_FLOAT, eyeDist);
+
+	if (VrDevice)
+		VrDevice->GetFloatValue(HY_PROPERTY_IPD_FLOAT, eyeDist);
+	else
+		eyeDist = 1.6f;
 
 //	float fLeft, fRight, fTop, fBottom;
 //	m_system->GetProjectionRaw((vr::EVREye)nEye, &fLeft, &fRight, &fTop, &fBottom);
@@ -1118,7 +1126,7 @@ void Device::SubmitFrame()
 
 		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
 		{
-			if (!m_overlays[id].submitted && m_overlays[id].visible)
+			if (!m_overlays[id].submitted && m_overlays[id].visible&&m_overlays[id].layerHandle)
 			{
 				HyTextureDesc  desc = m_overlays[id].textureDesc;
 				desc.m_texture = nullptr;
@@ -1126,7 +1134,7 @@ void Device::SubmitFrame()
 
 				m_overlays[id].visible = false;
 			}
-			else if (m_overlays[id].submitted && !m_overlays[id].visible)
+			else if (m_overlays[id].submitted && !m_overlays[id].visible&&m_overlays[id].layerHandle)
 			{
 				HyTextureDesc  desc = m_overlays[id].textureDesc;
 				m_overlays[id].layerHandle->SetTexture(desc);
@@ -1226,7 +1234,7 @@ void Device::OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, voi
 // -------------------------------------------------------------------------
 void Device::OnSetupOverlay(int id, ERenderAPI api, ERenderColorSpace colorSpace, void* overlayTextureHandle)
 {
-	if (!VrDevice&&VrGraphicsCxt)
+	if (nullptr==VrDevice|| nullptr == VrGraphicsCxt)
 		return;
 
 	//remove old one with same id
@@ -1422,6 +1430,9 @@ float Device::GetDistance(const HyVec2& P, const HyVec2& PA, const HyVec2& PB)
 
 void Device::CreateGraphicsContext(void* graphicsDevice)
 {
+	if (nullptr == VrDevice)
+		return;
+
 	//graphic ctx should be ready
 	HyGraphicsAPI graphicsAPI = HY_GRAPHICS_UNKNOWN;
 
