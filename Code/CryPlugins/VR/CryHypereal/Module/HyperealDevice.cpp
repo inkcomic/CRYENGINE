@@ -470,14 +470,15 @@ Device* Device::CreateInstance()
 // -------------------------------------------------------------------------
 void Device::GetCameraSetupInfo(float& fov, float& aspectRatioFactor) const
 {
-	float fNear = gEnv->pRenderer->GetCamera().GetNearPlane();
-	float fFar = gEnv->pRenderer->GetCamera().GetFarPlane();
-
-	HyMat4 proj;
-	VrGraphicsCxt->GetProjectionMatrix(VrDeviceInfo.Fov[HY_EYE_LEFT], fNear, fFar, true, proj);
-	fov = 2.0f * atan(1.0f / proj.m[1][1]);
-	aspectRatioFactor = 2.0f;
-
+// 	float fNear = gEnv->pRenderer->GetCamera().GetNearPlane();
+// 	float fFar = gEnv->pRenderer->GetCamera().GetFarPlane();
+// 
+// 	HyMat4 proj;
+// 	VrGraphicsCxt->GetProjectionMatrix(VrDeviceInfo.Fov[HY_EYE_LEFT], fNear, fFar, true, proj);
+// 	fov = 2.0f * atan(1.0f / proj.m[1][1]);
+// 	aspectRatioFactor = 2.0f;
+	fov = m_devInfo.fovV;
+	aspectRatioFactor = 2.0f * eyeFovSym.m_leftTan;
 // 	vr::HmdMatrix44_t proj = m_system->GetProjectionMatrix(vr::EVREye::Eye_Left, fNear, fFar, vr::API_DirectX);
 // 
 // 	fov = 2.0f * atan(1.0f / proj.m[1][1]);
@@ -487,18 +488,28 @@ void Device::GetCameraSetupInfo(float& fov, float& aspectRatioFactor) const
 // -------------------------------------------------------------------------
 void Device::GetAsymmetricCameraSetupInfo(int nEye, float& fov, float& aspectRatio, float& asymH, float& asymV, float& eyeDist) const
 {
-	float fLeft, fRight, fTop, fBottom;
-	HyFov hyFov = VrDeviceInfo.Fov[(HyEye)nEye];
-	fLeft = hyFov.m_leftTan;
-	fRight = hyFov.m_rightTan;
-	fTop = hyFov.m_upTan;
-	fBottom = hyFov.m_downTan;
+// 	float fLeft, fRight, fTop, fBottom;
+// 	HyFov hyFov = VrDeviceInfo.Fov[(HyEye)nEye];
+// 	fLeft = hyFov.m_leftTan;
+// 	fRight = hyFov.m_rightTan;
+// 	fTop = hyFov.m_upTan;
+// 	fBottom = hyFov.m_downTan;
+// 
+// 
+// 	fov = 2.0f * atan((fBottom + fTop) / 2.0f);
+// 	aspectRatio = (fRight + fLeft) / (fBottom + fTop);
+// 	asymH = (fRight + fLeft) / 2;
+// 	asymV = (fBottom + fTop) / 2;
 
+	float fNear = gEnv->pRenderer->GetCamera().GetNearPlane();
+	float fFar = gEnv->pRenderer->GetCamera().GetFarPlane();
+	HyMat4 proj;
+	VrGraphicsCxt->GetProjectionMatrix(VrDeviceInfo.Fov[nEye], fNear, fFar, true, proj);
+	fov = 2.0f * atan(1.0f / proj.m[1][1]);
+	aspectRatio = proj.m[1][1] / proj.m[0][0];
+	asymH = proj.m[0][2] / proj.m[1][1] * aspectRatio;
+	asymV = proj.m[1][2] / proj.m[1][1];
 
-	fov = 2.0f * atan((fBottom + fTop) / 2.0f);
-	aspectRatio = (fRight + fLeft) / (fBottom + fTop);
-	asymH = (fRight + fLeft) / 2;
-	asymV = (fBottom + fTop) / 2;
 
 	if (VrDevice)
 		VrDevice->GetFloatValue(HY_PROPERTY_IPD_FLOAT, eyeDist);
@@ -871,9 +882,11 @@ void Device::CreateDevice()
 
 
 
-	HyFov eyeFovSym = ComputeSymmetricalFov( VrDeviceInfo.Fov[HY_EYE_LEFT], VrDeviceInfo.Fov[HY_EYE_RIGHT]);
+	eyeFovSym = ComputeSymmetricalFov( VrDeviceInfo.Fov[HY_EYE_LEFT], VrDeviceInfo.Fov[HY_EYE_RIGHT]);
 	//set for  generic HMD device
-	GetRenderTargetSize(m_devInfo.screenWidth, m_devInfo.screenHeight);
+	m_devInfo.screenWidth = (uint)VrDeviceInfo.DeviceResolutionX;
+	m_devInfo.screenHeight = (uint)VrDeviceInfo.DeviceResolutionY;
+	
 	m_devInfo.manufacturer = GetTrackedDeviceCharPointer(HY_PROPERTY_DEVICE_MANUFACTURER_STRING);
 	m_devInfo.productName = GetTrackedDeviceCharPointer(HY_PROPERTY_DEVICE_PRODUCT_NAME_STRING);
 	m_devInfo.fovH = 2.0f * atanf(eyeFovSym.m_leftTan);
@@ -1073,6 +1086,7 @@ const HmdTrackingState& Device::GetNativeTrackingState() const
 // -------------------------------------------------------------------------
 const EHmdSocialScreen Device::GetSocialScreenType(bool* pKeepAspect) const
 {
+
 	const int kFirstInvalidIndex = static_cast<int>(EHmdSocialScreen::FirstInvalidIndex);
 
 	if (pKeepAspect)
@@ -1181,6 +1195,12 @@ void Device::SubmitFrame()
 // -------------------------------------------------------------------------
 void Device::GetRenderTargetSize(uint& w, uint& h)
 {
+	if (nullptr == VrGraphicsCxt)
+	{
+		w = 1200;
+		h = 1080;
+		return;
+	}
 	VrGraphicsCxt->GetRenderTargetSize(HY_EYE_LEFT, w, h);
 	
 // 
@@ -1253,7 +1273,7 @@ void Device::OnSetupOverlay(int id, ERenderAPI api, ERenderColorSpace colorSpace
 
 	HyViewLayer* pLayer = (HyViewLayer*)VrDevice->CreateClassInstance(HY_CLASS_VIEW_LAYER);
 
-	if (nullptr!= pLayer)
+	if (nullptr == pLayer)
 	{
 		gEnv->pLog->Log("[HMD][Hypereal] Error creating overlay %i", id);
 		return;
@@ -1279,7 +1299,7 @@ void Device::OnSetupOverlay(int id, ERenderAPI api, ERenderColorSpace colorSpace
 	hyTextureDesc.m_texture = overlayTextureHandle;
 	hyTextureDesc.m_uvOffset = HyVec2{ 0.0f , 0.0f };
 	hyTextureDesc.m_uvSize = HyVec2{ 1.0f , 1.0f };
-	
+	hyTextureDesc.m_flags = 0;
 	pLayer->SetTexture(hyTextureDesc);
 	
 	if (m_hmdQuadAbsolute)

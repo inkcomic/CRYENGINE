@@ -189,7 +189,7 @@ private:
 	HyVec2 *PlayAreaVertices;
 	int64 PlayAreaVertexCount;
 	bool bPlayAreaValid;
-
+	HyFov eyeFovSym;
 	float PixelDensity;
 	bool bVRInitialized;
 	bool bVRSystemValid;
