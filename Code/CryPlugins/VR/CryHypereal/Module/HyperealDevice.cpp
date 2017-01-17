@@ -566,6 +566,8 @@ void Device::UpdateTrackingState(EVRComponent type)
 
 	if (VrDevice)
 	{
+		VrDevice->ConfigureTrackingOrigin(m_pTrackingOriginCVar->GetIVal() == (int)EHmdTrackingOrigin::Floor == 1 ? HY_TRACKING_ORIGIN_FLOOR : HY_TRACKING_ORIGIN_EYE);
+
 		static const HySubDevice Devices[EDevice::Total_Count] =
 		{ HY_SUBDEV_HMD, HY_SUBDEV_CONTROLLER_LEFT, HY_SUBDEV_CONTROLLER_RIGHT };
 
@@ -1121,28 +1123,28 @@ void Device::SubmitFrame()
 		hr = VrGraphicsCxt->Submit(m_lastFrameID_UpdateTrackingState, RTDesc, 2);
 
 
-		if (!m_mapOverlayers.size()==0)
-			return;
-
-		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
-		{
-			if (!m_overlays[id].submitted && m_overlays[id].visible&&m_overlays[id].layerHandle)
-			{
-				HyTextureDesc  desc = m_overlays[id].textureDesc;
-				desc.m_texture = nullptr;
-				m_overlays[id].layerHandle->SetTexture(desc);
-
-				m_overlays[id].visible = false;
-			}
-			else if (m_overlays[id].submitted && !m_overlays[id].visible&&m_overlays[id].layerHandle)
-			{
-				HyTextureDesc  desc = m_overlays[id].textureDesc;
-				m_overlays[id].layerHandle->SetTexture(desc);
-
-				m_overlays[id].visible = true;
-			}
-			m_overlays[id].submitted = false;
-		}
+// 		if (!m_mapOverlayers.size()==0)
+// 			return;
+// 
+// 		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
+// 		{
+// 			if (!m_overlays[id].submitted && m_overlays[id].visible&&m_overlays[id].layerHandle)
+// 			{
+// 				HyTextureDesc  desc = m_overlays[id].textureDesc;
+// 				desc.m_texture = nullptr;
+// 				m_overlays[id].layerHandle->SetTexture(desc);
+// 
+// 				m_overlays[id].visible = false;
+// 			}
+// 			else if (m_overlays[id].submitted && !m_overlays[id].visible&&m_overlays[id].layerHandle)
+// 			{
+// 				HyTextureDesc  desc = m_overlays[id].textureDesc;
+// 				m_overlays[id].layerHandle->SetTexture(desc);
+// 
+// 				m_overlays[id].visible = true;
+// 			}
+// 			m_overlays[id].submitted = false;
+// 		}
 	}
 
 
@@ -1179,8 +1181,11 @@ void Device::SubmitFrame()
 // -------------------------------------------------------------------------
 void Device::GetRenderTargetSize(uint& w, uint& h)
 {
-	w = (uint)VrDeviceInfo.DeviceResolutionX;
-	h = (uint)VrDeviceInfo.DeviceResolutionY;
+	VrGraphicsCxt->GetRenderTargetSize(HY_EYE_LEFT, w, h);
+	
+// 
+// 	w = (uint)VrDeviceInfo.DeviceResolutionX;
+// 	h = (uint)VrDeviceInfo.DeviceResolutionY;
 }
 
 // -------------------------------------------------------------------------

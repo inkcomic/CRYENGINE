@@ -51,8 +51,9 @@ bool CD3DHyperealRenderer::Initialize()
 
 	m_pHyperealDevice->CreateGraphicsContext(d3d11Device);
 
-	m_eyeWidth = 960;// m_pRenderer->GetWidth();
-	m_eyeHeight = 1080;// m_pRenderer->GetHeight();
+	m_pHyperealDevice->GetRenderTargetSize(m_eyeWidth, m_eyeHeight);//1200x1080??
+// 	m_eyeWidth = m_pRenderer->GetWidth();
+// 	m_eyeHeight = m_pRenderer->GetHeight();
 
 	CryVR::Hypereal::TextureDesc eyeTextureDesc;
 	eyeTextureDesc.width = m_eyeWidth;
