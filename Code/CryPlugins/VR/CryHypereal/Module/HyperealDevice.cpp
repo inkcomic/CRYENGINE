@@ -604,6 +604,15 @@ void Device::UpdateTrackingState(EVRComponent type)
 
 				if (m_IsDevicePositionTracked[i]||m_IsDeviceRotationTracked[i])
 				{
+					//need retransform
+					float* ipdptr = (InterpupillaryDistance > 0.01f ? &InterpupillaryDistance : nullptr);
+					VrGraphicsCxt->GetEyePoses(CurDevicePose[EHyMotionDevice::Hmd], ipdptr, CurrentRenderPoses);
+					FQuat eyeOrientation;
+					FVector eyePosition;
+					PoseToOrientationAndPosition(CurrentRenderPoses[(InView.StereoPass == eSSP_LEFT_EYE) ? HY_EYE_LEFT : HY_EYE_RIGHT], eyeOrientation, eyePosition);
+
+
+
 					CopyPoseState(m_localStates[i].pose, m_nativeStates[i].pose, m_rTrackedDevicePose[i]);
 				}
 
