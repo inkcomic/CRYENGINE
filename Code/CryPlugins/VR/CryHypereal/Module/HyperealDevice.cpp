@@ -18,6 +18,7 @@
 #include <CryCore/Platform/CryWindows.h>
 
 #define HY_RELEASE(p) {if(p != nullptr) p->Release(); p = nullptr;}
+#define DEFAULT_IPD 0.064f;
 
 HyFov ComputeSymmetricalFov(const HyFov& fovLeftEye, const HyFov& fovRightEye)
 {
@@ -224,6 +225,12 @@ Device::Device()
 	, bVRInitialized(nullptr)
 	, bVRSystemValid(nullptr)
 	, bIsQuitting(false)
+	, InterpupillaryDistance(-1.0f)
+	, m_qBaseOrientation(IDENTITY)
+	, m_vBaseOffset(IDENTITY)
+	, m_fMeterToWorldScale(100.f)
+	, m_bPosTrackingEnable(true)
+	, m_bResetOrientationKeepPitchAndRoll(false)
 {
 	m_pHmdInfoCVar = gEnv->pConsole->GetCVar("hmd_info");
 	m_pHmdSocialScreenKeepAspectCVar = gEnv->pConsole->GetCVar("hmd_social_screen_keep_aspect");
@@ -513,11 +520,7 @@ void Device::GetAsymmetricCameraSetupInfo(int nEye, float& fov, float& aspectRat
 	asymH = proj.m[0][2] / proj.m[1][1] * aspectRatio;
 	asymV = proj.m[1][2] / proj.m[1][1];
 
-
-	if (VrDevice)
-		VrDevice->GetFloatValue(HY_PROPERTY_IPD_FLOAT, eyeDist);
-	else
-		eyeDist = 1.6f;
+	eyeDist = GetInterpupillaryDistance();
 
 //	float fLeft, fRight, fTop, fBottom;
 //	m_system->GetProjectionRaw((vr::EVREye)nEye, &fLeft, &fRight, &fTop, &fBottom);
@@ -552,6 +555,55 @@ void Device::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam)
 	default:
 		break;
 	}
+}
+// -------------------------------------------------------------------------
+float Device::GetInterpupillaryDistance() const
+{
+	if (InterpupillaryDistance > 0.01f)
+		return InterpupillaryDistance;
+	if (bVRSystemValid)
+	{
+		bool isConnected = false;
+		HyResult hr = VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, isConnected);
+		if (hySucceeded(hr) && isConnected)
+		{
+			float ipd = DEFAULT_IPD;
+			hr = VrDevice->GetFloatValue(HY_PROPERTY_IPD_FLOAT, ipd);
+			if (hySucceeded(hr))
+				return ipd;
+		}
+	}
+	return DEFAULT_IPD;
+}
+
+void Device::ResetOrientationAndPosition(float Yaw)
+{
+	ResetOrientation(Yaw);
+	ResetPosition();
+}
+
+void Device::ResetOrientation(float yaw)
+{
+	Quat qBaseOrientation = HYQuatToQuat(m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation);
+
+	Ang3 currentAng = Ang3(qBaseOrientation);
+	if (!m_bResetOrientationKeepPitchAndRoll)
+	{
+		currentAng.x = 0;//Pitch
+		currentAng.y = 0;//Roll
+	}
+
+	if (fabs(yaw )<FLT_EPSILON)
+	{
+		currentAng.z -= yaw;
+		currentAng.Normalize();
+	}
+	m_qBaseOrientation =Quat(qBaseOrientation);
+}
+
+void Device::ResetPosition()
+{
+	m_vBaseOffset = HYVec3ToVec3(m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_position);
 }
 
 // -------------------------------------------------------------------------
@@ -591,8 +643,6 @@ void Device::UpdateTrackingState(EVRComponent type)
 			HyResult r = VrDevice->GetTrackingState(Devices[i], frameID, trackingState);
 			if (hySucceeded(r))
 			{
-				m_CurEyePoses[i] = trackingState.m_pose;
-
 				m_rTrackedDevicePose[i] = trackingState;
 				m_IsDevicePositionTracked[i] = ((HY_TRACKING_POSITION_TRACKED & trackingState.m_flags) != 0);
 				m_IsDeviceRotationTracked[i] = ((HY_TRACKING_ROTATION_TRACKED & trackingState.m_flags) != 0);
@@ -604,15 +654,6 @@ void Device::UpdateTrackingState(EVRComponent type)
 
 				if (m_IsDevicePositionTracked[i]||m_IsDeviceRotationTracked[i])
 				{
-					//need retransform
-					float* ipdptr = (InterpupillaryDistance > 0.01f ? &InterpupillaryDistance : nullptr);
-					VrGraphicsCxt->GetEyePoses(CurDevicePose[EHyMotionDevice::Hmd], ipdptr, CurrentRenderPoses);
-					FQuat eyeOrientation;
-					FVector eyePosition;
-					PoseToOrientationAndPosition(CurrentRenderPoses[(InView.StereoPass == eSSP_LEFT_EYE) ? HY_EYE_LEFT : HY_EYE_RIGHT], eyeOrientation, eyePosition);
-
-
-
 					CopyPoseState(m_localStates[i].pose, m_nativeStates[i].pose, m_rTrackedDevicePose[i]);
 				}
 
@@ -632,6 +673,30 @@ void Device::UpdateTrackingState(EVRComponent type)
 				res = VrDevice->GetControllerInputState(sid, controllerState);
 				if (res)
 					m_controller.Update(sid, m_nativeStates[i], m_localStates[i], controllerState);
+			}
+			else//HMD
+			{
+				//need retransform
+				float* ipdptr = (InterpupillaryDistance > 0.01f ? &InterpupillaryDistance : nullptr);
+				HyPose hyEyeRenderPose[HY_EYE_MAX];
+				VrGraphicsCxt->GetEyePoses(m_rTrackedDevicePose[EDevice::Hmd].m_pose, ipdptr, hyEyeRenderPose);
+				
+				memcpy(&m_nativeEyePoseStates, &m_nativeStates, sizeof(m_nativeStates));
+				memcpy(&m_localEyePoseStates, &m_localStates, sizeof(m_localStates));
+
+				// compute centered transformation
+				Quat qRecenterRotation = m_qBaseOrientation.GetInverted()* HYQuatToQuat(hyEyeRenderPose[HY_EYE_LEFT].m_rotation);
+				qRecenterRotation.Normalize();
+				Vec3 vRecenterPosition = (HYVec3ToVec3(hyEyeRenderPose[HY_EYE_LEFT].m_position) - m_vBaseOffset) * m_fMeterToWorldScale;
+				vRecenterPosition = vRecenterPosition*m_qBaseOrientation.GetInverted();
+				if (!m_bPosTrackingEnable)
+				{
+					vRecenterPosition.x = 0.f;
+					vRecenterPosition.y = 0.f;
+				}
+
+				m_nativeEyePoseStates.pose.orientation = m_localEyePoseStates.pose.orientation = qRecenterRotation;
+				m_nativeEyePoseStates.pose.position = m_localEyePoseStates.pose.position = vRecenterPosition;
 			}
 		}
 
@@ -1066,7 +1131,7 @@ void Device::OnRecentered()
 // -------------------------------------------------------------------------
 void Device::RecenterPose()
 {
-//	m_system->ResetSeatedZeroPose();
+	ResetOrientationAndPosition(0.0f);
 }
 
 // -------------------------------------------------------------------------
@@ -1510,6 +1575,14 @@ void Device::CreateGraphicsContext(void* graphicsDevice)
 void Device::ReleaseGraphicsContext()
 {
 	HY_RELEASE(VrGraphicsCxt);
+}
+
+void Device::CopyMirrorImage(void* pDstResource,uint nWidth,uint nHeight)
+{
+	if (VrGraphicsCxt)
+	{
+		VrGraphicsCxt->CopyMirrorTexture(pDstResource, nWidth, nHeight);
+	}
 }
 
 } // namespace Hypereal

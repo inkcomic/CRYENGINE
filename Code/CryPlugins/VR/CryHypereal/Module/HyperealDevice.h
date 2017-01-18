@@ -51,6 +51,7 @@ public:
 	virtual void OnDeleteOverlay(int id);
 	virtual void GetRenderTargetSize(uint& w, uint& h);
 	virtual void GetMirrorImageView(EEyeType eye, void* resource, void** mirrorTextureView) override;
+	virtual void CopyMirrorImage(void* pDstResource, uint nWidth, uint nHeight)override;
 	// ~IHyperealDevice
 
 	// ISystemEventListener
@@ -154,7 +155,17 @@ private:
 	HyTrackingState			m_rTrackedDevicePose[EDevice::Total_Count];
 	HmdTrackingState        m_nativeStates[EDevice::Total_Count];
 	HmdTrackingState        m_localStates[EDevice::Total_Count];
+	HmdTrackingState        m_nativeEyePoseStates;
+	HmdTrackingState        m_localEyePoseStates;
+
 	HmdTrackingState        m_disabledTrackingState;
+
+	Quat					m_qBaseOrientation;
+	Vec3					m_vBaseOffset;
+	float					m_fMeterToWorldScale;
+	bool					m_bPosTrackingEnable;
+	bool					m_bResetOrientationKeepPitchAndRoll;
+
 	// Controller related:
 	Controller              m_controller;
 	RenderModel*            m_deviceModels[1/*vr::k_unMaxTrackedDeviceCount*/];
@@ -195,8 +206,8 @@ private:
 	bool bVRSystemValid;
 	bool bIsQuitting;
 	HyTextureDesc RTDesc[2];
+	float InterpupillaryDistance;
 
-	HyPose	m_CurEyePoses[HY_EYE_MAX];
 	HyPose	m_CurDevicePose[EDevice::Total_Count];
 	bool	m_IsDevicePositionTracked[EDevice::Total_Count];
 	bool	m_IsDeviceRotationTracked[EDevice::Total_Count];
@@ -206,6 +217,11 @@ private:
 	void RebuildPlayArea();
 	float GetDistance(const HyVec2& P, const HyVec2& PA, const HyVec2& PB);
 	void ReleaseDevice();
+	inline float GetInterpupillaryDistance() const;
+	void ResetOrientationAndPosition(float Yaw);
+	void ResetOrientation(float Yaw);
+	void ResetPosition();
+
 public:
 	virtual void CreateGraphicsContext(void* graphicsDevice);
 	virtual void ReleaseGraphicsContext();

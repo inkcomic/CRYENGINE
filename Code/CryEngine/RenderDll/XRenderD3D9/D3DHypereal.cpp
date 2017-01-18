@@ -290,62 +290,17 @@ void CD3DHyperealRenderer::RenderSocialScreen()
 			// intentional fall through
 			case EHmdSocialScreen::UndistortedLeftEye:
 			case EHmdSocialScreen::UndistortedRightEye:
-				{
-					CTexture* pTex = socialScreen == EHmdSocialScreen::UndistortedLeftEye ? m_mirrorTextures[LEFT_EYE] : m_mirrorTextures[RIGHT_EYE];
-					if (CShaderMan::s_shPostEffects)
-						GetUtils().StretchRect(pTex, pBackbufferTexture);
-				}
+			case EHmdSocialScreen::UndistortedDualImage:
 				break;
-
-			case EHmdSocialScreen::UndistortedDualImage: // intentional fall through - default to undistorted dual image
-			case EHmdSocialScreen::DistortedDualImage:   // intentional fall through - Hypereal does not return distorted eye targets, therefore the only display the undistorted eye targets
+			case EHmdSocialScreen::DistortedDualImage:
 			default:
-				if (CShaderMan::s_shPostEffects)
+			{
+				if (pBackbufferTexture->GetDevTexture()->Get2DTexture() != nullptr)
 				{
-					// Get eye textures
-					uint64 nSaveFlagsShader_RT = gRenDev->m_RP.m_FlagsShader_RT;
-					gRenDev->m_RP.m_FlagsShader_RT &= ~(g_HWSR_MaskBit[HWSR_SAMPLE0] | g_HWSR_MaskBit[HWSR_SAMPLE1] | g_HWSR_MaskBit[HWSR_SAMPLE2] | g_HWSR_MaskBit[HWSR_SAMPLE4] | g_HWSR_MaskBit[HWSR_SAMPLE5] | g_HWSR_MaskBit[HWSR_REVERSE_DEPTH]);
-
-					// Store current viewport
-					int iTempX, iTempY, iWidth, iHeight;
-					gRenDev->GetViewport(&iTempX, &iTempY, &iWidth, &iHeight);
-
-					if (bKeepAspect)
-					{
-						gcpRendD3D->FX_ClearTarget(pBackbufferTexture, Clr_Empty);
-					}
-
-					// Set backbuffer texture as renter target
-					gcpRendD3D->FX_PushRenderTarget(0, pBackbufferTexture, nullptr);
-					gcpRendD3D->FX_SetActiveRenderTargets();
-
-					for (uint32 eye = 0; eye < 2; ++eye)
-					{
-						if (CTexture* pSrcTex = m_mirrorTextures[eye])
-						{
-							// Set rendering and shader flags
-							if (eye == LEFT_EYE)
-								gcpRendD3D->RT_SetViewport(0, 0, pBackbufferTexture->GetWidth() >> 1, pBackbufferTexture->GetHeight()); // Set viewport (left half of backbuffer)
-							else if (eye == RIGHT_EYE)
-								gcpRendD3D->RT_SetViewport(pBackbufferTexture->GetWidth() >> 1, 0, pBackbufferTexture->GetWidth() >> 1, pBackbufferTexture->GetHeight()); // set viewport (right half of backbuffer)
-
-							GetUtils().ShBeginPass(CShaderMan::s_shPostEffects, m_textureToTexture, FEF_DONTSETTEXTURES | FEF_DONTSETSTATES);
-
-							gcpRendD3D->FX_SetState(GS_NODEPTHTEST);
-							pSrcTex->Apply(0, CTexture::GetTexState(STexState(FILTER_LINEAR, true))); // Bind left-eye texture for rendering
-
-							GetUtils().DrawFullScreenTri(0, 0);
-							GetUtils().ShEndPass();
-						}
-					}
-
-					// Restore previous viewport
-					gcpRendD3D->FX_PopRenderTarget(0);
-					gcpRendD3D->SetViewport(iTempX, iTempY, iWidth, iHeight);
-
-					gRenDev->m_RP.m_FlagsShader_RT = nSaveFlagsShader_RT;
+					m_pHyperealDevice->CopyMirrorImage(pBackbufferTexture->GetDevTexture()->Get2DTexture(), pBackbufferTexture->GetWidth(), pBackbufferTexture->GetHeight());
 				}
-				break;
+			}
+			break;
 			}
 		}
 	}

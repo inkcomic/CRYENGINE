@@ -20,6 +20,6 @@
         "name": "Blank Game Template"
     },
     "require": {
-        "engine": "engine-5.3"
+        "engine": "{eccd4175-cf52-44c9-837d-e9e417f68703}"
     }
 }
