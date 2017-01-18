@@ -13,28 +13,29 @@ namespace Hypereal {
 #define MAPSYMBOL(EKI, DEV_KEY_ID, KEY_NAME, KEY_TYPE) m_symbols[EKI - HYPEREAL_BASE] = MapSymbol(DEV_KEY_ID, EKI, KEY_NAME, KEY_TYPE, 0);
 
 // -------------------------------------------------------------------------
-Controller::Controller()
-	//: m_pSystem(pSystem)
+Controller::Controller():m_Device(nullptr)
 {
-// 	memset(&m_previousState, 0, sizeof(m_previousState));
-// 	memset(&m_state, 0, sizeof(m_state));
-// 
-// 	for (int iController = 0; iController < eHmdController_OpenVR_MaxNumOpenVRControllers; iController++)
-// 		m_controllerMapping[iController] = vr::k_unMaxTrackedDeviceCount;
+	memset(&m_previousState, 0, sizeof(m_previousState));
+	memset(&m_state, 0, sizeof(m_state));
+
+	for (int iController = 0; iController < eKI_Motion_Hypereal_NUM_SYMBOLS; iController++)
+		m_controllerMapping[iController] = HY_SUBDEV_CONTROLLER_RESERVED;//max controller id
 }
 
 // -------------------------------------------------------------------------
-bool Controller::Init()
+bool Controller::Init(HyDevice *device)
 {
-// 	//				CRYENGINE SYMBOL ID					DEVICE KEY ID									SYMBOL NAME				SYMBOL TYPE
-// 	MAPSYMBOL(eKI_Motion_OpenVR_System, vr::k_EButton_System, "openvr_system", SInputSymbol::Button);
-// 	MAPSYMBOL(eKI_Motion_OpenVR_ApplicationMenu, vr::k_EButton_ApplicationMenu, "openvr_appmenu", SInputSymbol::Button);
-// 	MAPSYMBOL(eKI_Motion_OpenVR_Grip, vr::k_EButton_Grip, "openvr_grip", SInputSymbol::Button);
-// 	MAPSYMBOL(eKI_Motion_OpenVR_TouchPad_X, vr::k_EButton_SteamVR_Touchpad, "openvr_touch_x", SInputSymbol::Axis);
-// 	MAPSYMBOL(eKI_Motion_OpenVR_TouchPad_Y, vr::k_EButton_SteamVR_Touchpad | HYPEREAL_SPECIAL, "openvr_touch_y", SInputSymbol::Axis);
-// 	MAPSYMBOL(eKI_Motion_OpenVR_Trigger, vr::k_EButton_SteamVR_Trigger, "openvr_trigger", SInputSymbol::Trigger);
-// 	MAPSYMBOL(eKI_Motion_OpenVR_TriggerBtn, vr::k_EButton_SteamVR_Trigger | HYPEREAL_SPECIAL, "openvr_trigger_btn", SInputSymbol::Button);
-// 	MAPSYMBOL(eKI_Motion_OpenVR_TouchPadBtn, vr::k_EButton_SteamVR_Touchpad, "openvr_touch_btn", SInputSymbol::Button);
+	m_Device = device;
+	// Button symbols
+	MAPSYMBOL(eKI_Motion_Hypereal_TouchPad_A, HyButton::HY_BUTTON_A, "hytouch_a", SInputSymbol::Button);
+	MAPSYMBOL(eKI_Motion_Hypereal_TouchPad_B, HyButton::HY_BUTTON_B, "hytouch_b", SInputSymbol::Button);
+	MAPSYMBOL(eKI_Motion_Hypereal_TouchPad_X, HyButton::HY_BUTTON_X, "hytouch_x", SInputSymbol::Button);
+	MAPSYMBOL(eKI_Motion_Hypereal_TouchPad_Y, HyButton::HY_BUTTON_Y, "hytouch_y", SInputSymbol::Button);
+	MAPSYMBOL(eKI_Motion_Hypereal_TriggerBtnL, HyButton::HY_BUTTON_THUMB_LEFT, "hytouch_thumbl", SInputSymbol::Trigger);
+	MAPSYMBOL(eKI_Motion_Hypereal_TriggerBtnR, HyButton::HY_BUTTON_THUMB_RIGHT, "hytouch_thumbr", SInputSymbol::Trigger);
+	MAPSYMBOL(eKI_Motion_Hypereal_SideTriggerBtnL, HyButton::HY_BUTTON_SHOULDER_LEFT, "hytouch_shoulderl", SInputSymbol::Trigger);
+	MAPSYMBOL(eKI_Motion_Hypereal_SideTriggerBtnR, HyButton::HY_BUTTON_SHOULDER_RIGHT, "hytouch_shoulderr", SInputSymbol::Trigger);
+
 	return true;
 }
 
@@ -43,14 +44,14 @@ bool Controller::Init()
 // -------------------------------------------------------------------------
 Controller::~Controller()
 {
-	for (int iSymbol = 0; iSymbol < eKI_Motion_OpenVR_NUM_SYMBOLS; iSymbol++)
+	for (int iSymbol = 0; iSymbol < eKI_Motion_Hypereal_NUM_SYMBOLS; iSymbol++)
 		SAFE_DELETE(m_symbols[iSymbol]);
 }
 
 // -------------------------------------------------------------------------
 void Controller::ClearState()
 {
-	for (int i = 0; i < eHmdController_OpenVR_MaxNumOpenVRControllers; i++)
+	for (int i = 0; i < eHmdController_Hypereal_MaxHyperealControllers; i++)
 		m_state[i] = SControllerState();
 }
 
@@ -69,93 +70,82 @@ SInputSymbol* Controller::MapSymbol(uint32 deviceSpecificId, EKeyId keyId, const
 }
 
 // -------------------------------------------------------------------------
-void Controller::Update(/*vr::TrackedDeviceIndex_t controllerId, HmdTrackingState nativeState, HmdTrackingState localState, vr::VRControllerState_t& vrState*/)
+void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, HmdTrackingState localState, HyInputState& vrState)
 {
-// 	EHmdController index = eHmdController_OpenVR_MaxNumOpenVRControllers;
-// 	for (int i = 0; i < eHmdController_OpenVR_MaxNumOpenVRControllers; i++)
-// 	{
-// 		if (m_controllerMapping[i] == controllerId)
-// 		{
-// 			index = static_cast<EHmdController>(i);
-// 			break;
-// 		}
-// 	}
-// 
-// 	if ((index < eHmdController_OpenVR_MaxNumOpenVRControllers) && (m_state[index].packetNum != vrState.unPacketNum))
-// 	{
-// 		m_previousState[index] = m_state[index];
-// 
-// 		m_state[index].packetNum = vrState.unPacketNum;
-// 		m_state[index].buttonsPressed = vrState.ulButtonPressed;
-// 		m_state[index].buttonsTouched = vrState.ulButtonTouched;
-// 
-// 		m_state[index].trigger = vrState.rAxis[vr::k_EButton_SteamVR_Trigger & 0x0f].x;
-// 		m_state[index].touchPad.x = vrState.rAxis[vr::k_EButton_SteamVR_Touchpad & 0x0f].x;
-// 		m_state[index].touchPad.y = vrState.rAxis[vr::k_EButton_SteamVR_Touchpad & 0x0f].y;
-// 
-// 		// Send button events (if necessary)
-// 		PostButtonIfChanged(index, eKI_Motion_OpenVR_System);
-// 		PostButtonIfChanged(index, eKI_Motion_OpenVR_ApplicationMenu);
-// 		PostButtonIfChanged(index, eKI_Motion_OpenVR_Grip);
-// 		PostButtonIfChanged(index, eKI_Motion_OpenVR_TriggerBtn);
-// 		PostButtonIfChanged(index, eKI_Motion_OpenVR_TouchPadBtn);
-// 
-// 		// send trigger event (if necessary)
-// 		if (m_state[index].trigger != m_previousState[index].trigger)
-// 		{
-// 			SInputEvent event;
-// 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
-// 			pSymbol->ChangeEvent(m_state[index].trigger);
-// 			pSymbol->AssignTo(event);
-// 			event.deviceIndex = controllerId;
-// 			event.deviceType = eIDT_MotionController;
-// 			gEnv->pInput->PostInputEvent(event);
-// 		}
-// 
-// 		// send touch pad events (if necessary)
-// 		if (m_state[index].touchPad.x != m_previousState[index].touchPad.x)
-// 		{
-// 			SInputEvent event;
-// 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_TouchPad_X - HYPEREAL_BASE];
-// 			pSymbol->ChangeEvent(m_state[index].touchPad.x);
-// 			pSymbol->AssignTo(event);
-// 			event.deviceIndex = controllerId;
-// 			event.deviceType = eIDT_MotionController;
-// 			gEnv->pInput->PostInputEvent(event);
-// 		}
-// 		if (m_state[index].touchPad.y != m_previousState[index].touchPad.y)
-// 		{
-// 			SInputEvent event;
-// 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_TouchPad_Y - HYPEREAL_BASE];
-// 			pSymbol->ChangeEvent(m_state[index].touchPad.y);
-// 			pSymbol->AssignTo(event);
-// 			event.deviceIndex = controllerId;
-// 			event.deviceType = eIDT_MotionController;
-// 			gEnv->pInput->PostInputEvent(event);
-// 		}
-// 	}
-// 	m_state[index].localPose = localState;
-// 	m_state[index].nativePose = nativeState;
+ 	EHmdController index = eHmdController_Hypereal_MaxHyperealControllers;
+ 	for (int i = 0; i < eHmdController_Hypereal_MaxHyperealControllers; i++)
+ 	{
+ 		if (m_controllerMapping[i] == controllerId)
+ 		{
+ 			index = static_cast<EHmdController>(i);
+ 			break;
+ 		}
+ 	}
+ 
+ 	if ((index < eHmdController_Hypereal_MaxHyperealControllers)/* && (m_state[index].packetNum != vrState.unPacketNum)*/)
+ 	{
+ 		m_previousState[index] = m_state[index];
+  		
+ 		m_state[index].buttonsPressed = vrState.m_buttons;
+ 
+ 		m_state[index].trigger = vrState.m_trigger;
+		m_state[index].sideTrigger = vrState.m_sideTrigger;
+ 
+ 		// Send button events (if necessary)
+ 		PostButtonIfChanged(index, eKI_Motion_Hypereal_TouchPad_A);
+ 		PostButtonIfChanged(index, eKI_Motion_Hypereal_TouchPad_B);
+ 		PostButtonIfChanged(index, eKI_Motion_Hypereal_TouchPad_X);
+ 		PostButtonIfChanged(index, eKI_Motion_Hypereal_TouchPad_Y);
+ 		PostButtonIfChanged(index, eKI_Motion_Hypereal_TriggerBtnL);
+		PostButtonIfChanged(index, eKI_Motion_Hypereal_TriggerBtnR);
+		PostButtonIfChanged(index, eKI_Motion_Hypereal_SideTriggerBtnL);
+		PostButtonIfChanged(index, eKI_Motion_Hypereal_SideTriggerBtnR);
+ 		// send trigger event (if necessary)
+ 		if (m_state[index].trigger != m_previousState[index].trigger)
+ 		{
+ 			SInputEvent event;
+ 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
+ 			pSymbol->ChangeEvent(m_state[index].trigger);
+ 			pSymbol->AssignTo(event);
+ 			event.deviceIndex = controllerId;
+ 			event.deviceType = eIDT_MotionController;
+ 			gEnv->pInput->PostInputEvent(event);
+ 		}
+ 
+		// send trigger event (if necessary)
+		if (m_state[index].sideTrigger != m_previousState[index].sideTrigger)
+		{
+			SInputEvent event;
+			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
+			pSymbol->ChangeEvent(m_state[index].sideTrigger);
+			pSymbol->AssignTo(event);
+			event.deviceIndex = controllerId;
+			event.deviceType = eIDT_MotionController;
+			gEnv->pInput->PostInputEvent(event);
+		}
+ 	}
+ 	m_state[index].localPose = localState;
+ 	m_state[index].nativePose = nativeState;
 }
 
 // -------------------------------------------------------------------------
 void Controller::PostButtonIfChanged(EHmdController controllerId, EKeyId keyID)
 {
-// 	SInputSymbol* pSymbol = m_symbols[keyID - HYPEREAL_BASE];
-// 	vr::EVRButtonId vrBtn = static_cast<vr::EVRButtonId>((pSymbol->devSpecId & (~HYPEREAL_SPECIAL)));
-// 
-// 	bool wasPressed = m_previousState[controllerId].Pressed(vrBtn);
-// 	bool isPressed = m_state[controllerId].Pressed(vrBtn);
-// 
-// 	if (isPressed != wasPressed)
-// 	{
-// 		SInputEvent event;
-// 		pSymbol->PressEvent(isPressed);
-// 		pSymbol->AssignTo(event);
-// 		event.deviceIndex = controllerId;
-// 		event.deviceType = eIDT_MotionController;
-// 		gEnv->pInput->PostInputEvent(event);
-// 	}
+	SInputSymbol* pSymbol = m_symbols[keyID - HYPEREAL_BASE];
+	HyButton vrBtn = static_cast<HyButton>(pSymbol->devSpecId);
+
+	bool wasPressed = m_previousState[controllerId].Pressed(vrBtn);
+	bool isPressed = m_state[controllerId].Pressed(vrBtn);
+
+	if (isPressed != wasPressed)
+	{
+		SInputEvent event;
+		pSymbol->PressEvent(isPressed);
+		pSymbol->AssignTo(event);
+		event.deviceIndex = controllerId;
+		event.deviceType = eIDT_MotionController;
+		gEnv->pInput->PostInputEvent(event);
+	}
 }
 
 // -------------------------------------------------------------------------
@@ -172,7 +162,7 @@ void Controller::DebugDraw(float& xPosLabel, float& yPosLabel) const
 // 	const ColorF fColorDataTh(1.0f, 0.0f, 1.0f, 1.0f);
 // 	const ColorF fColorDataPose(0.0f, 1.0f, 1.0f, 1.0f);
 // 
-// 	IRenderAuxText::Draw2dLabel(xPosLabel, y, 1.3f, fColorLabel, false, "OpenVR Controller Info:");
+// 	IRenderAuxText::Draw2dLabel(xPosLabel, y, 1.3f, fColorLabel, false, "Hypereal Controller Info:");
 // 	y += yDelta;
 // 
 // 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataConn, false, "Left Hand:%s", IsConnected(eHmdController_OpenVR_1) ? "Connected" : "Disconnected");
@@ -237,54 +227,56 @@ void Controller::DebugDraw(float& xPosLabel, float& yPosLabel) const
 }
 
 // -------------------------------------------------------------------------;
-void Controller::OnControllerConnect(/*vr::TrackedDeviceIndex_t controllerId*/)
+void Controller::OnControllerConnect(HySubDevice controllerId)
 {
-// 	bool added = false;
-// 	for (int i = 0; i < eHmdController_OpenVR_MaxNumOpenVRControllers; i++)
-// 	{
-// 		if (m_controllerMapping[i] >= vr::k_unMaxTrackedDeviceCount)
-// 		{
-// 			m_controllerMapping[i] = controllerId;
-// 			m_state[i] = SControllerState();
-// 			m_previousState[i] = SControllerState();
-// 			added = true;
-// 			break;
-// 		}
-// 	}
-// 
-// 	if (!added)
-// 	{
-// 		gEnv->pLog->LogError("[HMD][OpenVR] Maximum number of controllers reached! Ignoring new controller!");
-// 	}
+	bool added = false;
+	for (int i = 0; i < eHmdController_Hypereal_MaxHyperealControllers; i++)
+	{
+		if (m_controllerMapping[i] >= HY_SUBDEV_CONTROLLER_RESERVED)
+		{
+			m_controllerMapping[i] = controllerId;
+			m_state[i] = SControllerState();
+			m_previousState[i] = SControllerState();
+			added = true;
+			break;
+		}
+	}
+
+	if (!added)
+	{
+		gEnv->pLog->LogError("[HMD][Hypereal] Maximum number of controllers reached! Ignoring new controller!");
+	}
 }
 
 // -------------------------------------------------------------------------
-void Controller::OnControllerDisconnect(/*vr::TrackedDeviceIndex_t controllerId*/)
+void Controller::OnControllerDisconnect(HySubDevice controllerId)
 {
-// 	for (int i = 0; i < eHmdController_OpenVR_MaxNumOpenVRControllers; i++)
-// 	{
-// 		if (m_controllerMapping[i] == controllerId)
-// 		{
-// 			m_controllerMapping[i] = vr::k_unMaxTrackedDeviceCount;
-// 			break;
-// 		}
-// 	}
+	for (int i = 0; i < eHmdController_OpenVR_MaxNumOpenVRControllers; i++)
+	{
+		if (m_controllerMapping[i] == controllerId)
+		{
+			m_controllerMapping[i] = HY_SUBDEV_CONTROLLER_RESERVED;
+			break;
+		}
+	}
 }
 
 // -------------------------------------------------------------------------
 bool Controller::IsConnected(EHmdController id) const
 {
-//	return m_pSystem->IsTrackedDeviceConnected(m_controllerMapping[id]);
-	return false;
+	bool bControllerConnected = false;
+	if (eHmdController_Hypereal_1==id)
+		m_Device->GetBoolValue(HY_PROPERTY_CONTROLLER0_CONNECTED_BOOL, bControllerConnected);
+	else if(eHmdController_Hypereal_2==id)
+		m_Device->GetBoolValue(HY_PROPERTY_CONTROLLER0_CONNECTED_BOOL, bControllerConnected);
+	return bControllerConnected;
 }
 
 // -------------------------------------------------------------------------
 void Controller::ApplyForceFeedback(EHmdController id, float freq, float amplitude)
 {
-// 	auto axisId = vr::k_EButton_SteamVR_Touchpad - vr::k_EButton_Axis0;
-// 	auto durationMicroSeconds = (ushort)clamp_tpl(freq, 0.f, 5000.f);
-// 
-// 	m_pSystem->TriggerHapticPulse(m_controllerMapping[id], axisId, durationMicroSeconds);
+	auto durationMicroSeconds = (ushort)clamp_tpl(freq, 0.f, 5000.f);
+	m_Device->SetControllerVibration(m_controllerMapping[id], durationMicroSeconds, amplitude);
 }
 
 } // namespace Hypereal

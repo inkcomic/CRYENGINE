@@ -134,6 +134,10 @@ enum EHmdController
 	eHmdController_OpenVR_1                       = 0,
 	eHmdController_OpenVR_2                       = 1,
 	eHmdController_OpenVR_MaxNumOpenVRControllers = 2,
+	// Hypereal
+	eHmdController_Hypereal_1					  = 0,
+	eHmdController_Hypereal_2					  = 1,
+	eHmdController_Hypereal_MaxHyperealControllers = 2,
 };
 
 enum EHmdProjection

@@ -247,13 +247,16 @@ Device::Device()
 	// 
 	if (GetISystem()->GetISystemEventDispatcher())
 		GetISystem()->GetISystemEventDispatcher()->RegisterListener(this);
-	// 
-	// 	m_controller.Init();
-	// 
-	// 	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
-	// 		if (m_system->GetTrackedDeviceClass(i) == vr::TrackedDeviceClass_Controller)
-	// 			m_controller.OnControllerConnect(i);
-	// 
+
+	m_controller.Init(VrDevice);
+
+	if(m_controller.IsConnected(EHmdController::eHmdController_Hypereal_1))
+		m_controller.OnControllerConnect(HY_SUBDEV_CONTROLLER_LEFT);
+
+	if(m_controller.IsConnected(EHmdController::eHmdController_Hypereal_2))
+		m_controller.OnControllerConnect(HY_SUBDEV_CONTROLLER_RIGHT);
+	
+		
 	for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
 	{
 		memset(&m_overlays[id], 0, sizeof(m_overlays[id]));
@@ -611,15 +614,18 @@ void Device::UpdateTrackingState(EVRComponent type)
 				m_IsDeviceRotationTracked[i] = false;
 			}
 
-			
+			if(i!= Hmd)
+			{
+				HyResult res;
+				HyInputState controllerState;
+
+				HySubDevice sid = static_cast<HySubDevice>(i);
+				res = VrDevice->GetControllerInputState(sid, controllerState);
+				if (res)
+					m_controller.Update(sid, m_nativeStates[i], m_localStates[i], controllerState);
+			}
 		}
 
-		HyInputState leftState;
-		HyInputState rightState;
-		VrDevice->GetControllerInputState(HY_SUBDEV_CONTROLLER_LEFT, leftState);
-		VrDevice->GetControllerInputState(HY_SUBDEV_CONTROLLER_RIGHT, rightState);
-
-		
 	}
 
 
@@ -707,6 +713,16 @@ void Device::UpdateInternal(EInternalUpdate type)
 // 				FCoreDelegates::ApplicationHasEnteredForegroundDelegate.Broadcast();
 // 			else
 // 				FCoreDelegates::ApplicationWillEnterBackgroundDelegate.Broadcast();
+			break;
+		case HY_MSG_SUBDEVICE_STATUS_CHANGED:
+		{
+			HyMsgSubdeviceChange* pData = ((HyMsgSubdeviceChange*)msg);
+			HySubDevice sid = static_cast<HySubDevice>(pData->m_subdevice);
+			if (0 != pData->m_value)
+				m_controller.OnControllerConnect(sid);
+			else
+				m_controller.OnControllerDisconnect(sid);
+		}
 			break;
 		default:
 			VrDevice->DefaultMsgFunction(msg);

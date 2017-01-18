@@ -362,6 +362,17 @@ enum EKeyId
 
 	eKI_Motion_OpenVR_NUM_SYMBOLS = eKI_Motion_OpenVR_TouchPadBtn - eKI_Motion_OpenVR_System + 1,
 
+	// Hypereal
+	eKI_Motion_Hypereal_TouchPad_A = KI_MOTION_BASE + eKI_Motion_OpenVR_NUM_SYMBOLS,
+	eKI_Motion_Hypereal_TouchPad_B,
+	eKI_Motion_Hypereal_TouchPad_X,
+	eKI_Motion_Hypereal_TouchPad_Y,
+	eKI_Motion_Hypereal_TriggerBtnL,
+	eKI_Motion_Hypereal_TriggerBtnR,
+	eKI_Motion_Hypereal_SideTriggerBtnL,
+	eKI_Motion_Hypereal_SideTriggerBtnR,
+	
+	eKI_Motion_Hypereal_NUM_SYMBOLS = eKI_Motion_Hypereal_SideTriggerBtnR - eKI_Motion_Hypereal_TouchPad_A + 1,
 	// Normal inputs should be added above
 	// eKI_SYS_Commit and below will be ignored by input blocking functionality
 	eKI_SYS_Commit = KI_SYS_BASE,
