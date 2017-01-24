@@ -264,6 +264,8 @@ void Controller::OnControllerDisconnect(HySubDevice controllerId)
 // -------------------------------------------------------------------------
 bool Controller::IsConnected(EHmdController id) const
 {
+	if (!m_Device)
+		return false;
 	bool bControllerConnected = false;
 	if (eHmdController_Hypereal_1==id)
 		m_Device->GetBoolValue(HY_PROPERTY_CONTROLLER0_CONNECTED_BOOL, bControllerConnected);
