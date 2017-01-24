@@ -239,6 +239,9 @@ Device::Device()
 
 	CreateDevice();
 
+	if (VrDevice == nullptr)
+		return;
+
 	gEnv->pSystem->GetHmdManager()->AddEventListener(this);
 
 	pParallax = gEnv->pConsole->GetCVar("sys_flash_stereo_maxparallax");
