@@ -47,7 +47,7 @@ public:
 	virtual void SubmitOverlay(int id);
 	virtual void SubmitFrame();
 	virtual void OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, void* leftEyeHandle, void* rightEyeHandle);
-	virtual void OnSetupOverlay(int id, ERenderAPI api, ERenderColorSpace colorSpace, void* overlayTextureHandle);
+	virtual void OnSetupOverlay(int id,void* overlayTextureHandle);
 	virtual void OnDeleteOverlay(int id);
 	virtual void GetRenderTargetSize(uint& w, uint& h);
 	virtual void GetMirrorImageView(EEyeType eye, void* resource, void** mirrorTextureView) override;
@@ -221,7 +221,9 @@ private:
 	void ResetOrientationAndPosition(float Yaw);
 	void ResetOrientation(float Yaw);
 	void ResetPosition();
-
+	void CreateLayer(int id, void* overlayTextureHandle, bool bRecrate = false);
+	void DestroyLayer(int id);
+	void SetShowLayer(int id, bool bShow);
 public:
 	virtual void CreateGraphicsContext(void* graphicsDevice);
 	virtual void ReleaseGraphicsContext();

@@ -33,7 +33,7 @@ struct IHyperealDevice : public IHmdDevice
 {
 public:
 	virtual void OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, void* leftEyeHandle, void* rightEyeHandle) = 0;
-	virtual void OnSetupOverlay(int id, ERenderAPI api, ERenderColorSpace colorSpace, void* overlayTextureHandle) = 0;
+	virtual void OnSetupOverlay(int id, void* overlayTextureHandle) = 0;
 	virtual void OnDeleteOverlay(int id) = 0;
 	virtual void SubmitOverlay(int id) = 0;
 	virtual void SubmitFrame() = 0;

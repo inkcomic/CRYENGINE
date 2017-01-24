@@ -93,11 +93,7 @@ bool CD3DHyperealRenderer::Initialize()
 	// Quad layers
 	for (int i = 0; i < RenderLayer::eQuadLayers_Total; i++)
 	{
-		m_pHyperealDevice->OnSetupOverlay(i,
-			CryVR::Hypereal::ERenderAPI::eRenderAPI_DirectX,
-			CryVR::Hypereal::ERenderColorSpace::eRenderColorSpace_Auto,
-			m_quadLayerRenderData[i].texture->GetDevTexture()->Get2DTexture()
-		);
+		m_pHyperealDevice->OnSetupOverlay(i,m_quadLayerRenderData[i].texture->GetDevTexture()->Get2DTexture());
 	}
 
 	// Mirror texture
@@ -291,7 +287,128 @@ void CD3DHyperealRenderer::RenderSocialScreen()
 			case EHmdSocialScreen::UndistortedLeftEye:
 			case EHmdSocialScreen::UndistortedRightEye:
 			case EHmdSocialScreen::UndistortedDualImage:
-				break;
+			{
+				static CCryNameTSCRC pTechTexToTex("TextureToTexture");
+				//const auto frameData = m_layerManager.ConstructFrameData();
+				const bool bRenderBothEyes = socialScreen == EHmdSocialScreen::UndistortedDualImage;
+
+				int eyesToRender[2] = { LEFT_EYE, -1 };
+				if (socialScreen == EHmdSocialScreen::UndistortedRightEye)  eyesToRender[0] = RIGHT_EYE;
+				else if (socialScreen == EHmdSocialScreen::UndistortedDualImage)
+					eyesToRender[1] = RIGHT_EYE;
+
+				uint64 nSaveFlagsShader_RT = gRenDev->m_RP.m_FlagsShader_RT;
+				gRenDev->m_RP.m_FlagsShader_RT &= ~(g_HWSR_MaskBit[HWSR_SAMPLE0] | g_HWSR_MaskBit[HWSR_SAMPLE1] | g_HWSR_MaskBit[HWSR_SAMPLE2] | g_HWSR_MaskBit[HWSR_SAMPLE4] | g_HWSR_MaskBit[HWSR_SAMPLE5] | g_HWSR_MaskBit[HWSR_REVERSE_DEPTH]);
+
+				int iTempX, iTempY, iWidth, iHeight;
+				gRenDev->GetViewport(&iTempX, &iTempY, &iWidth, &iHeight);
+
+				if (bKeepAspect)
+				{
+					gcpRendD3D->FX_ClearTarget(pBackbufferTexture, Clr_Empty);
+				}
+
+				gcpRendD3D->FX_PushRenderTarget(0, pBackbufferTexture, nullptr);
+				gcpRendD3D->FX_SetActiveRenderTargets();
+
+				for (int i = 0; i < CRY_ARRAY_COUNT(eyesToRender); ++i)
+				{
+					if (eyesToRender[i] < 0)
+						continue;
+
+					const auto pTex = eyesToRender[i] == LEFT_EYE ? m_scene3DRenderData[EEyeType::eEyeType_LeftEye].texture : m_scene3DRenderData[EEyeType::eEyeType_RightEye].texture;
+
+					Vec2 targetSize;
+					targetSize.x = pBackbufferTexture->GetWidth() * (bRenderBothEyes ? 0.5f : 1.0f);
+					targetSize.y = float(pBackbufferTexture->GetHeight());
+
+					Vec2 srcToTargetScale;
+					srcToTargetScale.x = targetSize.x / pTex->GetWidth();
+					srcToTargetScale.y = targetSize.y / pTex->GetHeight();
+
+					if (bKeepAspect)
+					{
+						float minScale = min(srcToTargetScale.x, srcToTargetScale.y);
+
+						srcToTargetScale.x = minScale;
+						srcToTargetScale.y = minScale;
+					}
+
+					auto rescaleViewport = [&](const Vec2i& viewportPosition, const Vec2i& viewportSize)
+					{
+						Vec4 result;
+						result.x = viewportPosition.x * srcToTargetScale.x;
+						result.y = viewportPosition.y * srcToTargetScale.y;
+						result.z = viewportSize.x * srcToTargetScale.x;
+						result.w = viewportSize.y * srcToTargetScale.y;
+
+						// shift to center
+						Vec2 emptySpace;
+						emptySpace.x = targetSize.x - result.z;
+						emptySpace.y = targetSize.y - result.w;
+
+						if (bRenderBothEyes)
+						{
+							result.x += (i == 0) ? emptySpace.x : targetSize.x;
+							result.y += (i == 0) ? emptySpace.y : 0;
+						}
+						else if (!bRenderBothEyes)
+						{
+							result.x += 0.5f * emptySpace.x;
+							result.y += 0.5f * emptySpace.y;
+						}
+
+						return result;
+					};
+
+					// draw eye texture first
+					if (CTexture* pSrcTex = m_pStereoRenderer->GetEyeTarget(StereoEye(eyesToRender[i])))
+					{
+						auto vp = rescaleViewport(Vec2i(0,0), Vec2i(pTex->GetWidth(), pTex->GetHeight()));
+						gcpRendD3D->RT_SetViewport(int(vp.x), int(vp.y), int(vp.z), int(vp.w));
+
+						GetUtils().ShBeginPass(CShaderMan::s_shPostEffects, pTechTexToTex, FEF_DONTSETTEXTURES | FEF_DONTSETSTATES);
+
+						gRenDev->FX_SetState(GS_NODEPTHTEST);
+						pSrcTex->Apply(0, CTexture::GetTexState(STexState(FILTER_LINEAR, true)));
+
+						GetUtils().DrawFullScreenTri(0, 0);
+						GetUtils().ShEndPass();
+					}
+
+					// now draw quad layers
+					for (int i = 0; i < RenderLayer::eQuadLayers_Total; ++i)
+					{
+						const auto& quadLayer = m_quadLayerProperties[i];
+						if (quadLayer.IsActive())
+						{
+							if (auto pQuadTex = m_pStereoRenderer->GetVrQuadLayerTex(RenderLayer::EQuadLayers(i)))
+							{
+								QuatTS tsLayer = quadLayer.GetPose();
+								Vec2i viewportPosition(tsLayer.t.x, tsLayer.t.y);
+								Vec2i viewportSize(quadLayer.GetTexture()->GetWidth(), quadLayer.GetTexture()->GetHeight());
+								auto vp = rescaleViewport(viewportPosition, viewportSize);
+								gcpRendD3D->RT_SetViewport(int(vp.x), int(vp.y), int(vp.z), int(vp.w));
+
+								GetUtils().ShBeginPass(CShaderMan::s_shPostEffects, pTechTexToTex, FEF_DONTSETTEXTURES | FEF_DONTSETSTATES);
+
+								gRenDev->FX_SetState(GS_NODEPTHTEST | GS_BLSRC_SRCALPHA | GS_BLDST_ONEMINUSSRCALPHA);
+								pQuadTex->Apply(0, CTexture::GetTexState(STexState(FILTER_LINEAR, true)));
+
+								GetUtils().DrawFullScreenTri(0, 0);
+								GetUtils().ShEndPass();
+							}
+						}
+					}
+				}
+
+				// Restore previous viewport
+				gcpRendD3D->FX_PopRenderTarget(0);
+				gcpRendD3D->RT_SetViewport(iTempX, iTempY, iWidth, iHeight);
+
+				gRenDev->m_RP.m_FlagsShader_RT = nSaveFlagsShader_RT;
+			}
+			break;
 			case EHmdSocialScreen::DistortedDualImage:
 			default:
 			{

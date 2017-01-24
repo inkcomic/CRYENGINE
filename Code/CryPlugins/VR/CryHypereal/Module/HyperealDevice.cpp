@@ -1202,13 +1202,15 @@ void Device::PrintHmdInfo()
 // -------------------------------------------------------------------------
 void Device::SubmitOverlay(int id)
 {
-//  	if (m_mapOverlayers.size()==0)
-//  		return;
- 
- 	if (HyViewLayer* pLayer = m_overlays[id].layerHandle)
- 	{
- 		m_overlays[id].submitted = true;
- 	}
+	if (m_mapOverlayers.size()==0)
+		return;
+
+	if (m_overlays[id].overlayTexture)
+	{
+		/*m_overlay->SetOverlayTexture(m_overlays[id].handle, m_overlays[id].vrTexture);*/
+		m_overlays[id].submitted = true;
+	}
+	
 }
 
 // -------------------------------------------------------------------------
@@ -1216,41 +1218,33 @@ void Device::SubmitFrame()
 {
 	if (VrGraphicsCxt)
 	{
-		//HyTextureDesc RTDesc[2];
+
+		//layer switcher
+		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
+		{
+			if (!m_overlays[id].submitted && m_overlays[id].visible)
+			{
+				SetShowLayer(id, false);
+				m_overlays[id].visible = false;
+			}
+			else if (m_overlays[id].submitted && !m_overlays[id].visible)
+			{
+				SetShowLayer(id, true);
+				m_overlays[id].visible = true;
+			}
+			m_overlays[id].submitted = false;
+		}
 
 
 
 		HyResult hr = hySuccess;
-		
-// 		RTDesc[0].m_texture = resL->RenderTex;
-// 		RTDesc[1].m_texture = resR->RenderTex;
+
+		// 		RTDesc[0].m_texture = resL->RenderTex;
+		// 		RTDesc[1].m_texture = resR->RenderTex;
 		hr = VrGraphicsCxt->Submit(m_lastFrameID_UpdateTrackingState, RTDesc, 2);
 
 
-// 		if (!m_mapOverlayers.size()==0)
-// 			return;
-// 
-// 		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
-// 		{
-// 			if (!m_overlays[id].submitted && m_overlays[id].visible&&m_overlays[id].layerHandle)
-// 			{
-// 				HyTextureDesc  desc = m_overlays[id].textureDesc;
-// 				desc.m_texture = nullptr;
-// 				m_overlays[id].layerHandle->SetTexture(desc);
-// 
-// 				m_overlays[id].visible = false;
-// 			}
-// 			else if (m_overlays[id].submitted && !m_overlays[id].visible&&m_overlays[id].layerHandle)
-// 			{
-// 				HyTextureDesc  desc = m_overlays[id].textureDesc;
-// 				m_overlays[id].layerHandle->SetTexture(desc);
-// 
-// 				m_overlays[id].visible = true;
-// 			}
-// 			m_overlays[id].submitted = false;
-// 		}
 	}
-
 
 	
 // 	FRAME_PROFILER("Device::SubmitFrame", gEnv->pSystem, PROFILE_SYSTEM);
@@ -1347,66 +1341,9 @@ void Device::OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, voi
 }
 
 // -------------------------------------------------------------------------
-void Device::OnSetupOverlay(int id, ERenderAPI api, ERenderColorSpace colorSpace, void* overlayTextureHandle)
+void Device::OnSetupOverlay(int id,void* overlayTextureHandle)
 {
-	if (nullptr==VrDevice|| nullptr == VrGraphicsCxt)
-		return;
-
-	//remove old one with same id
-	MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
-	if (itFind != m_mapOverlayers.end())
-	{
-		HyViewLayer* pLayer = itFind->second.layerHandle;
-		pLayer->Release();
-		m_mapOverlayers.erase(itFind);
-	}
-
-	HyViewLayer* pLayer = (HyViewLayer*)VrDevice->CreateClassInstance(HY_CLASS_VIEW_LAYER);
-
-	if (nullptr == pLayer)
-	{
-		gEnv->pLog->Log("[HMD][Hypereal] Error creating overlay %i", id);
-		return;
-	}
-	
-	SOverlay newOverlayer;
-	newOverlayer.layerHandle = pLayer;
-	
-	Matrix34 matPose =  Matrix34::CreateTranslationMat(Vec3(0, 0, -m_hmdQuadDistance));
-	Quat qRot(matPose);
-
-	HyPose pose;
-	pose.m_position = Vec3ToHYVec3(matPose.GetTranslation());
-	pose.m_rotation = QuatToHYQuat(qRot);
-	pLayer->SetPose(pose);
-	HyVec2 hySize;
-	hySize.x = 1.0f;
-	hySize.y = 1.0f;
-	pLayer->SetSize(hySize);
-	
-
-	HyTextureDesc hyTextureDesc;
-	hyTextureDesc.m_texture = overlayTextureHandle;
-	hyTextureDesc.m_uvOffset = HyVec2{ 0.0f , 0.0f };
-	hyTextureDesc.m_uvSize = HyVec2{ 1.0f , 1.0f };
-	hyTextureDesc.m_flags = 0;
-	pLayer->SetTexture(hyTextureDesc);
-	
-	if (m_hmdQuadAbsolute)
-		pLayer->SetFlags(0);
-	else
-		pLayer->SetFlags(HY_LAYER_FLAG_LOCK_TO_HELMET);
-
-	pLayer->SetPriority(id);
-
-	m_overlays[id].visible = false;
-	m_overlays[id].submitted = false;
-	m_overlays[id].layerHandle = pLayer;
-	m_overlays[id].overlayTexture = overlayTextureHandle;
-	m_overlays[id].textureDesc = hyTextureDesc;
-
-	m_mapOverlayers[id] = m_overlays[id];
-
+	CreateLayer(id, overlayTextureHandle);
 // 	if (!m_overlay)
 // 		return;
 // 
@@ -1476,20 +1413,7 @@ void Device::OnSetupOverlay(int id, ERenderAPI api, ERenderColorSpace colorSpace
 // -------------------------------------------------------------------------
 void Device::OnDeleteOverlay(int id)
 {
-	if (!VrDevice&&VrGraphicsCxt)
-		return;
-
-	//remove old one with same id
-	MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
-	if (itFind != m_mapOverlayers.end())
-	{
-		HyViewLayer* pLayer = itFind->second.layerHandle;
-		pLayer->Release();
-		m_mapOverlayers.erase(itFind);
-
-		memset(&m_overlays[id], 0, sizeof(m_overlays[id]));
-	}
-
+	DestroyLayer(id);
 // 	if (!m_overlay)
 // 		return;
 // 
@@ -1582,6 +1506,111 @@ void Device::CopyMirrorImage(void* pDstResource,uint nWidth,uint nHeight)
 	if (VrGraphicsCxt)
 	{
 		VrGraphicsCxt->CopyMirrorTexture(pDstResource, nWidth, nHeight);
+	}
+}
+
+
+void Device::CreateLayer(int id, void* overlayTextureHandle,bool bRecrate)
+{
+	if (nullptr == VrDevice || nullptr == VrGraphicsCxt)
+		return;
+
+	//remove old one with same id
+	MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
+	if (itFind != m_mapOverlayers.end())
+	{
+		HyViewLayer* pLayer = itFind->second.layerHandle;
+		pLayer->Release();
+		m_mapOverlayers.erase(itFind);
+	}
+
+	HyViewLayer* pLayer = (HyViewLayer*)VrDevice->CreateClassInstance(HY_CLASS_VIEW_LAYER);
+
+	if (nullptr == pLayer)
+	{
+		gEnv->pLog->Log("[HMD][Hypereal] Error creating overlay %i", id);
+		return;
+	}
+
+	SOverlay newOverlayer;
+	newOverlayer.layerHandle = pLayer;
+
+	Matrix34 matPose = Matrix34::CreateTranslationMat(Vec3(0, 0, -m_hmdQuadDistance));
+	Quat qRot(matPose);
+
+	HyPose pose;
+	pose.m_position = Vec3ToHYVec3(matPose.GetTranslation());
+	pose.m_rotation = QuatToHYQuat(qRot);
+	pLayer->SetPose(pose);
+	HyVec2 hySize;
+	hySize.x = 1.0f;
+	hySize.y = 1.0f;
+	pLayer->SetSize(hySize);
+
+
+	HyTextureDesc hyTextureDesc;
+	hyTextureDesc.m_texture = overlayTextureHandle;
+	hyTextureDesc.m_uvOffset = HyVec2{ 0.0f , 0.0f };
+	hyTextureDesc.m_uvSize = HyVec2{ 1.0f , 1.0f };
+	hyTextureDesc.m_flags = 0;
+	pLayer->SetTexture(hyTextureDesc);
+
+	if (m_hmdQuadAbsolute)
+		pLayer->SetFlags(0);
+	else
+		pLayer->SetFlags(HY_LAYER_FLAG_LOCK_TO_HELMET);
+
+	pLayer->SetPriority(id);
+	if (!bRecrate)
+	{
+		m_overlays[id].visible = false;
+		m_overlays[id].submitted = false;
+	}
+
+	m_overlays[id].layerHandle = pLayer;
+	m_overlays[id].overlayTexture = overlayTextureHandle;
+	m_overlays[id].textureDesc = hyTextureDesc;
+
+	m_mapOverlayers[id] = m_overlays[id];
+
+}
+void Device::DestroyLayer(int id)
+{
+	if (!VrDevice&&VrGraphicsCxt)
+		return;
+
+	//remove old one with same id
+	MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
+	if (itFind != m_mapOverlayers.end())
+	{
+		HyViewLayer* pLayer = itFind->second.layerHandle;
+		pLayer->Release();
+		m_mapOverlayers.erase(itFind);
+
+		memset(&m_overlays[id], 0, sizeof(m_overlays[id]));
+	}
+}
+void Device::SetShowLayer(int id,bool bShow)
+{
+	if (!VrDevice&&VrGraphicsCxt)
+		return;
+
+	MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
+	if (itFind != m_mapOverlayers.end())
+	{
+		HyViewLayer* pLayer = itFind->second.layerHandle;
+		if (pLayer!=nullptr)
+		{
+			if (!bShow) //remove from HMD
+			{
+				pLayer->Release();
+				itFind->second.layerHandle = nullptr;
+			}
+			else //create from HMD
+			{
+				CreateLayer(id, itFind->second.overlayTexture, true);
+			}
+		}
 	}
 }
 
