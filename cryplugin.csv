@@ -1,1 +1,6 @@
+C++;CryDefaultEntities;Plugin_DefaultEntities;CryDefaultEntities;
 C++;CryHypereal;Plugin_Hypereal;CryHypereal;
+C++;CryOculusVR;Plugin_OculusVR;CryOculusVR;
+C++;CryOpenVR;Plugin_OpenVR;CryOpenVR;
+C++;CrySensorSystem;Plugin_SensorSystem;CrySensorSystem;
+C++;CryUserAnalytics;Plugin_UserAnalytics;CryUserAnalytics;
