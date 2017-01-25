@@ -501,6 +501,8 @@ void Device::GetCameraSetupInfo(float& fov, float& aspectRatioFactor) const
 // -------------------------------------------------------------------------
 void Device::GetAsymmetricCameraSetupInfo(int nEye, float& fov, float& aspectRatio, float& asymH, float& asymV, float& eyeDist) const
 {
+	if (VrGraphicsCxt == nullptr)
+		return;
 // 	float fLeft, fRight, fTop, fBottom;
 // 	HyFov hyFov = VrDeviceInfo.Fov[(HyEye)nEye];
 // 	fLeft = hyFov.m_leftTan;
