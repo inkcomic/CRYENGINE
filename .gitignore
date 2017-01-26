@@ -3,9 +3,9 @@
 *.caf
 
 # Config files
-/user.cfg
-/system.cfg
-/editor.cfg
+#/user.cfg
+#/system.cfg
+#/editor.cfg
 /.bootstrap*.*
 
 # Temporary files.
