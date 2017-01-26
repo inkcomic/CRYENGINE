@@ -415,20 +415,20 @@
       <Node Id="17" Class="VR:QuadRenderLayer" pos="-790,-580,0" flags="0">
        <Inputs Layer="1" Enable="0" Type="2" Position="0,0,-1" Orientation="0,0,-1" Scale="1"/>
       </Node>
-      <Node Id="18" Class="VR:RenderLayerTexture" pos="-530,-840,0" flags="0">
-       <Inputs LayerType="1" QuadLayerId="0" tex_TextureName="textures/cubemaps/example/environmentprobe_cm.dds"/>
+      <Node Id="18" Class="VR:RenderLayerTexture" pos="-530,-570,0" flags="0">
+       <Inputs LayerType="1" QuadLayerId="1" tex_TextureName="textures/blood_overlay.dds"/>
       </Node>
-      <Node Id="19" Class="VR:RenderLayerTexture" pos="-452.95105,-600.16016,0" flags="1">
-       <Inputs LayerType="0" QuadLayerId="1" tex_TextureName="textures/cubemaps/example/environmentprobe_cm.dds"/>
+      <Node Id="19" Class="VR:RenderLayerTexture" pos="-530,-790,0" flags="0">
+       <Inputs LayerType="0" QuadLayerId="0" tex_TextureName="textures/hud_tracker_teir1.dds"/>
       </Node>
      </Nodes>
      <Edges>
       <Edge nodeIn="15" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
       <Edge nodeIn="16" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
       <Edge nodeIn="17" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
+      <Edge nodeIn="18" nodeOut="4" portIn="ApplyScale" portOut="output" enabled="1"/>
+      <Edge nodeIn="19" nodeOut="4" portIn="ApplyScale" portOut="output" enabled="1"/>
       <Edge nodeIn="5" nodeOut="15" portIn="RecentrePose" portOut="Pressed" enabled="1"/>
-      <Edge nodeIn="18" nodeOut="16" portIn="ApplyScale" portOut="Done" enabled="1"/>
-      <Edge nodeIn="19" nodeOut="17" portIn="ApplyScale" portOut="Done" enabled="1"/>
      </Edges>
      <GraphTokens />
     </FlowGraph>
