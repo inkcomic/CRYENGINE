@@ -686,22 +686,22 @@ void Device::UpdateTrackingState(EVRComponent type)
 				HyPose hyEyeRenderPose[HY_EYE_MAX];
 				VrGraphicsCxt->GetEyePoses(m_rTrackedDevicePose[EDevice::Hmd].m_pose, ipdptr, hyEyeRenderPose);
 				
-				memcpy(&m_nativeEyePoseStates, &m_nativeStates, sizeof(m_nativeStates));
-				memcpy(&m_localEyePoseStates, &m_localStates, sizeof(m_localStates));
+				memcpy(&m_nativeEyePoseStates, &m_nativeStates[EDevice::Hmd], sizeof(HmdTrackingState));
+				memcpy(&m_localEyePoseStates, &m_localStates[EDevice::Hmd], sizeof(HmdTrackingState));
 
 				// compute centered transformation
-				Quat qRecenterRotation = m_qBaseOrientation.GetInverted()* HYQuatToQuat(hyEyeRenderPose[HY_EYE_LEFT].m_rotation);
+				Quat qRecenterRotation = HmdQuatToWorldQuat(m_qBaseOrientation.GetInverted()* HYQuatToQuat(hyEyeRenderPose[HY_EYE_LEFT].m_rotation));
 				qRecenterRotation.Normalize();
-				Vec3 vRecenterPosition = (HYVec3ToVec3(hyEyeRenderPose[HY_EYE_LEFT].m_position) - m_vBaseOffset) * m_fMeterToWorldScale;
-				vRecenterPosition = vRecenterPosition*m_qBaseOrientation.GetInverted();
-				if (!m_bPosTrackingEnable)
-				{
-					vRecenterPosition.x = 0.f;
-					vRecenterPosition.y = 0.f;
-				}
+// 				Vec3 vRecenterPosition = HmdVec3ToWorldVec3(HYVec3ToVec3(hyEyeRenderPose[HY_EYE_LEFT].m_position) - m_vBaseOffset) * m_fMeterToWorldScale;
+// 				vRecenterPosition = vRecenterPosition*HmdQuatToWorldQuat(m_qBaseOrientation.GetInverted());
+// 				if (!m_bPosTrackingEnable)
+// 				{
+// 					vRecenterPosition.x = 0.f;
+// 					vRecenterPosition.y = 0.f;
+// 				}
 
 				m_nativeEyePoseStates.pose.orientation = m_localEyePoseStates.pose.orientation = qRecenterRotation;
-				m_nativeEyePoseStates.pose.position = m_localEyePoseStates.pose.position = vRecenterPosition;
+			//	m_nativeEyePoseStates.pose.position = m_localEyePoseStates.pose.position = vRecenterPosition;
 			}
 		}
 
@@ -1142,7 +1142,7 @@ void Device::RecenterPose()
 // -------------------------------------------------------------------------
 const HmdTrackingState& Device::GetLocalTrackingState() const
 {
-	return m_hmdTrackingDisabled ? m_disabledTrackingState : m_localStates[EDevice::Hmd];
+	return m_hmdTrackingDisabled ? m_disabledTrackingState : m_localEyePoseStates;// m_localStates[EDevice::Hmd];
 }
 
 // -------------------------------------------------------------------------
@@ -1175,7 +1175,7 @@ Vec2 Device::GetPlayAreaSize() const
 // -------------------------------------------------------------------------
 const HmdTrackingState& Device::GetNativeTrackingState() const
 {
-	return m_hmdTrackingDisabled ? m_disabledTrackingState : m_nativeStates[EDevice::Hmd];
+	return m_hmdTrackingDisabled ? m_disabledTrackingState : m_nativeEyePoseStates;// m_nativeStates[EDevice::Hmd];
 }
 
 // -------------------------------------------------------------------------
