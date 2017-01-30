@@ -228,7 +228,7 @@ Device::Device()
 	, InterpupillaryDistance(-1.0f)
 	, m_qBaseOrientation(IDENTITY)
 	, m_vBaseOffset(IDENTITY)
-	, m_fMeterToWorldScale(100.f)
+	, m_fMeterToWorldScale(1.f)
 	, m_bPosTrackingEnable(true)
 	, m_bResetOrientationKeepPitchAndRoll(false)
 {
@@ -329,7 +329,7 @@ const char* Device::GetTrackedDeviceCharPointer(int nProperty)
 // }
 // 
 // -------------------------------------------------------------------------
-Quat Device::HmdQuatToWorldQuat(const Quat& quat)
+inline Quat HmdQuatToWorldQuat(const Quat& quat)
 {
 	Matrix33 m33(quat);
 	Vec3 column1 = -quat.GetColumn2();
@@ -338,31 +338,33 @@ Quat Device::HmdQuatToWorldQuat(const Quat& quat)
 	return Quat::CreateRotationX(gf_PI * 0.5f) * Quat(m33);
 }
  
- // -------------------------------------------------------------------------
- Vec3 Device::HmdVec3ToWorldVec3(const Vec3& vec)
- {
- 	return Vec3(vec.x, -vec.z, vec.y);
- }
- 
+//  // -------------------------------------------------------------------------
+//  Vec3 Device::HmdVec3ToWorldVec3(const Vec3& vec)
+//  {
+//  	return Vec3(vec.x, -vec.z, vec.y);
+//  }
+
  inline Quat HYQuatToQuat(const HyQuat& q) {
-	 return Quat(q.w,q.x,q.y,q.z);
+	  return HmdQuatToWorldQuat(Quat(q.w, q.x, q.y, q.z));
  }
+
  inline Vec3 HYVec3ToVec3(const HyVec3& v) {
-	 return Vec3(v.z,v.y,v.z);
+	 return Vec3(v.x,-v.z,v.y);
  }
  inline HyQuat QuatToHYQuat(const Quat &q) {
+	 Quat invQuat = HmdQuatToWorldQuat(q).GetInverted();
 	 HyQuat hyQuat;
-	 hyQuat.w = q.w;
-	 hyQuat.x = q.v.x;
-	 hyQuat.y = q.v.y;
-	 hyQuat.z = q.v.z;
+	 hyQuat.w = invQuat.w;
+	 hyQuat.x = invQuat.v.x;
+	 hyQuat.y = invQuat.v.y;
+	 hyQuat.z = invQuat.v.z;
 	 return hyQuat;
  }
  inline HyVec3 Vec3ToHYVec3(const Vec3& v) {
 	 HyVec3 hyVec3;
 	 hyVec3.x = v.x;
-	 hyVec3.y = v.y;
-	 hyVec3.z = v.z;
+	 hyVec3.y = v.z;
+	 hyVec3.z = -v.y;
 	 return hyVec3;
  }
 // -------------------------------------------------------------------------
@@ -381,10 +383,10 @@ void Device::CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, HyTrackingSta
 	hmd.linearVelocity = srcLinVel;
 	hmd.angularVelocity = srcAngVel;
  
-	world.position = HmdVec3ToWorldVec3(hmd.position);
-	world.orientation = HmdQuatToWorldQuat(hmd.orientation);
-	world.linearVelocity = HmdVec3ToWorldVec3(hmd.linearVelocity);
-	world.angularVelocity = HmdVec3ToWorldVec3(hmd.angularVelocity);
+	world.position = /*HmdVec3ToWorldVec3*/(hmd.position);
+	world.orientation = /*HmdQuatToWorldQuat*/(hmd.orientation);
+	world.linearVelocity = /*HmdVec3ToWorldVec3*/(hmd.linearVelocity);
+	world.angularVelocity = /*HmdVec3ToWorldVec3*/(hmd.angularVelocity);
 }
 
 // -------------------------------------------------------------------------
@@ -676,7 +678,7 @@ void Device::UpdateTrackingState(EVRComponent type)
 
 				HySubDevice sid = static_cast<HySubDevice>(i);
 				res = VrDevice->GetControllerInputState(sid, controllerState);
-				if (res)
+				if (hySuccess==res)
 					m_controller.Update(sid, m_nativeStates[i], m_localStates[i], controllerState);
 			}
 			else//HMD
@@ -690,18 +692,18 @@ void Device::UpdateTrackingState(EVRComponent type)
 				memcpy(&m_localEyePoseStates, &m_localStates[EDevice::Hmd], sizeof(HmdTrackingState));
 
 				// compute centered transformation
-				Quat qRecenterRotation = HmdQuatToWorldQuat(m_qBaseOrientation.GetInverted()* HYQuatToQuat(hyEyeRenderPose[HY_EYE_LEFT].m_rotation));
+				Quat qRecenterRotation = /*HmdQuatToWorldQuat*/(m_qBaseOrientation.GetInverted()* HYQuatToQuat(hyEyeRenderPose[HY_EYE_LEFT].m_rotation));
 				qRecenterRotation.Normalize();
-// 				Vec3 vRecenterPosition = HmdVec3ToWorldVec3(HYVec3ToVec3(hyEyeRenderPose[HY_EYE_LEFT].m_position) - m_vBaseOffset) * m_fMeterToWorldScale;
-// 				vRecenterPosition = vRecenterPosition*HmdQuatToWorldQuat(m_qBaseOrientation.GetInverted());
-// 				if (!m_bPosTrackingEnable)
-// 				{
-// 					vRecenterPosition.x = 0.f;
-// 					vRecenterPosition.y = 0.f;
-// 				}
+				Vec3 vRecenterPosition = /*HmdVec3ToWorldVec3*/(HYVec3ToVec3(hyEyeRenderPose[HY_EYE_LEFT].m_position) - m_vBaseOffset) * m_fMeterToWorldScale;
+				vRecenterPosition = /*HmdQuatToWorldQuat*/m_qBaseOrientation.GetInverted()*vRecenterPosition;
+				if (!m_bPosTrackingEnable)
+				{
+					vRecenterPosition.x = 0.f;
+					vRecenterPosition.y = 0.f;
+				}
 
 				m_nativeEyePoseStates.pose.orientation = m_localEyePoseStates.pose.orientation = qRecenterRotation;
-			//	m_nativeEyePoseStates.pose.position = m_localEyePoseStates.pose.position = vRecenterPosition;
+				m_nativeEyePoseStates.pose.position = m_localEyePoseStates.pose.position = vRecenterPosition;
 			}
 		}
 
@@ -809,6 +811,43 @@ void Device::UpdateInternal(EInternalUpdate type)
 		}
 	}
 
+// 	//update overlay pose
+// 	if (VrGraphicsCxt)
+// 	{
+// 
+// 		//layer switcher
+// 		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
+// 		{
+// 			if (m_overlays[id].submitted && m_overlays[id].visible)
+// 			{
+// 				MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
+// 				if (itFind != m_mapOverlayers.end())
+// 				{
+// 					HyViewLayer* pLayer = itFind->second.layerHandle;
+// 					if (pLayer != nullptr)
+// 					{
+// 						//Matrix34 matPose = Matrix34::CreateTranslationMat(Vec3(500, 100, 100));
+// 						Quat qRot(m_localEyePoseStates.pose.orientation);
+// 
+// 						HyPose pose;
+// 						pose.m_position = Vec3ToHYVec3(Vec3(500, 0, 100));
+// 						pose.m_rotation = QuatToHYQuat(Quat(IDENTITY));// /*m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation;*/ QuatToHYQuat(qRot);
+// 						pLayer->SetPose(pose);
+// 						HyVec2 hySize;
+// 						hySize.x = 1000.0f;
+// 						hySize.y = 1000.0f;
+// 						pLayer->SetSize(hySize);
+// 
+// 						if (m_hmdQuadAbsolute)
+// 							pLayer->SetFlags(0);
+// 						else
+// 							pLayer->SetFlags(HY_LAYER_FLAG_LOCK_TO_HELMET);
+// 					}
+// 				}
+// 				
+// 			}
+// 		}
+// 	}
 	if (bIsQuitting)
 	{
 		//EnableStereo(false);
@@ -1149,10 +1188,10 @@ const HmdTrackingState& Device::GetLocalTrackingState() const
 Quad Device::GetPlayArea() const
 {
 	Quad result;
-	result.vCorners[0] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[0].x, PlayAreaVertices[0].y, 0));
-	result.vCorners[1] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[1].x, PlayAreaVertices[1].y, 0));
-	result.vCorners[2] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[2].x, PlayAreaVertices[2].y, 0));
-	result.vCorners[3] = HmdVec3ToWorldVec3(Vec3(PlayAreaVertices[3].x, PlayAreaVertices[3].y, 0));
+	result.vCorners[0] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[0].x, PlayAreaVertices[0].y, 0));
+	result.vCorners[1] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[1].x, PlayAreaVertices[1].y, 0));
+	result.vCorners[2] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[2].x, PlayAreaVertices[2].y, 0));
+	result.vCorners[3] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[3].x, PlayAreaVertices[3].y, 0));
 	return result;
 
 }
@@ -1217,28 +1256,85 @@ void Device::SubmitOverlay(int id)
 	}
 	
 }
-
+Vec3 sPos = Vec3(0, 500, 0);
+Ang3 sAng = Ang3(0, 0, 0);
+bool sNoRelative = false;
 // -------------------------------------------------------------------------
-void Device::SubmitFrame()
+void Device::SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData)
 {
 	if (VrGraphicsCxt)
 	{
-
-		//layer switcher
+		//update overlay pose
 		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
 		{
-			if (!m_overlays[id].submitted && m_overlays[id].visible)
+			if (m_overlays[id].submitted && m_overlays[id].visible)
 			{
-				SetShowLayer(id, false);
-				m_overlays[id].visible = false;
+				MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
+				if (itFind != m_mapOverlayers.end())
+				{
+					HyViewLayer* pLayer = itFind->second.layerHandle;
+					if (pLayer != nullptr)
+					{
+						SHmdRenderLayerInfo & _data = submitData.pQuadLayersArray[id];
+
+						
+						HyPose pose;
+
+						
+ 
+						HyVec2 hySize;
+						hySize.x = (float)_data.viewportSize.y;
+						hySize.y = (float)_data.viewportSize.y;
+						pLayer->SetSize(hySize);
+						
+						pLayer->SetTexture(itFind->second.textureDesc);
+
+						Quat qut = Quat(sAng);
+
+						if (sNoRelative/*_data.layerType== RenderLayer::ELayerType::eLayer_Quad|| _data.layerType == RenderLayer::ELayerType::eLayer_Scene3D*/)
+						{
+							Quat qRecenterRotation = qut*m_localEyePoseStates.pose.orientation;
+							qRecenterRotation.Normalize();
+							Vec3 vRecenterPosition = (sPos + m_localEyePoseStates.pose.position);
+							
+							pose.m_position = Vec3ToHYVec3(vRecenterPosition);
+							pose.m_rotation = QuatToHYQuat(qRecenterRotation);
+							//						pose.m_position = Vec3ToHYVec3(_data.pose.t);
+							//						pose.m_rotation = QuatToHYQuat(_data.pose.q);// /*m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation;*/ QuatToHYQuat(qRot);
+							pLayer->SetPose(pose);
+
+							pLayer->SetFlags(0);
+						}
+						else
+						{
+							pose.m_position = Vec3ToHYVec3(sPos);
+							pose.m_rotation = QuatToHYQuat(qut);
+							//						pose.m_position = Vec3ToHYVec3(_data.pose.t);
+							//						pose.m_rotation = QuatToHYQuat(_data.pose.q);// /*m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation;*/ QuatToHYQuat(qRot);
+							pLayer->SetPose(pose);
+
+							pLayer->SetFlags(HY_LAYER_FLAG_LOCK_TO_HELMET);
+						}
+					}
+				}
+
 			}
-			else if (m_overlays[id].submitted && !m_overlays[id].visible)
-			{
-				SetShowLayer(id, true);
-				m_overlays[id].visible = true;
-			}
-			m_overlays[id].submitted = false;
 		}
+		////layer switcher
+		//for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
+		//{
+		//	if (!m_overlays[id].submitted && m_overlays[id].visible)
+		//	{
+		//		SetShowLayer(id, false);
+		//		m_overlays[id].visible = false;
+		//	}
+		//	else if (m_overlays[id].submitted && !m_overlays[id].visible)
+		//	{
+		//		SetShowLayer(id, true);
+		//		m_overlays[id].visible = true;
+		//	}
+		//	m_overlays[id].submitted = false;
+		//}
 
 
 
@@ -1541,15 +1637,16 @@ void Device::CreateLayer(int id, void* overlayTextureHandle,bool bRecrate)
 	newOverlayer.layerHandle = pLayer;
 
 	Matrix34 matPose = Matrix34::CreateTranslationMat(Vec3(0, 0, -m_hmdQuadDistance));
-	Quat qRot(matPose);
+
+	//Quat qRot( );
 
 	HyPose pose;
 	pose.m_position = Vec3ToHYVec3(matPose.GetTranslation());
-	pose.m_rotation = QuatToHYQuat(qRot);
+	pose.m_rotation = m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation;
 	pLayer->SetPose(pose);
 	HyVec2 hySize;
-	hySize.x = 1.0f;
-	hySize.y = 1.0f;
+	hySize.x = 1000.0f;
+	hySize.y = 1000.0f;
 	pLayer->SetSize(hySize);
 
 
@@ -1568,10 +1665,10 @@ void Device::CreateLayer(int id, void* overlayTextureHandle,bool bRecrate)
 	pLayer->SetPriority(id);
 	if (!bRecrate)
 	{
-		m_overlays[id].visible = false;
-		m_overlays[id].submitted = false;
+		m_overlays[id].visible = true;
+		m_overlays[id].submitted = true;
 	}
-
+	
 	m_overlays[id].layerHandle = pLayer;
 	m_overlays[id].overlayTexture = overlayTextureHandle;
 	m_overlays[id].textureDesc = hyTextureDesc;

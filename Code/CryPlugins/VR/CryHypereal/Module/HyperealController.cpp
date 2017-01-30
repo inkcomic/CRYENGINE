@@ -104,7 +104,7 @@ void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, 
  		if (m_state[index].trigger != m_previousState[index].trigger)
  		{
  			SInputEvent event;
- 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
+ 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_Hypereal_TriggerBtnL - HYPEREAL_BASE];
  			pSymbol->ChangeEvent(m_state[index].trigger);
  			pSymbol->AssignTo(event);
  			event.deviceIndex = controllerId;
@@ -116,7 +116,7 @@ void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, 
 		if (m_state[index].sideTrigger != m_previousState[index].sideTrigger)
 		{
 			SInputEvent event;
-			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
+			SInputSymbol* pSymbol = m_symbols[eKI_Motion_Hypereal_SideTriggerBtnR - HYPEREAL_BASE];
 			pSymbol->ChangeEvent(m_state[index].sideTrigger);
 			pSymbol->AssignTo(event);
 			event.deviceIndex = controllerId;

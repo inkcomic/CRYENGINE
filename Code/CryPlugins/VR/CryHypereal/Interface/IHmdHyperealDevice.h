@@ -3,6 +3,7 @@
 #pragma once
 
 #include <CrySystem/VR/IHMDDevice.h>
+#include <CryRenderer/IStereoRenderer.h>
 
 namespace CryVR
 {
@@ -29,6 +30,23 @@ enum ERenderColorSpace
 	eRenderColorSpace_Linear = 2,
 };
 
+struct SHmdRenderLayerInfo
+{
+	Vec2i                    viewportPosition;
+	Vec2i                    viewportSize;
+	uint8                    eye;         // only for Scene3D layer (0 left , 1 right)
+	bool                     bActive;     // should this layer be sent to the Hmd?
+	RenderLayer::ELayerType  layerType;
+	RenderLayer::TLayerId    layerId;
+	QuatTS                   pose;        // only for Quad layers. (in camera space) layer position, orientation and scale
+};
+
+struct SHmdSubmitFrameData
+{
+	SHmdRenderLayerInfo* pQuadLayersArray;
+	uint32             numQuadLayersArray;;
+};
+
 struct IHyperealDevice : public IHmdDevice
 {
 public:
@@ -36,7 +54,7 @@ public:
 	virtual void OnSetupOverlay(int id, void* overlayTextureHandle) = 0;
 	virtual void OnDeleteOverlay(int id) = 0;
 	virtual void SubmitOverlay(int id) = 0;
-	virtual void SubmitFrame() = 0;
+	virtual void SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData) = 0;
 	virtual void GetRenderTargetSize(uint& w, uint& h) = 0;
 	virtual void GetMirrorImageView(EEyeType eye, void* resource, void** mirrorTextureView) = 0;
 	virtual void CopyMirrorImage(void* pDstResource, uint nWidth, uint nHeight) = 0;

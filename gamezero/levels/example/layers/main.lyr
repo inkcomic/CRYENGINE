@@ -400,35 +400,59 @@
     </Components>
     <FlowGraph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
      <Nodes>
-      <Node Id="4" Class="Game:Start" pos="-1070,-540,0" flags="0">
+      <Node Id="4" Class="Game:Start" pos="-1570,-580,0" flags="0">
        <Inputs InGame="1" InEditor="1"/>
       </Node>
       <Node Id="5" Class="VR:Tools" pos="-680,-50,0" flags="0">
        <Inputs />
       </Node>
-      <Node Id="15" Class="Debug:InputKey" pos="-740,-330,0" flags="0">
+      <Node Id="15" Class="Debug:InputKey" pos="-1070,-30,0" flags="0">
        <Inputs entityId="0" Key="r" NonDevMode="0"/>
       </Node>
-      <Node Id="16" Class="VR:QuadRenderLayer" pos="-800,-850,0" flags="0">
-       <Inputs Layer="0" Enable="0" Type="1" Position="0,0,-1" Orientation="0,0,-1" Scale="1"/>
+      <Node Id="16" Class="VR:QuadRenderLayer" pos="-820,-1150,0" flags="0">
+       <Inputs Layer="0" Enable="1" Type="1" Position="0,0,0" Orientation="0,0,-1.57" Scale="1"/>
       </Node>
-      <Node Id="17" Class="VR:QuadRenderLayer" pos="-790,-580,0" flags="0">
-       <Inputs Layer="1" Enable="0" Type="2" Position="0,0,-1" Orientation="0,0,-1" Scale="1"/>
+      <Node Id="17" Class="VR:QuadRenderLayer" pos="-820,-700,0" flags="0">
+       <Inputs Layer="1" Enable="1" Type="2" Position="0,0,0" Orientation="0,0,1.57" Scale="1"/>
       </Node>
-      <Node Id="18" Class="VR:RenderLayerTexture" pos="-530,-840,0" flags="0">
-       <Inputs LayerType="1" QuadLayerId="0" tex_TextureName="textures/cubemaps/example/environmentprobe_cm.dds"/>
+      <Node Id="18" Class="VR:RenderLayerTexture" pos="-530,-640,0" flags="0">
+       <Inputs LayerType="1" QuadLayerId="1" tex_TextureName="textures/blood_overlay.dds"/>
       </Node>
-      <Node Id="19" Class="VR:RenderLayerTexture" pos="-452.95105,-600.16016,0" flags="1">
-       <Inputs LayerType="0" QuadLayerId="1" tex_TextureName="textures/cubemaps/example/environmentprobe_cm.dds"/>
+      <Node Id="19" Class="VR:RenderLayerTexture" pos="-550,-1040,0" flags="0">
+       <Inputs LayerType="1" QuadLayerId="0" tex_TextureName="textures/nano_change_1.dds"/>
+      </Node>
+      <Node Id="20" Class="VR:TransformInfo" pos="-2060,-1220,0" flags="1">
+       <Inputs Enabled="1"/>
+      </Node>
+      <Node Id="28" Class="Camera:View" pos="-1130,-1150,0" flags="0" GraphEntity="0">
+       <Inputs entityId="0" Enable="0" Disable="0" FOV="90" Blend="0" BlendFOVSpeed="5" BlendFOVOffset="0" BlendPosSpeed="5" BlendPosOffset="0,0,0" BlendRotSpeed="10" BlendRotOffset="0,0,0"/>
+      </Node>
+      <Node Id="30" Class="Time:Timer" pos="-1300,-710,0" flags="0">
+       <Inputs period="1" min="0" max="1000" paused="0"/>
+      </Node>
+      <Node Id="31" Class="Entity:EntityPos" pos="-1610,-980,0" flags="0" EntityGUID="{99B3B00B-75CE-A715-DBFD-234319A2C724}" EntityGUID_64="99B3B00B75CEA715">
+       <Inputs entityId="0" pos="0,0,0" rotate="0,0,0" scale="0,0,0" CoordSys="1"/>
+      </Node>
+      <Node Id="32" Class="Entity:EntityPos" pos="-1630,-1440,0" flags="0" EntityGUID="{7576B96A-31AE-7FD5-B411-293971A856A8}" EntityGUID_64="7576B96A31AE7FD5">
+       <Inputs entityId="0" pos="0,0,0" rotate="0,0,0" scale="0,0,0" CoordSys="1"/>
       </Node>
      </Nodes>
      <Edges>
       <Edge nodeIn="15" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
-      <Edge nodeIn="16" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
-      <Edge nodeIn="17" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
+      <Edge nodeIn="18" nodeOut="4" portIn="ApplyScale" portOut="output" enabled="1"/>
+      <Edge nodeIn="19" nodeOut="4" portIn="ApplyScale" portOut="output" enabled="1"/>
+      <Edge nodeIn="28" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
       <Edge nodeIn="5" nodeOut="15" portIn="RecentrePose" portOut="Pressed" enabled="1"/>
-      <Edge nodeIn="18" nodeOut="16" portIn="ApplyScale" portOut="Done" enabled="1"/>
-      <Edge nodeIn="19" nodeOut="17" portIn="ApplyScale" portOut="Done" enabled="1"/>
+      <Edge nodeIn="28" nodeOut="20" portIn="BlendPosOffset" portOut="Camera pos" enabled="1"/>
+      <Edge nodeIn="28" nodeOut="20" portIn="BlendRotOffset" portOut="Camera rot (PRY)" enabled="1"/>
+      <Edge nodeIn="31" nodeOut="20" portIn="pos" portOut="HMD right controller pos" enabled="1"/>
+      <Edge nodeIn="31" nodeOut="20" portIn="rotate" portOut="HMD right controller rot (PRY)" enabled="1"/>
+      <Edge nodeIn="32" nodeOut="20" portIn="pos" portOut="HMD left controller pos" enabled="1"/>
+      <Edge nodeIn="32" nodeOut="20" portIn="rotate" portOut="HMD left controller rot (PRY)" enabled="1"/>
+      <Edge nodeIn="16" nodeOut="30" portIn="ApplyOrientation" portOut="out" enabled="1"/>
+      <Edge nodeIn="16" nodeOut="30" portIn="ApplyPos" portOut="out" enabled="1"/>
+      <Edge nodeIn="17" nodeOut="30" portIn="ApplyOrientation" portOut="out" enabled="1"/>
+      <Edge nodeIn="17" nodeOut="30" portIn="ApplyPos" portOut="out" enabled="1"/>
      </Edges>
      <GraphTokens />
     </FlowGraph>

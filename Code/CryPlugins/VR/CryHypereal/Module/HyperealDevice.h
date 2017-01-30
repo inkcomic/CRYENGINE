@@ -45,7 +45,7 @@ public:
 
 	// IHyperealDevice
 	virtual void SubmitOverlay(int id);
-	virtual void SubmitFrame();
+	virtual void SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData);
 	virtual void OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, void* leftEyeHandle, void* rightEyeHandle);
 	virtual void OnSetupOverlay(int id,void* overlayTextureHandle);
 	virtual void OnDeleteOverlay(int id);
@@ -83,8 +83,9 @@ private:
  	const char*            GetTrackedDeviceCharPointer(int nProperty);
 // 	static inline Matrix34 BuildMatrix(const vr::HmdMatrix34_t& in);
 // 	static inline Matrix44 BuildMatrix(const vr::HmdMatrix44_t& in);
- 	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
- 	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
+//  	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
+//  	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
+	
  	inline void            CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, HyTrackingState& source);
 // 	void                   LoadDeviceRenderModel(int deviceIndex);
 // 	void                   DumpDeviceRenderModel(int deviceIndex);

@@ -43,11 +43,15 @@ protected:
 	bool             InitializeQuadLayer(D3DDevice* d3dDevice, RenderLayer::EQuadLayers quadLayer, CryVR::Hypereal::TextureDesc desc, const char* name);
 	bool             InitializeMirrorTexture(D3DDevice* d3dDevice, EEyeType eye, CryVR::Hypereal::TextureDesc desc, const char* name);
 
+
+	void			UpdateLayers();
 protected:
 	CTexture*                     m_mirrorTextures[EEyeType::eEyeType_NumEyes];
 	Eye                           m_scene3DRenderData[EEyeType::eEyeType_NumEyes];
 	QuadLayer                     m_quadLayerRenderData[RenderLayer::eQuadLayers_Total];
 	RenderLayer::CProperties      m_quadLayerProperties[RenderLayer::eQuadLayers_Total];
+
+	CryVR::Hypereal::SHmdRenderLayerInfo	m_renderLayerInfoArray[RenderLayer::eQuadLayers_Total];
 
 	uint32                        m_numFrames;
 	uint32                        m_currentFrame;
