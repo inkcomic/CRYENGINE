@@ -1,4 +1,11 @@
 {
+    "EngineFileDialog": {
+        "favorites": [
+        ],
+        "history": [
+            "/textures"
+        ]
+    },
     "FavoritesHelper": {
         "Asset Browser": null
     },

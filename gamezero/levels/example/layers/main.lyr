@@ -390,7 +390,7 @@
      <GraphTokens />
     </FlowGraph>
    </Object>
-   <Object Type="Camera" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{AC3391E3-281A-213A-9062-01DA1BD64FEF}" Name="Camera1" Pos="286.11496,260.23608,25.210831" FloorNumber="-1" Rotate="0.86350501,-0.50434029,0,0" ColorRGB="16776960" FOV="1.0472" NearZ="0.25" FarZ="1024" EntityClass="CameraSource" HasEntity="1">
+   <Object Type="Camera" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{AC3391E3-281A-213A-9062-01DA1BD64FEF}" Name="Camera1" Pos="277.08356,248.0992,25.210831" FloorNumber="-1" Rotate="1,0,0,0" ColorRGB="16776960" FOV="1.0472" NearZ="0.25" FarZ="1024" EntityClass="CameraSource" HasEntity="1">
     <ShakeParams AmplitudeA="1,1,1" AmplitudeAMult="0" FrequencyA="1,1,1" FrequencyAMult="0" NoiseAAmpMult="0" NoiseAFreqMult="0" TimeOffsetA="0" AmplitudeB="1,1,1" AmplitudeBMult="0" FrequencyB="1,1,1" FrequencyBMult="0" NoiseBAmpMult="0" NoiseBFreqMult="0" TimeOffsetB="0" CameraShakeSeed="0"/>
     <Properties />
     <Components>
@@ -410,18 +410,18 @@
        <Inputs entityId="0" Key="r" NonDevMode="0"/>
       </Node>
       <Node Id="16" Class="VR:QuadRenderLayer" pos="-820,-1150,0" flags="0">
-       <Inputs Layer="0" Enable="1" Type="1" Position="0,0,0" Orientation="0,0,-1.57" Scale="1"/>
+       <Inputs Layer="0" Enable="1" Type="2" Position="0,0,0" Orientation="0,0,-1.57" Scale="1"/>
       </Node>
       <Node Id="17" Class="VR:QuadRenderLayer" pos="-820,-700,0" flags="0">
        <Inputs Layer="1" Enable="1" Type="2" Position="0,0,0" Orientation="0,0,1.57" Scale="1"/>
       </Node>
-      <Node Id="18" Class="VR:RenderLayerTexture" pos="-530,-640,0" flags="0">
-       <Inputs LayerType="1" QuadLayerId="1" tex_TextureName="textures/blood_overlay.dds"/>
+      <Node Id="18" Class="VR:RenderLayerTexture" pos="-510,-510,0" flags="0">
+       <Inputs LayerType="2" QuadLayerId="1" tex_TextureName="textures/hud_tracker_teir2.dds"/>
       </Node>
-      <Node Id="19" Class="VR:RenderLayerTexture" pos="-550,-1040,0" flags="0">
-       <Inputs LayerType="1" QuadLayerId="0" tex_TextureName="textures/nano_change_1.dds"/>
+      <Node Id="19" Class="VR:RenderLayerTexture" pos="-550,-1040,0" flags="1">
+       <Inputs LayerType="2" QuadLayerId="0" tex_TextureName="textures/blood_overlay.dds"/>
       </Node>
-      <Node Id="20" Class="VR:TransformInfo" pos="-2060,-1220,0" flags="1">
+      <Node Id="20" Class="VR:TransformInfo" pos="-2060,-1220,0" flags="0">
        <Inputs Enabled="1"/>
       </Node>
       <Node Id="28" Class="Camera:View" pos="-1130,-1150,0" flags="0" GraphEntity="0">

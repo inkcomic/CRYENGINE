@@ -181,8 +181,6 @@ private:
 	ICVar*                  m_pHmdSocialScreenCVar;
 	ICVar*                  m_pTrackingOriginCVar;
 
-
-
 	//////////////////////////////////////////////////////////////////////////
 	//HVR device member
 	struct DeviceInfo

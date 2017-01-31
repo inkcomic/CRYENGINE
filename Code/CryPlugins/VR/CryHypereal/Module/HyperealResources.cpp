@@ -40,9 +40,7 @@ Resources::Resources()
 // ------------------------------------------------------------------------
 void Resources::PostInit()
 {
-	Device* pDev = GetAssociatedDevice();
-	if (pDev)
-		pDev->SetupRenderModels();
+//	Device* pDev = GetAssociatedDevice();
 }
 
 // ------------------------------------------------------------------------

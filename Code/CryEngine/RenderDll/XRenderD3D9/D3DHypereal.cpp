@@ -51,9 +51,9 @@ bool CD3DHyperealRenderer::Initialize()
 
 	m_pHyperealDevice->CreateGraphicsContext(d3d11Device);
 
-	m_pHyperealDevice->GetRenderTargetSize(m_eyeWidth, m_eyeHeight);//1200x1080??
-// 	m_eyeWidth = m_pRenderer->GetWidth();
-// 	m_eyeHeight = m_pRenderer->GetHeight();
+	//m_pHyperealDevice->GetRenderTargetSize(m_eyeWidth, m_eyeHeight);//1200x1080??
+ 	m_eyeWidth = m_pRenderer->GetWidth();
+ 	m_eyeHeight = m_pRenderer->GetHeight();
 
 	CryVR::Hypereal::TextureDesc eyeTextureDesc;
 	eyeTextureDesc.width = m_eyeWidth;
@@ -434,7 +434,7 @@ void CD3DHyperealRenderer::UpdateLayers()
 	for (uint32 i = RenderLayer::EQuadLayers::eQuadLayers_0; i < RenderLayer::EQuadLayers::eQuadLayers_Total; ++i)
 	{
 		ITexture* pTexture = m_quadLayerProperties[i].GetTexture();
-		if (pTexture/* && m_quadLayerProperties[i].IsActive()*/)
+		if (pTexture && m_quadLayerProperties[i].IsActive())
 		{
 			CTexture* pQuadTex = m_pStereoRenderer->GetVrQuadLayerTex((RenderLayer::EQuadLayers)i);
 			GetUtils().StretchRect(static_cast<CTexture*>(pTexture), pQuadTex);
