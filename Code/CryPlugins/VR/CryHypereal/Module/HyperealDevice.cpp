@@ -681,7 +681,7 @@ void Device::UpdateInternal(EInternalUpdate type)
 			if (0 != pData->m_value)
 				m_controller.OnControllerConnect(sid);
 			else
-				m_controller.OnControllerDisconnect(sid);
+				m_controller.OnControllerDisconnect(sid);//?????bug? some times incorrect
 		}
 			break;
 		default:

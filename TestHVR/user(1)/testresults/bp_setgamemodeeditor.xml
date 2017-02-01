@@ -1,19 +1,19 @@
 <root>
-	<thread name="Main" totalTimeMS="21.207335" startTime="635919960125" stopTime="635920013806" totalBlocks="8"> 
-		<block name="CGameEngine::SetGameMode" totalTimeMS="21.193111" startTime="635919960160" stopTime="635920013805" args=""> 
-			<block name="CAISystem::Reset" totalTimeMS="13.480707" startTime="635919972902" stopTime="635920007025" args=""> 
+	<thread name="Main" totalTimeMS="19.053455" startTime="906751793280" stopTime="906751841509" totalBlocks="8"> 
+		<block name="CGameEngine::SetGameMode" totalTimeMS="19.019480" startTime="906751793365" stopTime="906751841508" args=""> 
+			<block name="CAISystem::Reset" totalTimeMS="12.478829" startTime="906751803806" stopTime="906751835393" args=""> 
 			</block>
-			<block name="CCryAction::OnEditorSetGameMode" totalTimeMS="0.303408" startTime="635920010637" stopTime="635920011405" args=""> 
-				<block name="CActionGame::OnEditorSetGameMode" totalTimeMS="0.281284" startTime="635920010639" stopTime="635920011351" args=""> 
-					<block name="CFlashUI::Reload" totalTimeMS="0.021728" startTime="635920011280" stopTime="635920011335" args=""> 
-						<block name="CFlashUI::OnSystemEvent" totalTimeMS="0.000000" startTime="635920011322" stopTime="635920011322" args=""> 
+			<block name="CCryAction::OnEditorSetGameMode" totalTimeMS="0.290766" startTime="906751839270" stopTime="906751840006" args=""> 
+				<block name="CActionGame::OnEditorSetGameMode" totalTimeMS="0.263506" startTime="906751839271" stopTime="906751839938" args=""> 
+					<block name="CFlashUI::Reload" totalTimeMS="0.026864" startTime="906751839853" stopTime="906751839921" args=""> 
+						<block name="CFlashUI::OnSystemEvent" totalTimeMS="0.000790" startTime="906751839905" stopTime="906751839907" args=""> 
 						</block>
 					</block>
 				</block>
-				<block name="CFlashUI::OnSystemEvent" totalTimeMS="0.000000" startTime="635920011403" stopTime="635920011403" args=""> 
+				<block name="CFlashUI::OnSystemEvent" totalTimeMS="0.000000" startTime="906751840004" stopTime="906751840004" args=""> 
 				</block>
 			</block>
-			<block name="CFlashUI::OnSystemEvent" totalTimeMS="0.000395" startTime="635920013793" stopTime="635920013794" args=""> 
+			<block name="CFlashUI::OnSystemEvent" totalTimeMS="0.000395" startTime="906751841494" stopTime="906751841495" args=""> 
 			</block>
 		</block>
 	</thread>
