@@ -23,10 +23,10 @@
       <Node Id="6" Class="entity:GeomEntity" pos="180,-30,0" flags="0" GraphEntity="0">
        <Inputs entityId="0" Hide="0" UnHide="0" LoadGeometry=""/>
       </Node>
-      <Node Id="8" Class="Movement:RotateEntity" pos="180,40,0" flags="0" GraphEntity="0">
+      <Node Id="8" Class="Movement:RotateEntity" pos="180,230,0" flags="1" GraphEntity="0">
        <Inputs entityId="0" Speed="0,0,50" Paused="0" Ref="0"/>
       </Node>
-      <Node Id="10" Class="Debug:InputKey" pos="-410,-30,0" flags="1">
+      <Node Id="10" Class="Debug:InputKey" pos="-410,-30,0" flags="0">
        <Inputs entityId="0" Key="t" NonDevMode="0"/>
       </Node>
      </Nodes>
@@ -145,7 +145,7 @@
      <GraphTokens />
     </FlowGraph>
    </Object>
-   <Object Type="GeomEntity" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{7576B96A-31AE-7FD5-B411-293971A856A8}" Name="sphere1" Pos="300.28119,323.00317,4.9956427" FloorNumber="-1" Rotate="1,0,0,0" ColorRGB="65535" MatLayersMask="0" Geometry="" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="GeomEntity" HasEntity="1">
+   <Object Type="Entity" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{6497F8C5-4D36-A69F-9D29-DB9329B69ABA}" Name="Left" Pos="277.75101,264.15118,24.833097" FloorNumber="-1" Rotate="1,0,0,0" Scale="2.743,2.743,2.743" ColorRGB="65535" Material="engineassets/texturemsg/defaultsolids" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="GeomEntity" HasEntity="1">
     <Properties />
     <Components>
      <Component typeId="{17E5EBA7-57E4-4662-A1C2-1F41DE946CDA}"/>
@@ -182,10 +182,10 @@
       <Node Id="6" Class="entity:GeomEntity" pos="180,-30,0" flags="0" GraphEntity="0">
        <Inputs entityId="0" Hide="0" UnHide="0" LoadGeometry=""/>
       </Node>
-      <Node Id="8" Class="Movement:RotateEntity" pos="180,40,0" flags="0" GraphEntity="0">
+      <Node Id="8" Class="Movement:RotateEntity" pos="170,170,0" flags="1" GraphEntity="0">
        <Inputs entityId="0" Speed="0,0,50" Paused="0" Ref="0"/>
       </Node>
-      <Node Id="10" Class="Debug:InputKey" pos="-420,-30,0" flags="1">
+      <Node Id="10" Class="Debug:InputKey" pos="-420,-30,0" flags="0">
        <Inputs entityId="0" Key="t" NonDevMode="0"/>
       </Node>
      </Nodes>
@@ -304,20 +304,6 @@
      <GraphTokens />
     </FlowGraph>
    </Object>
-   <Object Type="GeomEntity" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{99B3B00B-75CE-A715-DBFD-234319A2C724}" Name="sphere2" Pos="287.30115,307.0036,4.9956427" FloorNumber="-1" Rotate="1,0,0,0" ColorRGB="65535" MatLayersMask="0" Geometry="" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="GeomEntity" HasEntity="1">
-    <Properties />
-    <Components>
-     <Component typeId="{54B2C130-8E27-4E07-8BF0-F1FE89228D14}">
-      <Geometry value="objects/sphere.cgf"/>
-      <Physicalize value="ePhysicalizationType_Static"/>
-      <ReceiveCollisionEvents value="false"/>
-      <Mass value="1"/>
-      <Animation value=""/>
-      <Speed value="1"/>
-      <Loop value="true"/>
-     </Component>
-    </Components>
-   </Object>
    <Object Type="Entity" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{A0B31156-9760-4285-BE0F-849CF3B7AB30}" Name="GeomEntity36" Pos="268.99451,264.15118,24.833097" FloorNumber="-1" Rotate="1,0,0,0" Scale="2.743,2.743,2.743" ColorRGB="65535" Material="engineassets/texturemsg/defaultsolids" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="GeomEntity" HasEntity="1">
     <Properties />
     <Components>
@@ -390,7 +376,7 @@
      <GraphTokens />
     </FlowGraph>
    </Object>
-   <Object Type="Camera" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{AC3391E3-281A-213A-9062-01DA1BD64FEF}" Name="Camera1" Pos="286.11496,260.23608,25.210831" FloorNumber="-1" Rotate="0.86350501,-0.50434029,0,0" ColorRGB="16776960" FOV="1.0472" NearZ="0.25" FarZ="1024" EntityClass="CameraSource" HasEntity="1">
+   <Object Type="Camera" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{AC3391E3-281A-213A-9062-01DA1BD64FEF}" Name="Camera1" Pos="277.08356,248.0992,25.210831" FloorNumber="-1" Rotate="1,0,0,0" ColorRGB="16776960" FOV="1.0472" NearZ="0.25" FarZ="1024" EntityClass="CameraSource" HasEntity="1">
     <ShakeParams AmplitudeA="1,1,1" AmplitudeAMult="0" FrequencyA="1,1,1" FrequencyAMult="0" NoiseAAmpMult="0" NoiseAFreqMult="0" TimeOffsetA="0" AmplitudeB="1,1,1" AmplitudeBMult="0" FrequencyB="1,1,1" FrequencyBMult="0" NoiseBAmpMult="0" NoiseBFreqMult="0" TimeOffsetB="0" CameraShakeSeed="0"/>
     <Properties />
     <Components>
@@ -400,35 +386,57 @@
     </Components>
     <FlowGraph Description="" Group="" enabled="1" MultiPlayer="ClientServer">
      <Nodes>
-      <Node Id="4" Class="Game:Start" pos="-1070,-540,0" flags="0">
+      <Node Id="4" Class="Game:Start" pos="-1570,-580,0" flags="0">
        <Inputs InGame="1" InEditor="1"/>
       </Node>
       <Node Id="5" Class="VR:Tools" pos="-680,-50,0" flags="0">
        <Inputs />
       </Node>
-      <Node Id="15" Class="Debug:InputKey" pos="-740,-330,0" flags="0">
+      <Node Id="15" Class="Debug:InputKey" pos="-1070,-30,0" flags="0">
        <Inputs entityId="0" Key="r" NonDevMode="0"/>
       </Node>
-      <Node Id="16" Class="VR:QuadRenderLayer" pos="-800,-850,0" flags="0">
-       <Inputs Layer="0" Enable="0" Type="1" Position="0,0,-1" Orientation="0,0,-1" Scale="1"/>
+      <Node Id="16" Class="VR:QuadRenderLayer" pos="-820,-1150,0" flags="0">
+       <Inputs Layer="0" Enable="1" Type="2" Position="0,500,0" Orientation="0,0,-1.57" Scale="1"/>
       </Node>
-      <Node Id="17" Class="VR:QuadRenderLayer" pos="-790,-580,0" flags="0">
-       <Inputs Layer="1" Enable="0" Type="2" Position="0,0,-1" Orientation="0,0,-1" Scale="1"/>
+      <Node Id="17" Class="VR:QuadRenderLayer" pos="-820,-700,0" flags="0">
+       <Inputs Layer="1" Enable="1" Type="2" Position="0,500,0" Orientation="0,0,1.57" Scale="1"/>
       </Node>
-      <Node Id="18" Class="VR:RenderLayerTexture" pos="-530,-570,0" flags="0">
-       <Inputs LayerType="1" QuadLayerId="1" tex_TextureName="textures/blood_overlay.dds"/>
+      <Node Id="18" Class="VR:RenderLayerTexture" pos="-540,-260,0" flags="0">
+       <Inputs LayerType="2" QuadLayerId="1" tex_TextureName="textures/hud_tracker_teir2.dds"/>
       </Node>
-      <Node Id="19" Class="VR:RenderLayerTexture" pos="-530,-790,0" flags="0">
-       <Inputs LayerType="0" QuadLayerId="0" tex_TextureName="textures/hud_tracker_teir1.dds"/>
+      <Node Id="19" Class="VR:RenderLayerTexture" pos="-550,-1040,0" flags="0">
+       <Inputs LayerType="2" QuadLayerId="0" tex_TextureName="textures/blood_overlay.dds"/>
+      </Node>
+      <Node Id="20" Class="VR:TransformInfo" pos="-2060,-1220,0" flags="0">
+       <Inputs Enabled="1"/>
+      </Node>
+      <Node Id="28" Class="Camera:View" pos="-1130,-1150,0" flags="0" GraphEntity="0">
+       <Inputs entityId="0" Enable="0" Disable="0" FOV="90" Blend="0" BlendFOVSpeed="5" BlendFOVOffset="0" BlendPosSpeed="5" BlendPosOffset="0,0,0" BlendRotSpeed="10" BlendRotOffset="0,0,0"/>
+      </Node>
+      <Node Id="30" Class="Time:Timer" pos="-1300,-710,0" flags="0">
+       <Inputs period="1" min="0" max="1000" paused="0"/>
+      </Node>
+      <Node Id="31" Class="Entity:EntityPos" pos="-1620,-1190,0" flags="1" EntityGUID="{FFB016F2-5A56-736C-4320-13C3B7A0BCCA}" EntityGUID_64="FFB016F25A56736C">
+       <Inputs entityId="0" pos="280.333,256.999,23.9725" rotate="0,0,0" scale="0,0,0" CoordSys="1"/>
+      </Node>
+      <Node Id="32" Class="Entity:EntityPos" pos="-1630,-1440,0" flags="0" EntityGUID="{6497F8C5-4D36-A69F-9D29-DB9329B69ABA}" EntityGUID_64="6497F8C54D36A69F">
+       <Inputs entityId="0" pos="276.151,256.609,23.299" rotate="0,0,0" scale="0,0,0" CoordSys="1"/>
       </Node>
      </Nodes>
      <Edges>
       <Edge nodeIn="15" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
-      <Edge nodeIn="16" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
-      <Edge nodeIn="17" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
       <Edge nodeIn="18" nodeOut="4" portIn="ApplyScale" portOut="output" enabled="1"/>
       <Edge nodeIn="19" nodeOut="4" portIn="ApplyScale" portOut="output" enabled="1"/>
+      <Edge nodeIn="28" nodeOut="4" portIn="Enable" portOut="output" enabled="1"/>
       <Edge nodeIn="5" nodeOut="15" portIn="RecentrePose" portOut="Pressed" enabled="1"/>
+      <Edge nodeIn="28" nodeOut="20" portIn="BlendPosOffset" portOut="Camera pos" enabled="1"/>
+      <Edge nodeIn="28" nodeOut="20" portIn="BlendRotOffset" portOut="Camera rot (PRY)" enabled="1"/>
+      <Edge nodeIn="31" nodeOut="20" portIn="rotate" portOut="HMD right controller rot (PRY)" enabled="1"/>
+      <Edge nodeIn="32" nodeOut="20" portIn="rotate" portOut="HMD left controller rot (PRY)" enabled="1"/>
+      <Edge nodeIn="16" nodeOut="30" portIn="ApplyOrientation" portOut="out" enabled="1"/>
+      <Edge nodeIn="16" nodeOut="30" portIn="ApplyPos" portOut="out" enabled="1"/>
+      <Edge nodeIn="17" nodeOut="30" portIn="ApplyOrientation" portOut="out" enabled="1"/>
+      <Edge nodeIn="17" nodeOut="30" portIn="ApplyPos" portOut="out" enabled="1"/>
      </Edges>
      <GraphTokens />
     </FlowGraph>
@@ -527,6 +535,21 @@
      </Edges>
      <GraphTokens />
     </FlowGraph>
+   </Object>
+   <Object Type="Entity" Layer="Main" LayerGUID="{7DC816F2-D365-4BAE-9111-912CED6E8F6A}" Id="{FFB016F2-5A56-736C-4320-13C3B7A0BCCA}" Name="Right" Pos="283.35083,264.15118,24.833097" FloorNumber="-1" Rotate="1,0,0,0" Scale="2.743,2.743,2.743" ColorRGB="65535" Material="engineassets/texturemsg/defaultsolids" MatLayersMask="0" OutdoorOnly="0" CastShadow="1" CastShadowMinspec="1" DynamicDistanceShadows="0" GIMode="0" LodRatio="100" ViewDistRatio="100" HiddenInGame="0" RecvWind="0" RenderNearest="0" NoStaticDecals="0" EntityClass="GeomEntity" HasEntity="1">
+    <Properties />
+    <Components>
+     <Component typeId="{17E5EBA7-57E4-4662-A1C2-1F41DE946CDA}"/>
+     <Component typeId="{54B2C130-8E27-4E07-8BF0-F1FE89228D14}">
+      <Geometry value="objects/sphere.cgf"/>
+      <Physicalize value="ePhysicalizationType_Static"/>
+      <ReceiveCollisionEvents value="false"/>
+      <Mass value="1"/>
+      <Animation value=""/>
+      <Speed value="1"/>
+      <Loop value="true"/>
+     </Component>
+    </Components>
    </Object>
   </LayerObjects>
  </Layer>

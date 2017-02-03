@@ -51,9 +51,9 @@ bool CD3DHyperealRenderer::Initialize()
 
 	m_pHyperealDevice->CreateGraphicsContext(d3d11Device);
 
-	m_pHyperealDevice->GetRenderTargetSize(m_eyeWidth, m_eyeHeight);//1200x1080??
-// 	m_eyeWidth = m_pRenderer->GetWidth();
-// 	m_eyeHeight = m_pRenderer->GetHeight();
+	//m_pHyperealDevice->GetRenderTargetSize(m_eyeWidth, m_eyeHeight);//1200x1080??
+ 	m_eyeWidth = m_pRenderer->GetWidth();
+ 	m_eyeHeight = m_pRenderer->GetHeight();
 
 	CryVR::Hypereal::TextureDesc eyeTextureDesc;
 	eyeTextureDesc.width = m_eyeWidth;
@@ -246,17 +246,14 @@ void CD3DHyperealRenderer::SubmitFrame()
 	gcpRendD3D->m_benchmarkRendererSensor->PreStereoFrameSubmit(m_scene3DRenderData[0].texture, m_scene3DRenderData[1].texture);
 #endif
 
-	// Quad layers
-	for (uint32 i = 0; i < RenderLayer::eQuadLayers_Total; ++i)
-	{
-		if (GetQuadLayerProperties(static_cast<RenderLayer::EQuadLayers>(i))->IsActive())
-		{
-			m_pHyperealDevice->SubmitOverlay(i);
-		}
-	}
+	UpdateLayers();
+	CryVR::Hypereal::SHmdSubmitFrameData submitData;
+	submitData.pQuadLayersArray = &m_renderLayerInfoArray[0];
+	submitData.numQuadLayersArray = RenderLayer::eQuadLayers_Total;
+
 
 	// Pass the final images and layer configuration to the Hypereal device
-	m_pHyperealDevice->SubmitFrame();
+	m_pHyperealDevice->SubmitFrame(submitData);
 
 	#ifdef ENABLE_BENCHMARK_SENSOR
 	gcpRendD3D->m_benchmarkRendererSensor->AfterStereoFrameSubmit();
@@ -432,4 +429,41 @@ RenderLayer::CProperties* CD3DHyperealRenderer::GetQuadLayerProperties(RenderLay
 	return nullptr;
 }
 
+void CD3DHyperealRenderer::UpdateLayers()
+{
+	for (uint32 i = RenderLayer::EQuadLayers::eQuadLayers_0; i < RenderLayer::EQuadLayers::eQuadLayers_Total; ++i)
+	{
+		ITexture* pTexture = m_quadLayerProperties[i].GetTexture();
+		if (pTexture && m_quadLayerProperties[i].IsActive())
+		{
+			CTexture* pQuadTex = m_pStereoRenderer->GetVrQuadLayerTex((RenderLayer::EQuadLayers)i);
+			GetUtils().StretchRect(static_cast<CTexture*>(pTexture), pQuadTex);
+		}
+	}
+
+	// Quad layers
+	for (uint32 i = 0; i < RenderLayer::eQuadLayers_Total; ++i)
+	{
+		if (GetQuadLayerProperties(static_cast<RenderLayer::EQuadLayers>(i))->IsActive())
+		{
+			m_pHyperealDevice->SubmitOverlay(i);
+		}
+	}
+
+	// Quad layers
+	for (uint32 i = 0; i < RenderLayer::eQuadLayers_Total; ++i)
+	{
+		RenderLayer::CProperties *pProperty = GetQuadLayerProperties(static_cast<RenderLayer::EQuadLayers>(i));
+		//if (pProperty->IsActive())
+		{
+			CryVR::Hypereal::SHmdRenderLayerInfo &_data = m_renderLayerInfoArray[i];
+			_data.bActive = pProperty->IsActive();
+			_data.layerId = pProperty->GetId();
+			_data.layerType = pProperty->GetType();
+			_data.pose = pProperty->GetPose();
+			_data.viewportPosition = Vec2i(0, 0);
+			_data.viewportSize = Vec2i(1024, 1024);
+		}
+	}
+}
 #endif //defined(INCLUDE_VR_RENDERING)

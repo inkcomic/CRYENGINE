@@ -104,7 +104,7 @@ void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, 
  		if (m_state[index].trigger != m_previousState[index].trigger)
  		{
  			SInputEvent event;
- 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
+ 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_Hypereal_TriggerBtnL - HYPEREAL_BASE];
  			pSymbol->ChangeEvent(m_state[index].trigger);
  			pSymbol->AssignTo(event);
  			event.deviceIndex = controllerId;
@@ -116,7 +116,7 @@ void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, 
 		if (m_state[index].sideTrigger != m_previousState[index].sideTrigger)
 		{
 			SInputEvent event;
-			SInputSymbol* pSymbol = m_symbols[eKI_Motion_OpenVR_Trigger - HYPEREAL_BASE];
+			SInputSymbol* pSymbol = m_symbols[eKI_Motion_Hypereal_SideTriggerBtnR - HYPEREAL_BASE];
 			pSymbol->ChangeEvent(m_state[index].sideTrigger);
 			pSymbol->AssignTo(event);
 			event.deviceIndex = controllerId;
@@ -151,79 +151,6 @@ void Controller::PostButtonIfChanged(EHmdController controllerId, EKeyId keyID)
 // -------------------------------------------------------------------------
 void Controller::DebugDraw(float& xPosLabel, float& yPosLabel) const
 {
-// 	// Basic info
-// 	const float controllerWidth = 400.0f;
-// 	const float yPos = yPosLabel, xPosData = xPosLabel, yDelta = 20.f;
-// 	float y = yPos;
-// 	const ColorF fColorLabel(1.0f, 1.0f, 1.0f, 1.0f);
-// 	const ColorF fColorDataConn(1.0f, 1.0f, 0.0f, 1.0f);
-// 	const ColorF fColorDataBt(0.0f, 1.0f, 0.0f, 1.0f);
-// 	const ColorF fColorDataTr(0.0f, 0.0f, 1.0f, 1.0f);
-// 	const ColorF fColorDataTh(1.0f, 0.0f, 1.0f, 1.0f);
-// 	const ColorF fColorDataPose(0.0f, 1.0f, 1.0f, 1.0f);
-// 
-// 	IRenderAuxText::Draw2dLabel(xPosLabel, y, 1.3f, fColorLabel, false, "Hypereal Controller Info:");
-// 	y += yDelta;
-// 
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataConn, false, "Left Hand:%s", IsConnected(eHmdController_OpenVR_1) ? "Connected" : "Disconnected");
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataConn, false, "Right Hand:%s", IsConnected(eHmdController_OpenVR_2) ? "Connected" : "Disconnected");
-// 	y += yDelta;
-// 
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataBt, false, "System:%s", IsButtonPressed(eHmdController_OpenVR_1, eKI_Motion_OpenVR_System) ? "Pressed" : "Released");
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataBt, false, "Bt System:%s", IsButtonPressed(eHmdController_OpenVR_2, eKI_Motion_OpenVR_System) ? "Pressed" : "Released");
-// 	y += yDelta;
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataBt, false, "App:%s", IsButtonPressed(eHmdController_OpenVR_1, eKI_Motion_OpenVR_ApplicationMenu) ? "Pressed" : "Released");
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataBt, false, "Bt App:%s", IsButtonPressed(eHmdController_OpenVR_2, eKI_Motion_OpenVR_ApplicationMenu) ? "Pressed" : "Released");
-// 	y += yDelta;
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataBt, false, "Grip:%s", IsButtonPressed(eHmdController_OpenVR_1, eKI_Motion_OpenVR_Grip) ? "Pressed" : "Released");
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataBt, false, "Bt Grip:%s", IsButtonPressed(eHmdController_OpenVR_2, eKI_Motion_OpenVR_Grip) ? "Pressed" : "Released");
-// 	y += yDelta;
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataBt, false, "Trigger:%s", IsButtonPressed(eHmdController_OpenVR_1, eKI_Motion_OpenVR_TriggerBtn) ? "Pressed" : "Released");
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataBt, false, "Bt Trigger:%s", IsButtonPressed(eHmdController_OpenVR_2, eKI_Motion_OpenVR_TriggerBtn) ? "Pressed" : "Released");
-// 	y += yDelta;
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataBt, false, "Pad:%s", IsButtonPressed(eHmdController_OpenVR_1, eKI_Motion_OpenVR_TouchPadBtn) ? "Pressed" : "Released");
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataBt, false, "Bt Pad:%s", IsButtonPressed(eHmdController_OpenVR_2, eKI_Motion_OpenVR_TouchPadBtn) ? "Pressed" : "Released");
-// 	y += yDelta;
-// 
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataTr, false, "Trigger:%.2f", GetTriggerValue(eHmdController_OpenVR_1, eKI_Motion_OpenVR_Trigger));
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataTr, false, "Trigger:%.2f", GetTriggerValue(eHmdController_OpenVR_2, eKI_Motion_OpenVR_Trigger));
-// 	y += yDelta;
-// 
-// 	Vec2 touchLeft = GetThumbStickValue(eHmdController_OpenVR_1, eKI_Motion_OpenVR_TouchPad_X);
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataTh, false, "Pad:(%.2f %.2f)", touchLeft.x, touchLeft.y);
-// 	Vec2 touchRight = GetThumbStickValue(eHmdController_OpenVR_2, eKI_Motion_OpenVR_TouchPad_X);
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataTh, false, "Pad:(%.2f %.2f)", touchRight.x, touchRight.y);
-// 	y += yDelta;
-// 
-// 	Vec3 posLH = GetNativeTrackingState(eHmdController_OpenVR_1).pose.position;
-// 	Vec3 posRH = GetNativeTrackingState(eHmdController_OpenVR_2).pose.position;
-// 	Vec3 posWLH = GetLocalTrackingState(eHmdController_OpenVR_1).pose.position;
-// 	Vec3 posWRH = GetLocalTrackingState(eHmdController_OpenVR_2).pose.position;
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataPose, false, "Pose:(%.2f,%.2f,%.2f)", posLH.x, posLH.y, posLH.z);
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataPose, false, "Pose:(%.2f,%.2f,%.2f)", posRH.x, posRH.y, posRH.z);
-// 	y += yDelta;
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataPose, false, "W-Pose:(%.2f,%.2f,%.2f)", posWLH.x, posWLH.y, posWLH.z);
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataPose, false, "W-Pose:(%.2f,%.2f,%.2f)", posWRH.x, posWRH.y, posWRH.z);
-// 	y += yDelta;
-// 
-// 	Ang3 rotLHAng(GetNativeTrackingState(eHmdController_OpenVR_1).pose.orientation);
-// 	Vec3 rotLH(RAD2DEG(rotLHAng));
-// 	Ang3 rotRHAng(GetNativeTrackingState(eHmdController_OpenVR_2).pose.orientation);
-// 	Vec3 rotRH(RAD2DEG(rotRHAng));
-// 
-// 	Ang3 rotWLHAng(GetLocalTrackingState(eHmdController_OpenVR_1).pose.orientation);
-// 	Vec3 rotWLH(RAD2DEG(rotWLHAng));
-// 	Ang3 rotWRHAng(GetLocalTrackingState(eHmdController_OpenVR_2).pose.orientation);
-// 	Vec3 rotWRH(RAD2DEG(rotWRHAng));
-// 
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataPose, false, "Rot[PRY]:(%.2f,%.2f,%.2f)", rotLH.x, rotLH.y, rotLH.z);
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataPose, false, "Rot[PRY]:(%.2f,%.2f,%.2f)", rotRH.x, rotRH.y, rotRH.z);
-// 	y += yDelta;
-// 	IRenderAuxText::Draw2dLabel(xPosData, y, 1.3f, fColorDataPose, false, "W-Rot[PRY]:(%.2f,%.2f,%.2f)", rotWLH.x, rotWLH.y, rotWLH.z);
-// 	IRenderAuxText::Draw2dLabel(xPosData + controllerWidth, y, 1.3f, fColorDataPose, false, "W-Rot[PRY]:(%.2f,%.2f,%.2f)", rotWRH.x, rotWRH.y, rotWRH.z);
-// 	y += yDelta;
-// 
-// 	yPosLabel = y;
 }
 
 // -------------------------------------------------------------------------;
@@ -232,7 +159,7 @@ void Controller::OnControllerConnect(HySubDevice controllerId)
 	bool added = false;
 	for (int i = 0; i < eHmdController_Hypereal_MaxHyperealControllers; i++)
 	{
-		if (m_controllerMapping[i] >= HY_SUBDEV_CONTROLLER_RESERVED)
+		if ((m_controllerMapping[i] >= HY_SUBDEV_CONTROLLER_RESERVED)&&(m_controllerMapping[i]!= controllerId))
 		{
 			m_controllerMapping[i] = controllerId;
 			m_state[i] = SControllerState();

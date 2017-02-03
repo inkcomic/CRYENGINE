@@ -1,0 +1,60 @@
+<root>
+	<thread name="Main" totalTimeMS="25.841808" startTime="906741870612" stopTime="906741936024" totalBlocks="124"> 
+		<block name="CGameEngine::SetGameMode" totalTimeMS="25.829561" startTime="906741870643" stopTime="906741936024" args=""> 
+			<block name="CCryAction::OnEditorSetGameMode" totalTimeMS="0.293531" startTime="906741893183" stopTime="906741893926" args=""> 
+				<block name="CActionGame::OnEditorSetGameMode" totalTimeMS="0.265087" startTime="906741893183" stopTime="906741893854" args=""> 
+				</block>
+			</block>
+			<block name="CAISystem::Reset" totalTimeMS="3.377782" startTime="906741900784" stopTime="906741909334" args=""> 
+				<block name="CTexture::Load(ETEX_Format eTFDst)" totalTimeMS="1.022421" startTime="906741900925" stopTime="906741903513" args="EngineAssets/CodeCoverage/pbar.dds"> 
+					<block name="CTexture::LoadFromImage" totalTimeMS="1.020841" startTime="906741900927" stopTime="906741903511" args="EngineAssets/CodeCoverage/pbar.dds"> 
+						<block name="CCryPak::FOpen" totalTimeMS="0.107062" startTime="906741901387" stopTime="906741901658" args=""> 
+						</block>
+						<block name="CCryPak::FOpen" totalTimeMS="0.102716" startTime="906741901658" stopTime="906741901918" args=""> 
+						</block>
+						<block name="CImageDDSFile::CImageDDSFile" totalTimeMS="0.141432" startTime="906741901930" stopTime="906741902288" args=""> 
+							<block name="CImageDDSFile::Load" totalTimeMS="0.138667" startTime="906741901931" stopTime="906741902282" args=""> 
+							</block>
+						</block>
+						<block name="CImageDDSFile::CImageDDSFile" totalTimeMS="0.107062" startTime="906741903042" stopTime="906741903313" args=""> 
+							<block name="CImageDDSFile::Load" totalTimeMS="0.105482" startTime="906741903042" stopTime="906741903309" args=""> 
+							</block>
+						</block>
+					</block>
+				</block>
+				<block name="CTexture::Load(ETEX_Format eTFDst)" totalTimeMS="1.297384" startTime="906741903577" stopTime="906741906861" args="EngineAssets/CodeCoverage/hit.dds"> 
+					<block name="CTexture::LoadFromImage" totalTimeMS="1.295014" startTime="906741903583" stopTime="906741906861" args="EngineAssets/CodeCoverage/hit.dds"> 
+						<block name="CCryPak::FOpen" totalTimeMS="0.101926" startTime="906741903929" stopTime="906741904187" args=""> 
+						</block>
+						<block name="CCryPak::FOpen" totalTimeMS="0.135901" startTime="906741904188" stopTime="906741904532" args=""> 
+						</block>
+						<block name="CImageDDSFile::CImageDDSFile" totalTimeMS="0.224395" startTime="906741904545" stopTime="906741905113" args=""> 
+							<block name="CImageDDSFile::Load" totalTimeMS="0.220050" startTime="906741904546" stopTime="906741905103" args=""> 
+								<block name="CCryPak::FOpen" totalTimeMS="0.128395" startTime="906741904555" stopTime="906741904880" args=""> 
+								</block>
+							</block>
+						</block>
+						<block name="CCryPak::FOpen" totalTimeMS="0.119704" startTime="906741905685" stopTime="906741905988" args=""> 
+						</block>
+						<block name="CCryPak::FOpen" totalTimeMS="0.132346" startTime="906741905989" stopTime="906741906324" args=""> 
+						</block>
+						<block name="CImageDDSFile::CImageDDSFile" totalTimeMS="0.125235" startTime="906741906332" stopTime="906741906649" args=""> 
+							<block name="CImageDDSFile::Load" totalTimeMS="0.122864" startTime="906741906333" stopTime="906741906644" args=""> 
+							</block>
+						</block>
+					</block>
+				</block>
+				<block name="CTexture::Load(ETEX_Format eTFDst)" totalTimeMS="0.675556" startTime="906741906922" stopTime="906741908632" args="EngineAssets/CodeCoverage/unexpected.dds"> 
+					<block name="CTexture::LoadFromImage" totalTimeMS="0.674766" startTime="906741906923" stopTime="906741908631" args="EngineAssets/CodeCoverage/unexpected.dds"> 
+						<block name="CCryPak::FOpen" totalTimeMS="0.102716" startTime="906741907568" stopTime="906741907828" args=""> 
+						</block>
+						<block name="CImageDDSFile::CImageDDSFile" totalTimeMS="0.128395" startTime="906741907835" stopTime="906741908160" args=""> 
+							<block name="CImageDDSFile::Load" totalTimeMS="0.126815" startTime="906741907836" stopTime="906741908157" args=""> 
+							</block>
+						</block>
+					</block>
+				</block>
+			</block>
+		</block>
+	</thread>
+</root>
