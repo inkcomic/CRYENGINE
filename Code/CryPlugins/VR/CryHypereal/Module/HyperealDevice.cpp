@@ -529,7 +529,7 @@ void Device::ResetOrientation(float yaw)
 		currentAng.z -= yaw;
 		currentAng.Normalize();
 	}
-	m_qBaseOrientation =Quat(currentAng);
+	m_qBaseOrientation = Quat(currentAng);
 }
 
 void Device::ResetPosition()
@@ -595,31 +595,15 @@ void Device::UpdateTrackingState(EVRComponent type)
 				m_IsDeviceRotationTracked[i] = false;
 			}
 
-			if(i!= Hmd)
+			//recenter pose
 			{
-				HyResult res;
-				HyInputState controllerState;
-
-				HySubDevice sid = static_cast<HySubDevice>(i);
-				res = VrDevice->GetControllerInputState(sid, controllerState);
-				if (hySuccess==res)
-					m_controller.Update(sid, m_nativeStates[i], m_localStates[i], controllerState);
-			}
-			else//HMD
-			{
-				//need retransform
 				float* ipdptr = (InterpupillaryDistance > 0.01f ? &InterpupillaryDistance : nullptr);
 				HyPose hyEyeRenderPose[HY_EYE_MAX];
 				VrGraphicsCxt->GetEyePoses(m_rTrackedDevicePose[EDevice::Hmd].m_pose, ipdptr, hyEyeRenderPose);
-				
-				memcpy(&m_nativeEyePoseStates, &m_nativeStates[EDevice::Hmd], sizeof(HmdTrackingState));
-				memcpy(&m_localEyePoseStates, &m_localStates[EDevice::Hmd], sizeof(HmdTrackingState));
 
-// 				m_baseTrans.q = m_qBaseOrientation;
-// 				m_baseTrans.t = m_vBaseOffset;
-// 				QuatT qtInverted = m_baseTrans.GetInverted();
-// 				QuatT qtNew(HYQuatToQuat(hyEyeRenderPose[HY_EYE_LEFT].m_rotation), HYVec3ToVec3(hyEyeRenderPose[HY_EYE_LEFT].m_position));
-// 				QuatT qtRecentered = qtNew*qtInverted;
+				memcpy(&m_nativeEyePoseStates, &m_nativeStates[i/*EDevice::Hmd*/], sizeof(HmdTrackingState));
+				memcpy(&m_localEyePoseStates, &m_localStates[i/*EDevice::Hmd*/], sizeof(HmdTrackingState));
+
 				// compute centered transformation
 				Quat eyeRotation = HYQuatToQuat(hyEyeRenderPose[HY_EYE_LEFT].m_rotation);
 				Vec3 eyePosition = HYVec3ToVec3(hyEyeRenderPose[HY_EYE_LEFT].m_position);
@@ -634,11 +618,25 @@ void Device::UpdateTrackingState(EVRComponent type)
 					vRecenterPosition.y = 0.f;
 				}
 
-				m_nativeEyePoseStates.pose.orientation = m_localEyePoseStates.pose.orientation = qRecenterRotation;
-				m_nativeEyePoseStates.pose.position = m_localEyePoseStates.pose.position = vRecenterPosition;
+				m_nativeStates[i].pose.orientation = m_nativeEyePoseStates.pose.orientation = m_localEyePoseStates.pose.orientation = qRecenterRotation;
+				m_localStates[i].pose.position = m_nativeEyePoseStates.pose.position = m_localEyePoseStates.pose.position = vRecenterPosition;
+
+			}
+
+			if(i!= Hmd)//controller
+			{
+				HyResult res;
+				HyInputState controllerState;
+
+				HySubDevice sid = static_cast<HySubDevice>(i);
+				res = VrDevice->GetControllerInputState(sid, controllerState);
+				if (hySuccess==res)
+					m_controller.Update(sid, m_nativeStates[i], m_localStates[i], controllerState);
+			}
+			else//HMD
+			{
 			}
 		}
-
 	}
 }
 
