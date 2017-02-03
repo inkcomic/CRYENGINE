@@ -90,7 +90,8 @@ void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, 
  
  		m_state[index].trigger = vrState.m_trigger;
 		m_state[index].sideTrigger = vrState.m_sideTrigger;
- 
+		m_state[index].touchPad = Vec2(vrState.m_thumbstick.x, vrState.m_thumbstick.y);
+		
  		// Send button events (if necessary)
  		PostButtonIfChanged(index, eKI_Motion_Hypereal_TouchPad_A);
  		PostButtonIfChanged(index, eKI_Motion_Hypereal_TouchPad_B);
@@ -104,7 +105,12 @@ void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, 
  		if (m_state[index].trigger != m_previousState[index].trigger)
  		{
  			SInputEvent event;
- 			SInputSymbol* pSymbol = m_symbols[eKI_Motion_Hypereal_TriggerBtnL - HYPEREAL_BASE];
+			SInputSymbol* pSymbol = nullptr;
+			if (index == eHmdController_Hypereal_1)
+				m_symbols[eKI_Motion_Hypereal_TriggerBtnL - HYPEREAL_BASE];
+			else
+				m_symbols[eKI_Motion_Hypereal_TriggerBtnR - HYPEREAL_BASE];
+			
  			pSymbol->ChangeEvent(m_state[index].trigger);
  			pSymbol->AssignTo(event);
  			event.deviceIndex = controllerId;
@@ -116,7 +122,11 @@ void Controller::Update(HySubDevice controllerId, HmdTrackingState nativeState, 
 		if (m_state[index].sideTrigger != m_previousState[index].sideTrigger)
 		{
 			SInputEvent event;
-			SInputSymbol* pSymbol = m_symbols[eKI_Motion_Hypereal_SideTriggerBtnR - HYPEREAL_BASE];
+			SInputSymbol* pSymbol = nullptr;
+			if(index== eHmdController_Hypereal_1)
+				m_symbols[eKI_Motion_Hypereal_SideTriggerBtnL - HYPEREAL_BASE];
+			else 
+				m_symbols[eKI_Motion_Hypereal_SideTriggerBtnR - HYPEREAL_BASE];
 			pSymbol->ChangeEvent(m_state[index].sideTrigger);
 			pSymbol->AssignTo(event);
 			event.deviceIndex = controllerId;
@@ -178,7 +188,7 @@ void Controller::OnControllerConnect(HySubDevice controllerId)
 // -------------------------------------------------------------------------
 void Controller::OnControllerDisconnect(HySubDevice controllerId)
 {
-	for (int i = 0; i < eHmdController_OpenVR_MaxNumOpenVRControllers; i++)
+	for (int i = 0; i < eHmdController_Hypereal_MaxHyperealControllers; i++)
 	{
 		if (m_controllerMapping[i] == controllerId)
 		{
