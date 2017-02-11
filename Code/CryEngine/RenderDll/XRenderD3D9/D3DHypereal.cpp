@@ -434,7 +434,7 @@ void CD3DHyperealRenderer::UpdateLayers()
 	for (uint32 i = RenderLayer::EQuadLayers::eQuadLayers_0; i < RenderLayer::EQuadLayers::eQuadLayers_Total; ++i)
 	{
 		ITexture* pTexture = m_quadLayerProperties[i].GetTexture();
-		if (pTexture && m_quadLayerProperties[i].IsActive())
+		if (pTexture /*&& m_quadLayerProperties[i].IsActive()*/)
 		{
 			CTexture* pQuadTex = m_pStereoRenderer->GetVrQuadLayerTex((RenderLayer::EQuadLayers)i);
 			GetUtils().StretchRect(static_cast<CTexture*>(pTexture), pQuadTex);

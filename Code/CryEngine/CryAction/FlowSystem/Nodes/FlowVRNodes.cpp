@@ -947,6 +947,149 @@ public:
 	}
 };
 
+
+
+// ------------------------------------------------------------------------------------------------------------
+class CHyperealVRController : public CFlowBaseNode<eNCT_Singleton>
+{
+	enum INPUTS
+	{
+		EIP_Enabled = 0,
+		EIP_Index,
+	};
+
+	enum OUTPUTS
+	{
+		EOP_Connected,
+
+		EOP_ButtonA,
+		EOP_ButtonB,
+		EOP_ButtonX,
+		EOP_ButtonY,
+		EOP_TriggerBtnL,
+		EOP_TriggerBtnR,
+		EOP_SideTriggerBtnL,
+		EOP_SideTriggerBtnR,
+
+		EOP_Pad,
+
+		EFirst_bool = EOP_Connected,
+		ELast_bool = EOP_ButtonA,
+		EFirst_float = EOP_TriggerBtnL,
+		ELast_float = EOP_Pad,
+	};
+
+public:
+	CHyperealVRController(SActivationInfo* pActInfo)
+	{
+	}
+
+	virtual void GetMemoryUsage(ICrySizer* s) const
+	{
+		s->Add(*this);
+	}
+
+	virtual void GetConfiguration(SFlowNodeConfig& config)
+	{
+		static const SInputPortConfig in_config[] = {
+			InputPortConfig<bool>("Enabled", true, _HELP("Enable / disable the node")),
+			InputPortConfig<int>("Index",    true, _HELP("Controller Index")),
+			{ 0 }
+		};
+		static const SOutputPortConfig out_config[] = {
+			OutputPortConfig<bool>("Connected",       _HELP("Is Controller connected?")),
+
+			OutputPortConfig<bool>("ButtonA",   _HELP("Is ButtonA pressed?")),
+			OutputPortConfig<bool>("ButtonB",  _HELP("Is ButtonB pressed?")),
+			OutputPortConfig<bool>("ButtonX",     _HELP("Is ButtonX pressed?")),
+			OutputPortConfig<bool>("ButtonY",  _HELP("Is ButtonY pressed?")),
+			OutputPortConfig<float>("TriggerBtnL", _HELP("Is TriggerBtnL pressed?")),
+			OutputPortConfig<float>("TriggerBtnR", _HELP("Is TriggerBtnR pressed?")),
+			OutputPortConfig<float>("SideTriggerBtnL", _HELP("Is SideTriggerBtnL pressed?")),
+			OutputPortConfig<float>("SideTriggerBtnR", _HELP("Is SideTriggerBtnR pressed?")),
+			OutputPortConfig<Vec3>("TouchPad",        _HELP("Touch pad analog value")),
+		
+			{ 0 }
+		};
+
+		config.sDescription = _HELP("This node provides information about the connected OpenVR controllers");
+		config.pInputPorts = in_config;
+		config.pOutputPorts = out_config;
+		config.SetCategory(EFLN_APPROVED);
+	}
+
+	void ClearAllOutputs(SActivationInfo* pActInfo)
+	{
+		for (size_t i = EFirst_bool; i < ELast_bool; ++i)
+			ActivateOutput(pActInfo, i, false);
+
+		for (size_t i = EFirst_float; i < ELast_float; ++i)
+			ActivateOutput(pActInfo, i, 0.f);
+
+		ActivateOutput(pActInfo, EOP_Pad, Vec3(ZERO));
+	}
+
+	virtual void ProcessEvent(EFlowEvent event, SActivationInfo* pActInfo)
+	{
+		switch (event)
+		{
+		case eFE_Initialize:
+		{
+			if (pActInfo->pGraph != nullptr)
+			{
+				const bool enabled = GetPortBool(pActInfo, EIP_Enabled);
+				pActInfo->pGraph->SetRegularlyUpdated(pActInfo->myID, enabled);
+			}
+		}
+		break;
+
+		case eFE_Activate:
+		{
+			if (IsPortActive(pActInfo, EIP_Enabled) && pActInfo->pGraph != nullptr)
+			{
+				const bool enabled = GetPortBool(pActInfo, EIP_Enabled);
+				pActInfo->pGraph->SetRegularlyUpdated(pActInfo->myID, enabled);
+			}
+		}
+		break;
+
+		case eFE_Update:
+		{
+			const IHmdManager* pHmdManager = gEnv->pSystem->GetHmdManager();
+			const IHmdDevice* pDev = pHmdManager ? pHmdManager->GetHmdDevice() : nullptr;
+			int index = GetPortInt(pActInfo, EIP_Index);
+			if (index >= 0 && index < eHmdController_Hypereal_MaxHyperealControllers)
+			{
+				EHmdController controller = (EHmdController)index;
+				if (pDev != nullptr)
+				{
+					if (const IHmdController* pController = pDev->GetController())
+					{
+						ActivateOutput(pActInfo, EOP_Connected, pController->IsConnected(controller));
+
+						ActivateOutput(pActInfo, EOP_ButtonA, pController->IsButtonPressed(controller, eKI_Motion_Hypereal_TouchPad_A));
+						ActivateOutput(pActInfo, EOP_ButtonB, pController->IsButtonPressed(controller, eKI_Motion_Hypereal_TouchPad_B));
+						ActivateOutput(pActInfo, EOP_ButtonX, pController->IsButtonPressed(controller, eKI_Motion_Hypereal_TouchPad_X));
+						ActivateOutput(pActInfo, EOP_ButtonY, pController->IsButtonPressed(controller, eKI_Motion_Hypereal_TouchPad_Y));
+
+						ActivateOutput(pActInfo, EOP_TriggerBtnL, pController->GetTriggerValue(controller, eKI_Motion_Hypereal_TriggerBtnL));
+						ActivateOutput(pActInfo, EOP_TriggerBtnR, pController->GetTriggerValue(controller, eKI_Motion_Hypereal_TriggerBtnR));
+						ActivateOutput(pActInfo, EOP_SideTriggerBtnL, pController->GetTriggerValue(controller, eKI_Motion_Hypereal_SideTriggerBtnL));
+						ActivateOutput(pActInfo, EOP_SideTriggerBtnR, pController->GetTriggerValue(controller, eKI_Motion_Hypereal_SideTriggerBtnR));
+
+						const Vec2 tp = pController->GetThumbStickValue(controller, eKI_Motion_Hypereal_TouchPad_X);
+						ActivateOutput(pActInfo, EOP_Pad, Vec3(tp.x, tp.y, 0.f));
+						break;
+					}
+				}
+			}
+			ClearAllOutputs(pActInfo);
+		}
+		break;
+		}
+	}
+};
+
 REGISTER_FLOW_NODE("VR:Tools", CVRTools);
 REGISTER_FLOW_NODE("VR:TransformInfo", CVRTransformInfo);
 REGISTER_FLOW_NODE("VR:OculusController", CVROculusController);
@@ -954,3 +1097,4 @@ REGISTER_FLOW_NODE("VR:ControllerTracking", CVRControllerTracking);
 REGISTER_FLOW_NODE("VR:QuadRenderLayer", CVQuadRenderLayer);
 REGISTER_FLOW_NODE("VR:RenderLayerTexture", CVRRenderLayerTexture);
 REGISTER_FLOW_NODE("VR:OpenVRController", COpenVRController);
+REGISTER_FLOW_NODE("VR:HyperealVRController", CHyperealVRController);
