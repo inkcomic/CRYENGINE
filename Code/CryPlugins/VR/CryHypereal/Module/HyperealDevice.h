@@ -79,62 +79,18 @@ private:
 	void                   PrintHmdInfo();
 	void                   DebugDraw(float& xPosLabel, float& yPosLabel) const;
 
-// 	string                 GetTrackedDeviceString(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError = NULL);
  	const char*            GetTrackedDeviceCharPointer(int nProperty);
-// 	static inline Matrix34 BuildMatrix(const vr::HmdMatrix34_t& in);
-// 	static inline Matrix44 BuildMatrix(const vr::HmdMatrix44_t& in);
-//  	static inline Quat     HmdQuatToWorldQuat(const Quat& quat);
-//  	static inline Vec3     HmdVec3ToWorldVec3(const Vec3& vec);
-	
  	inline void            CopyPoseState(HmdPoseState& world, HmdPoseState& hmd, HyTrackingState& source);
-// 	void                   LoadDeviceRenderModel(int deviceIndex);
-// 	void                   DumpDeviceRenderModel(int deviceIndex);
-
 private:
-	enum ERenderModelState
-	{
-		eRMS_Loading,
-		eRMS_Loaded,
-		eRMS_Failed
-	};
-	struct RenderModel
-	{
-		/*PodArray<Vec3> vertices;
-		   PodArray<Vec3> normals;
-		   PodArray<Vec2> uvs;
-		   PodArray<vtx_idx> indices;*/
-
-		RenderModel(/*vr::IVRRenderModels* renderModels, string name*/);
-		~RenderModel();
-		void Update();
-		bool IsValid()   { return m_modelState != eRMS_Failed && m_textureState != eRMS_Failed; }
-		bool IsLoading() { return m_modelState == eRMS_Loading || m_textureState == eRMS_Loading; }
-
-	private:
-		string                        m_name;
-// 		vr::IVRRenderModels*          m_renderModels;
-// 		vr::RenderModel_t*            m_model;
-		ERenderModelState             m_modelState;
-/*		vr::RenderModel_TextureMap_t* m_texture;*/
-		ERenderModelState             m_textureState;
-	};
+	
 	struct SOverlay
 	{
-		bool                  visible;
-		bool                  submitted;
-		HyViewLayer			* layerHandle;
-		void				* overlayTexture;
-		HyTextureDesc		textureDesc;
-// 		vr::VROverlayHandle_t handle;
-// 		
-// 		vr::HmdMatrix34_t     pos;
+		bool					visible;
+		bool					submitted;
+		HyViewLayer*			layerHandle;
+		void*					overlayTexture;
+		HyTextureDesc			textureDesc;
 	};
-	// OpenVR Pointers
-// 	vr::IVRSystem*          m_system;
-// 	vr::IVRCompositor*      m_compositor;
-// 	vr::IVRRenderModels*    m_renderModels;
-// 	vr::IVROverlay*         m_overlay;
-// 	vr::Texture_t*          m_eyeTargets[EEyeType::eEyeType_NumEyes];
 
 	typedef std::map<uint, SOverlay> MapOverlayer;
 	MapOverlayer			m_mapOverlayers;
@@ -169,7 +125,6 @@ private:
 
 	// Controller related:
 	Controller              m_controller;
-	RenderModel*            m_deviceModels[1/*vr::k_unMaxTrackedDeviceCount*/];
 	bool                    m_hasInputFocus;
 	bool                    m_hmdTrackingDisabled;
 	float                   m_hmdQuadDistance;
@@ -192,20 +147,20 @@ private:
 
 
 
-	HyDevice *VrDevice;
-	DeviceInfo VrDeviceInfo;
-	HyGraphicsContext *VrGraphicsCxt;
-	HyGraphicsContextDesc VrGraphicsCxtDesc;
-	HyVec2 *PlayAreaVertices;
-	int64 PlayAreaVertexCount;
-	bool bPlayAreaValid;
-	HyFov eyeFovSym;
-	float PixelDensity;
-	bool bVRInitialized;
-	bool bVRSystemValid;
-	bool bIsQuitting;
-	HyTextureDesc RTDesc[2];
-	float InterpupillaryDistance;
+	HyDevice *m_pVrDevice;
+	DeviceInfo m_VrDeviceInfo;
+	HyGraphicsContext *m_pVrGraphicsCxt;
+	HyGraphicsContextDesc m_VrGraphicsCxtDesc;
+	HyVec2 *m_pPlayAreaVertices;
+	int64 m_nPlayAreaVertexCount;
+	bool m_bPlayAreaValid;
+	HyFov m_eyeFovSym;
+	float m_fPixelDensity;
+	bool m_bVRInitialized;
+	bool m_bVRSystemValid;
+	bool m_bIsQuitting;
+	HyTextureDesc m_RTDesc[2];
+	float m_fInterpupillaryDistance;
 
 	HyPose	m_CurDevicePose[EDevice::Total_Count];
 	bool	m_IsDevicePositionTracked[EDevice::Total_Count];

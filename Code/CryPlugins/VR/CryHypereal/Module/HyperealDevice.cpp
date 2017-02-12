@@ -42,172 +42,12 @@ HyFov ComputeSymmetricalFov(const HyFov& fovLeftEye, const HyFov& fovRightEye)
 	return fovSym;
 }
 
-
-// 
-// // -------------------------------------------------------------------------
-// namespace vr
-// {
-// // -------------------------------------------------------------------------
-// static void SetIdentity(HmdMatrix34_t& in)
-// {
-// 	memset(in.m, 0, sizeof(HmdMatrix34_t));
-// 	in.m[0][0] = 1;
-// 	in.m[1][1] = 1;
-// 	in.m[2][2] = 1;
-// }
-// 
-// // -------------------------------------------------------------------------
-// static void SetZero(HmdVector3_t& in)
-// {
-// 	memset(in.v, 0, sizeof(HmdVector3_t));
-// }
-// 
-// static Matrix34 RawConvert(HmdMatrix34_t in)
-// {
-// 	return Matrix34(in.m[0][0], in.m[0][1], in.m[0][2], in.m[0][3],
-// 	                in.m[1][0], in.m[1][1], in.m[1][2], in.m[1][3],
-// 	                in.m[2][0], in.m[2][1], in.m[2][2], in.m[2][3]);
-// }
-// 
-// static Matrix44 RawConvert(HmdMatrix44_t in)
-// {
-// 	return Matrix44(in.m[0][0], in.m[0][1], in.m[0][2], in.m[0][3],
-// 	                in.m[1][0], in.m[1][1], in.m[1][2], in.m[1][3],
-// 	                in.m[2][0], in.m[2][1], in.m[2][2], in.m[2][3],
-// 	                in.m[3][0], in.m[3][1], in.m[3][2], in.m[3][3]);
-// }
-// 
-// static HmdMatrix34_t RawConvert(Matrix34 in)
-// {
-// 	HmdMatrix34_t out;
-// 	out.m[0][0] = in.m00;
-// 	out.m[0][1] = in.m01;
-// 	out.m[0][2] = in.m02;
-// 	out.m[0][3] = in.m03;
-// 	out.m[1][0] = in.m10;
-// 	out.m[1][1] = in.m11;
-// 	out.m[1][2] = in.m12;
-// 	out.m[1][3] = in.m13;
-// 	out.m[2][0] = in.m20;
-// 	out.m[2][1] = in.m21;
-// 	out.m[2][2] = in.m22;
-// 	out.m[2][3] = in.m23;
-// 	return out;
-// }
-// 
-// static HmdMatrix44_t RawConvert(Matrix44 in)
-// {
-// 	HmdMatrix44_t out;
-// 	out.m[0][0] = in.m00;
-// 	out.m[0][1] = in.m01;
-// 	out.m[0][2] = in.m02;
-// 	out.m[0][3] = in.m03;
-// 	out.m[1][0] = in.m10;
-// 	out.m[1][1] = in.m11;
-// 	out.m[1][2] = in.m12;
-// 	out.m[1][3] = in.m13;
-// 	out.m[2][0] = in.m20;
-// 	out.m[2][1] = in.m21;
-// 	out.m[2][2] = in.m22;
-// 	out.m[2][3] = in.m23;
-// 	out.m[3][0] = in.m30;
-// 	out.m[3][1] = in.m31;
-// 	out.m[3][2] = in.m32;
-// 	out.m[3][3] = in.m33;
-// 	return out;
-// }
-// }
-
 namespace CryVR {
 namespace Hypereal {
-// -------------------------------------------------------------------------
-Device::RenderModel::RenderModel(/*vr::IVRRenderModels* renderModels, string name*/)
-// 	: m_renderModels(renderModels)
-// 	, m_name(name)
-// 	, m_model(nullptr)
-// 	, m_texture(nullptr)
-// 	, m_modelState(eRMS_Loading)
-// 	, m_textureState(eRMS_Loading)
-{
-
-}
-
-Device::RenderModel::~RenderModel()
-{
-	// Note: we currently do not use the render models, therefore we also do not set them up for rendering!
-	/*vertices.clear();
-	   normals.clear();
-	   uvs.clear();
-	   indices.clear();*/
-
-// 	m_model = nullptr; // Object is managed by Hypereal runtime. Since it is possible, that the rendermodel is being accessed by something else, we DO NOT want to delete it
-// 	m_modelState = eRMS_Failed;
-// 	m_texture = nullptr; // Object is managed by Hypereal runtime. Since it is possible, that the texture is being accessed by something else, we DO NOT want to delete it
-// 	m_textureState = eRMS_Failed;
-// 
-// 	m_renderModels = nullptr;
-}
-
-void Device::RenderModel::Update()
-{
-// 	if (m_modelState == eRMS_Loading) // check model loading progress
-// 	{
-// 		vr::EVRRenderModelError result = m_renderModels->LoadRenderModel_Async(m_name.c_str(), &m_model);
-// 		if (result == vr::VRRenderModelError_Loading)
-// 		{
-// 			// still loading
-// 		}
-// 		else if (result == vr::VRRenderModelError_None)
-// 		{
-// 			m_modelState = eRMS_Loaded;
-// 
-// 			// Note: we currently do not use the render models, therefore we also do not set them up for rendering!
-// 			/*vertices.reserve(m_model->unVertexCount);
-// 			   normals.reserve(m_model->unVertexCount);
-// 			   uvs.reserve(m_model->unVertexCount);
-// 			   indices.reserve(m_model->unVertexCount);
-// 
-// 			   for (int i = 0; i < m_model->unVertexCount; i++)
-// 			   {
-// 			   const vr::RenderModel_Vertex_t vrVert = m_model->rVertexData[i];
-// 			   vertices.Add(Vec3(vrVert.vPosition.v[0], -vrVert.vPosition.v[2], vrVert.vPosition.v[1]));
-// 			   normals.Add(Vec3(vrVert.vNormal.v[0], -vrVert.vNormal.v[2], vrVert.vNormal.v[1]));
-// 			   uvs.Add(Vec2(vrVert.rfTextureCoord[0], vrVert.rfTextureCoord[1]));
-// 			   indices.Add(m_model->rIndexData[i]);
-// 			   }*/
-// 		}
-// 		else
-// 		{
-// 			m_modelState = eRMS_Loaded;
-// 		}
-// 	}
-// 
-// 	if (m_modelState == eRMS_Loaded && m_textureState == eRMS_Loading) // check texture loading progress
-// 	{
-// 		vr::EVRRenderModelError result = m_renderModels->LoadTexture_Async(m_model->diffuseTextureId, &m_texture);
-// 		if (result == vr::VRRenderModelError_Loading)
-// 		{
-// 			// still loading
-// 		}
-// 		else if (result == vr::VRRenderModelError_None)
-// 		{
-// 			m_textureState = eRMS_Loaded;
-// 
-// 			// TODO: Setup engine texture
-// 
-// 			gEnv->pLog->Log("[HMD][Hypereal] Device render model loaded: %s", m_name.c_str());
-// 		}
-// 		else
-// 		{
-// 			m_textureState = eRMS_Failed;
-// 		}
-// 	}
-}
-
 static ICVar* pParallax = nullptr;
 // -------------------------------------------------------------------------
 Device::Device()
-	: m_refCount(1)     //OpenVRResources.cpp assumes refcount is 1 on allocation
+	: m_refCount(1)    
 	, m_controller()
 	, m_lastFrameID_UpdateTrackingState(-1)
 	, m_devInfo()
@@ -217,15 +57,15 @@ Device::Device()
 	, m_hmdQuadDistance(CPlugin_Hypereal::s_hmd_quad_distance)
 	, m_hmdQuadWidth(CPlugin_Hypereal::s_hmd_quad_width)
 	, m_hmdQuadAbsolute(CPlugin_Hypereal::s_hmd_quad_absolute)
-	, VrDevice(nullptr)
-	, VrGraphicsCxt(nullptr)
-	, PlayAreaVertices(nullptr)
-	, bPlayAreaValid(false)
-	, PixelDensity(1.0f)
-	, bVRInitialized(nullptr)
-	, bVRSystemValid(nullptr)
-	, bIsQuitting(false)
-	, InterpupillaryDistance(-1.0f)
+	, m_pVrDevice(nullptr)
+	, m_pVrGraphicsCxt(nullptr)
+	, m_pPlayAreaVertices(nullptr)
+	, m_bPlayAreaValid(false)
+	, m_fPixelDensity(1.0f)
+	, m_bVRInitialized(nullptr)
+	, m_bVRSystemValid(nullptr)
+	, m_bIsQuitting(false)
+	, m_fInterpupillaryDistance(-1.0f)
 	, m_qBaseOrientation(IDENTITY)
 	, m_vBaseOffset(IDENTITY)
 	, m_fMeterToWorldScale(1.f)
@@ -239,26 +79,17 @@ Device::Device()
 
 	CreateDevice();
 
-	if (VrDevice == nullptr)
+	if (m_pVrDevice == nullptr)
 		return;
 
 	gEnv->pSystem->GetHmdManager()->AddEventListener(this);
 
 	pParallax = gEnv->pConsole->GetCVar("sys_flash_stereo_maxparallax");
 
-	// 	memset(m_rTrackedDevicePose, 0, sizeof(vr::TrackedDevicePose_t) * vr::k_unMaxTrackedDeviceCount);
-	// 	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
-	// 	{
-	// 		m_deviceModels[i] = nullptr;
-	// 		vr::SetIdentity(m_rTrackedDevicePose[i].mDeviceToAbsoluteTracking);
-	// 	}
-	// 	for (int i = 0; i < EEyeType::eEyeType_NumEyes; i++)
-	// 		m_eyeTargets[i] = nullptr;
-	// 
 	if (GetISystem()->GetISystemEventDispatcher())
 		GetISystem()->GetISystemEventDispatcher()->RegisterListener(this);
 
-	m_controller.Init(VrDevice);
+	m_controller.Init(m_pVrDevice);
 
 	if(m_controller.IsConnected(EHmdController::eHmdController_Hypereal_1))
 		m_controller.OnControllerConnect(HY_SUBDEV_CONTROLLER_LEFT);
@@ -282,52 +113,21 @@ Device::~Device()
 	if (GetISystem()->GetISystemEventDispatcher())
 		GetISystem()->GetISystemEventDispatcher()->RemoveListener(this);
 }
-// 
-// // -------------------------------------------------------------------------
-// string Device::GetTrackedDeviceString(vr::TrackedDeviceIndex_t unDevice, vr::ETrackedDeviceProperty prop, vr::ETrackedPropertyError* peError)
-// {
-// 	uint32_t unRequiredBufferLen = m_system->GetStringTrackedDeviceProperty(unDevice, prop, nullptr, 0, peError);
-// 	if (unRequiredBufferLen == 0)
-// 		return "";
-// 
-// 	char* pchBuffer = new char[unRequiredBufferLen];
-// 	unRequiredBufferLen = m_system->GetStringTrackedDeviceProperty(unDevice, prop, pchBuffer, unRequiredBufferLen, peError);
-// 	string result = string(pchBuffer, unRequiredBufferLen);
-// 	delete[] pchBuffer;
-// 	return result;
-// }
-// 
+
 // -------------------------------------------------------------------------
 const char* Device::GetTrackedDeviceCharPointer(int nProperty)
 {
 	int realStrLen = 512;
-	//VrDevice->GetStringValue(HY_PROPERTY_DEVICE_MANUFACTURER_STRING, 0, 0, &realStrLen);
+	//m_pVrDevice->GetStringValue(HY_PROPERTY_DEVICE_MANUFACTURER_STRING, 0, 0, &realStrLen);
 
 	//if (realStrLen == 0)
 	//	return nullptr;
 
 	char* pBuffer = new char[realStrLen];
-	VrDevice->GetStringValue(HY_PROPERTY_DEVICE_MANUFACTURER_STRING, pBuffer, realStrLen, &realStrLen);
+	m_pVrDevice->GetStringValue(HY_PROPERTY_DEVICE_MANUFACTURER_STRING, pBuffer, realStrLen, &realStrLen);
 	return const_cast<char*>(pBuffer);
 }
-// 
-// // -------------------------------------------------------------------------
-// Matrix34 Device::BuildMatrix(const vr::HmdMatrix34_t& in)
-// {
-// 	return Matrix34(in.m[0][0], in.m[0][1], in.m[0][2], in.m[0][3],
-// 	                in.m[1][0], in.m[1][1], in.m[1][2], in.m[1][3],
-// 	                in.m[2][0], in.m[2][1], in.m[2][2], in.m[2][3]);
-// }
-// 
-// // -------------------------------------------------------------------------
-// Matrix44 Device::BuildMatrix(const vr::HmdMatrix44_t& in)
-// {
-// 	return Matrix44(in.m[0][0], in.m[0][1], in.m[0][2], in.m[0][3],
-// 	                in.m[1][0], in.m[1][1], in.m[1][2], in.m[1][3],
-// 	                in.m[2][0], in.m[2][1], in.m[2][2], in.m[2][3],
-// 	                in.m[3][0], in.m[3][1], in.m[3][2], in.m[3][3]);
-// }
-// 
+
 // -------------------------------------------------------------------------
 inline Quat HmdQuatToWorldQuat(const Quat& quat)
 {
@@ -338,12 +138,6 @@ inline Quat HmdQuatToWorldQuat(const Quat& quat)
 	return Quat::CreateRotationX(gf_PI * 0.5f) * Quat(m33);
 }
  
-//  // -------------------------------------------------------------------------
-//  Vec3 Device::HmdVec3ToWorldVec3(const Vec3& vec)
-//  {
-//  	return Vec3(vec.x, -vec.z, vec.y);
-//  }
-
  inline Quat HYQuatToQuat(const HyQuat& q) {
 	  return HmdQuatToWorldQuat(Quat(q.w, q.x, q.y, q.z));
  }
@@ -430,31 +224,20 @@ Device* Device::CreateInstance()
 // -------------------------------------------------------------------------
 void Device::GetCameraSetupInfo(float& fov, float& aspectRatioFactor) const
 {
-// 	float fNear = gEnv->pRenderer->GetCamera().GetNearPlane();
-// 	float fFar = gEnv->pRenderer->GetCamera().GetFarPlane();
-// 
-// 	HyMat4 proj;
-// 	VrGraphicsCxt->GetProjectionMatrix(VrDeviceInfo.Fov[HY_EYE_LEFT], fNear, fFar, true, proj);
-// 	fov = 2.0f * atan(1.0f / proj.m[1][1]);
-// 	aspectRatioFactor = 2.0f;
 	fov = m_devInfo.fovV;
-	aspectRatioFactor = 2.0f * eyeFovSym.m_leftTan;
-// 	vr::HmdMatrix44_t proj = m_system->GetProjectionMatrix(vr::EVREye::Eye_Left, fNear, fFar, vr::API_DirectX);
-// 
-// 	fov = 2.0f * atan(1.0f / proj.m[1][1]);
-// 	aspectRatioFactor = 2.0f;
+	aspectRatioFactor = 2.0f * m_eyeFovSym.m_leftTan;
 }
 
 // -------------------------------------------------------------------------
 void Device::GetAsymmetricCameraSetupInfo(int nEye, float& fov, float& aspectRatio, float& asymH, float& asymV, float& eyeDist) const
 {
-	if (VrGraphicsCxt == nullptr)
+	if (m_pVrGraphicsCxt == nullptr)
 		return;
 
 	float fNear = gEnv->pRenderer->GetCamera().GetNearPlane();
 	float fFar = gEnv->pRenderer->GetCamera().GetFarPlane();
 	HyMat4 proj;
-	VrGraphicsCxt->GetProjectionMatrix(VrDeviceInfo.Fov[nEye], fNear, fFar, true, proj);
+	m_pVrGraphicsCxt->GetProjectionMatrix(m_VrDeviceInfo.Fov[nEye], fNear, fFar, true, proj);
 	fov = 2.0f * atan(1.0f / proj.m[1][1]);
 	aspectRatio = proj.m[1][1] / proj.m[0][0];
 	asymH = proj.m[0][2] / proj.m[1][1] * aspectRatio;
@@ -490,16 +273,16 @@ void Device::OnSystemEvent(ESystemEvent event, UINT_PTR wparam, UINT_PTR lparam)
 // -------------------------------------------------------------------------
 float Device::GetInterpupillaryDistance() const
 {
-	if (InterpupillaryDistance > 0.01f)
-		return InterpupillaryDistance;
-	if (bVRSystemValid)
+	if (m_fInterpupillaryDistance > 0.01f)
+		return m_fInterpupillaryDistance;
+	if (m_bVRSystemValid)
 	{
 		bool isConnected = false;
-		HyResult hr = VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, isConnected);
+		HyResult hr = m_pVrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, isConnected);
 		if (hySucceeded(hr) && isConnected)
 		{
 			float ipd = DEFAULT_IPD;
-			hr = VrDevice->GetFloatValue(HY_PROPERTY_IPD_FLOAT, ipd);
+			hr = m_pVrDevice->GetFloatValue(HY_PROPERTY_IPD_FLOAT, ipd);
 			if (hySucceeded(hr))
 				return ipd;
 		}
@@ -561,9 +344,9 @@ void Device::UpdateTrackingState(EVRComponent type)
 #endif
 
 
-	if (VrDevice)
+	if (m_pVrDevice)
 	{
-		VrDevice->ConfigureTrackingOrigin(m_pTrackingOriginCVar->GetIVal() == (int)EHmdTrackingOrigin::Floor == 1 ? HY_TRACKING_ORIGIN_FLOOR : HY_TRACKING_ORIGIN_EYE);
+		m_pVrDevice->ConfigureTrackingOrigin(m_pTrackingOriginCVar->GetIVal() == (int)EHmdTrackingOrigin::Floor == 1 ? HY_TRACKING_ORIGIN_FLOOR : HY_TRACKING_ORIGIN_EYE);
 
 		static const HySubDevice Devices[EDevice::Total_Count] =
 		{ HY_SUBDEV_HMD, HY_SUBDEV_CONTROLLER_LEFT, HY_SUBDEV_CONTROLLER_RIGHT };
@@ -571,7 +354,7 @@ void Device::UpdateTrackingState(EVRComponent type)
 		HyTrackingState trackingState;
 		for (uint32_t i = 0; i < EDevice::Total_Count; i++)
 		{
-			HyResult r = VrDevice->GetTrackingState(Devices[i], frameID, trackingState);
+			HyResult r = m_pVrDevice->GetTrackingState(Devices[i], frameID, trackingState);
 			if (hySucceeded(r))
 			{
 				m_rTrackedDevicePose[i] = trackingState;
@@ -597,9 +380,9 @@ void Device::UpdateTrackingState(EVRComponent type)
 
 			//recenter pose
 			{
-				float* ipdptr = (InterpupillaryDistance > 0.01f ? &InterpupillaryDistance : nullptr);
+				float* ipdptr = (m_fInterpupillaryDistance > 0.01f ? &m_fInterpupillaryDistance : nullptr);
 				HyPose hyEyeRenderPose[HY_EYE_MAX];
-				VrGraphicsCxt->GetEyePoses(m_rTrackedDevicePose[EDevice::Hmd].m_pose, ipdptr, hyEyeRenderPose);
+				m_pVrGraphicsCxt->GetEyePoses(m_rTrackedDevicePose[EDevice::Hmd].m_pose, ipdptr, hyEyeRenderPose);
 
 				memcpy(&m_nativeEyePoseStates, &m_nativeStates[i/*EDevice::Hmd*/], sizeof(HmdTrackingState));
 				memcpy(&m_localEyePoseStates, &m_localStates[i/*EDevice::Hmd*/], sizeof(HmdTrackingState));
@@ -629,7 +412,7 @@ void Device::UpdateTrackingState(EVRComponent type)
 				HyInputState controllerState;
 
 				HySubDevice sid = static_cast<HySubDevice>(i);
-				res = VrDevice->GetControllerInputState(sid, controllerState);
+				res = m_pVrDevice->GetControllerInputState(sid, controllerState);
 				if (hySuccess==res)
 					m_controller.Update(sid, m_nativeStates[i], m_localStates[i], controllerState);
 			}
@@ -643,34 +426,24 @@ void Device::UpdateTrackingState(EVRComponent type)
 // -------------------------------------------------------------------------
 void Device::UpdateInternal(EInternalUpdate type)
 {
-	if (!VrDevice || !VrGraphicsCxt)
+	if (!m_pVrDevice || !m_pVrGraphicsCxt)
 	{
 		return;
 	}
 	const HyMsgHeader *msg;
 	while (true)
 	{
-		VrDevice->RetrieveMsg(&msg);
+		m_pVrDevice->RetrieveMsg(&msg);
 		if (msg->m_type == HY_MSG_NONE)
 			break;
 		switch (msg->m_type)
 		{
 		case HY_MSG_PENDING_QUIT:
-			bIsQuitting = true;
+			m_bIsQuitting = true;
 			break;
 		case HY_MSG_INPUT_FOCUS_CHANGED:
-// 			bIsPausing = !(((HyMsgFocusChange*)msg)->m_id == HY_ID_SELF_IN_MSG);
-// 			if (bIsPausing)
-// 				FCoreDelegates::ApplicationWillEnterBackgroundDelegate.Broadcast();
-// 			else
-// 				FCoreDelegates::ApplicationHasEnteredForegroundDelegate.Broadcast();
  			break;
 		case HY_MSG_VIEW_FOCUS_CHANGED:
-// 			bIsVisible = ((HyMsgFocusChange*)msg)->m_id == HY_ID_SELF_IN_MSG;
-// 			if (bIsVisible)
-// 				FCoreDelegates::ApplicationHasEnteredForegroundDelegate.Broadcast();
-// 			else
-// 				FCoreDelegates::ApplicationWillEnterBackgroundDelegate.Broadcast();
 			break;
 		case HY_MSG_SUBDEVICE_STATUS_CHANGED:
 		{
@@ -683,30 +456,19 @@ void Device::UpdateInternal(EInternalUpdate type)
 		}
 			break;
 		default:
-			VrDevice->DefaultMsgFunction(msg);
+			m_pVrDevice->DefaultMsgFunction(msg);
 			break;
 		}
 	}
 
-	if (bIsQuitting)
+	if (m_bIsQuitting)
 	{
-		//EnableStereo(false);
 #if WITH_EDITOR
-		if (GIsEditor)
-		{
-			FSceneViewport* SceneVP = FindSceneViewport();
-			if (SceneVP && SceneVP->IsStereoRenderingAllowed())
-			{
-				TSharedPtr<SWindow> Window = SceneVP->FindWindow();
-				Window->RequestDestroyWindow();
-			}
-		}
-		else
 #endif	//WITH_EDITOR
 		{
 			gEnv->pSystem->Quit();
 		}
-		bIsQuitting = false;
+		m_bIsQuitting = false;
 	}
 
 }
@@ -716,13 +478,13 @@ void Device::CreateDevice()
 {
 	for (int i = 0; i < 2; ++i)
 	{
-		RTDesc[i].m_uvSize = HyVec2{ 1.f, 1.f };
-		RTDesc[i].m_uvOffset = HyVec2{ 0.f, 0.f };
+		m_RTDesc[i].m_uvSize = HyVec2{ 1.f, 1.f };
+		m_RTDesc[i].m_uvOffset = HyVec2{ 0.f, 0.f };
 	}
 
 	HyResult startResult = HyStartup();
-	bVRInitialized = hySucceeded(startResult);
-	if (!bVRInitialized)
+	m_bVRInitialized = hySucceeded(startResult);
+	if (!m_bVRInitialized)
 	{
 		gEnv->pLog->Log("[HMD][Hypereal] HyperealVR Failed to Startup.");
 		return;
@@ -730,11 +492,11 @@ void Device::CreateDevice()
 
 	gEnv->pLog->Log("[HMD][Hypereal] HyperealVR Startup sucessfully.");
 	
-	bPlayAreaValid = false;
-	PlayAreaVertexCount = 0;
+	m_bPlayAreaValid = false;
+	m_nPlayAreaVertexCount = 0;
 
 	
-	HyResult hr = HyCreateInterface(sch_HyDevice_Version, 0, (void**)&VrDevice);
+	HyResult hr = HyCreateInterface(sch_HyDevice_Version, 0, (void**)&m_pVrDevice);
 
 	if (!hySucceeded(hr))
 	{
@@ -744,33 +506,31 @@ void Device::CreateDevice()
 
 	
 
-	memset(&VrDeviceInfo,0, sizeof(DeviceInfo));
+	memset(&m_VrDeviceInfo,0, sizeof(DeviceInfo));
 
-	VrDevice->GetIntValue(HY_PROPERTY_DEVICE_RESOLUTION_X_INT, VrDeviceInfo.DeviceResolutionX);
-	VrDevice->GetIntValue(HY_PROPERTY_DEVICE_RESOLUTION_Y_INT, VrDeviceInfo.DeviceResolutionY);
-	VrDevice->GetFloatArray(HY_PROPERTY_DEVICE_LEFT_EYE_FOV_FLOAT4_ARRAY, VrDeviceInfo.Fov[HY_EYE_LEFT].val, 4);
-	VrDevice->GetFloatArray(HY_PROPERTY_DEVICE_RIGHT_EYE_FOV_FLOAT4_ARRAY, VrDeviceInfo.Fov[HY_EYE_RIGHT].val, 4);
+	m_pVrDevice->GetIntValue(HY_PROPERTY_DEVICE_RESOLUTION_X_INT, m_VrDeviceInfo.DeviceResolutionX);
+	m_pVrDevice->GetIntValue(HY_PROPERTY_DEVICE_RESOLUTION_Y_INT, m_VrDeviceInfo.DeviceResolutionY);
+	m_pVrDevice->GetFloatArray(HY_PROPERTY_DEVICE_LEFT_EYE_FOV_FLOAT4_ARRAY, m_VrDeviceInfo.Fov[HY_EYE_LEFT].val, 4);
+	m_pVrDevice->GetFloatArray(HY_PROPERTY_DEVICE_RIGHT_EYE_FOV_FLOAT4_ARRAY, m_VrDeviceInfo.Fov[HY_EYE_RIGHT].val, 4);
 
 
 
-	eyeFovSym = ComputeSymmetricalFov( VrDeviceInfo.Fov[HY_EYE_LEFT], VrDeviceInfo.Fov[HY_EYE_RIGHT]);
+	m_eyeFovSym = ComputeSymmetricalFov( m_VrDeviceInfo.Fov[HY_EYE_LEFT], m_VrDeviceInfo.Fov[HY_EYE_RIGHT]);
 	//set for  generic HMD device
-	m_devInfo.screenWidth = (uint)VrDeviceInfo.DeviceResolutionX;
-	m_devInfo.screenHeight = (uint)VrDeviceInfo.DeviceResolutionY;
+	m_devInfo.screenWidth = (uint)m_VrDeviceInfo.DeviceResolutionX;
+	m_devInfo.screenHeight = (uint)m_VrDeviceInfo.DeviceResolutionY;
 	
 	m_devInfo.manufacturer = GetTrackedDeviceCharPointer(HY_PROPERTY_DEVICE_MANUFACTURER_STRING);
 	m_devInfo.productName = GetTrackedDeviceCharPointer(HY_PROPERTY_DEVICE_PRODUCT_NAME_STRING);
-	m_devInfo.fovH = 2.0f * atanf(eyeFovSym.m_leftTan);
-	m_devInfo.fovV = 2.0f * atanf(eyeFovSym.m_upTan);
+	m_devInfo.fovH = 2.0f * atanf(m_eyeFovSym.m_leftTan);
+	m_devInfo.fovV = 2.0f * atanf(m_eyeFovSym.m_upTan);
 
 
 	bool isConnected = false;
-	hr = VrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, isConnected);
+	hr = m_pVrDevice->GetBoolValue(HY_PROPERTY_HMD_CONNECTED_BOOL, isConnected);
 	if (hySucceeded(hr) && isConnected)
 	{
-	//	CustomPresent = new FHyperealCustomPresent(nullptr, this, VrGraphicsCxt);
-		
-		VrDevice->ConfigureTrackingOrigin(m_pTrackingOriginCVar->GetIVal() == (int)EHmdTrackingOrigin::Floor == 1 ? HY_TRACKING_ORIGIN_FLOOR : HY_TRACKING_ORIGIN_EYE);
+		m_pVrDevice->ConfigureTrackingOrigin(m_pTrackingOriginCVar->GetIVal() == (int)EHmdTrackingOrigin::Floor == 1 ? HY_TRACKING_ORIGIN_FLOOR : HY_TRACKING_ORIGIN_EYE);
 
 		RebuildPlayArea();
 		gEnv->pLog->Log("[HMD][Hypereal] EnableStereo successfully.");
@@ -792,13 +552,13 @@ void Device::CreateDevice()
 
 void Device::ReleaseDevice() 
 {
-	HY_RELEASE(VrDevice);
+	HY_RELEASE(m_pVrDevice);
 
-	bVRSystemValid = false;
+	m_bVRSystemValid = false;
 
-	if (bVRInitialized)
+	if (m_bVRInitialized)
 	{
-		bVRInitialized = false;
+		m_bVRInitialized = false;
 		HyShutdown();
 	}
 }
@@ -858,10 +618,10 @@ const HmdTrackingState& Device::GetLocalTrackingState() const
 Quad Device::GetPlayArea() const
 {
 	Quad result;
-	result.vCorners[0] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[0].x, PlayAreaVertices[0].y, 0));
-	result.vCorners[1] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[1].x, PlayAreaVertices[1].y, 0));
-	result.vCorners[2] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[2].x, PlayAreaVertices[2].y, 0));
-	result.vCorners[3] = /*HmdVec3ToWorldVec3*/(Vec3(PlayAreaVertices[3].x, PlayAreaVertices[3].y, 0));
+	result.vCorners[0] = (Vec3(m_pPlayAreaVertices[0].x, m_pPlayAreaVertices[0].y, 0));
+	result.vCorners[1] = (Vec3(m_pPlayAreaVertices[1].x, m_pPlayAreaVertices[1].y, 0));
+	result.vCorners[2] = (Vec3(m_pPlayAreaVertices[2].x, m_pPlayAreaVertices[2].y, 0));
+	result.vCorners[3] = (Vec3(m_pPlayAreaVertices[3].x, m_pPlayAreaVertices[3].y, 0));
 	return result;
 
 }
@@ -869,22 +629,13 @@ Quad Device::GetPlayArea() const
 // -------------------------------------------------------------------------
 Vec2 Device::GetPlayAreaSize() const
 {
-// 	if (auto* pChaperone = vr::VRChaperone())
-// 	{
-// 		Vec2 result;
-// 		if (pChaperone->GetPlayAreaSize(&result.x, &result.y))
-// 		{
-// 			return result;
-// 		}
-// 	}
-
 	return Vec2(ZERO);
 }
 
 // -------------------------------------------------------------------------
 const HmdTrackingState& Device::GetNativeTrackingState() const
 {
-	return m_hmdTrackingDisabled ? m_disabledTrackingState : m_nativeEyePoseStates;// m_nativeStates[EDevice::Hmd];
+	return m_hmdTrackingDisabled ? m_disabledTrackingState : m_nativeEyePoseStates;
 }
 
 // -------------------------------------------------------------------------
@@ -931,7 +682,7 @@ bool sNoRelative = true;
 // -------------------------------------------------------------------------
 void Device::SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData)
 {
-	if (VrGraphicsCxt)
+	if (m_pVrGraphicsCxt)
 	{
 		//update overlay pose
 		for (int id = 0; id < RenderLayer::eQuadLayers_Total; id++)
@@ -946,9 +697,7 @@ void Device::SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData)
 					{
 						SHmdRenderLayerInfo & _data = submitData.pQuadLayersArray[id];
 
-						
 						HyPose pose;
-
 			 
 						HyVec2 hySize;
 						hySize.x = (float)_data.viewportSize.y;
@@ -959,10 +708,10 @@ void Device::SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData)
 
 						Quat qut = Quat(sAng);
 
-						if (/*sNoRelative*/_data.layerType== RenderLayer::ELayerType::eLayer_Quad|| _data.layerType == RenderLayer::ELayerType::eLayer_Scene3D)
+						if (_data.layerType== RenderLayer::ELayerType::eLayer_Quad|| _data.layerType == RenderLayer::ELayerType::eLayer_Scene3D)
 						{
 							QuatT qtLayer(_data.pose.q, _data.pose.t);
-							//QuatT qtLayer(qut, sPos);
+							
 							Quat hmdRotation = HYQuatToQuat(m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation);
 							Vec3 hmdPosition = HYVec3ToVec3(m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_position);
 
@@ -970,22 +719,17 @@ void Device::SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData)
 						
 							QuatT qtRecentered(qRecenterRotation, hmdPosition);
 							qtRecentered = qtRecentered.GetInverted()*qtLayer;
-							//Vec3 vRecenterPosition = (sPos + m_localEyePoseStates.pose.position);
-						
+													
 							pose.m_position = Vec3ToHYVec3(qtRecentered.t);
 							pose.m_rotation = QuatToHYQuat(qtRecentered.q);
-							//						pose.m_position = Vec3ToHYVec3(_data.pose.t);
-							//						pose.m_rotation = QuatToHYQuat(_data.pose.q);// /*m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation;*/ QuatToHYQuat(qRot);
+							
 							pLayer->SetPose(pose);
-
 							pLayer->SetFlags(0);
 						}
 						else
 						{
 							pose.m_position = Vec3ToHYVec3(sPos);
 							pose.m_rotation = QuatToHYQuat(qut);
-							//						pose.m_position = Vec3ToHYVec3(_data.pose.t);
-							//						pose.m_rotation = QuatToHYQuat(_data.pose.q);// /*m_rTrackedDevicePose[EDevice::Hmd].m_pose.m_rotation;*/ QuatToHYQuat(qRot);
 							pLayer->SetPose(pose);
 
 							pLayer->SetFlags(HY_LAYER_FLAG_LOCK_TO_HELMET);
@@ -998,9 +742,7 @@ void Device::SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData)
 		
 		HyResult hr = hySuccess;
 
-		// 		RTDesc[0].m_texture = resL->RenderTex;
-		// 		RTDesc[1].m_texture = resR->RenderTex;
-		hr = VrGraphicsCxt->Submit(m_lastFrameID_UpdateTrackingState, RTDesc, 2);
+		hr = m_pVrGraphicsCxt->Submit(m_lastFrameID_UpdateTrackingState, m_RTDesc, 2);
 	}
 
 }
@@ -1008,13 +750,13 @@ void Device::SubmitFrame(const CryVR::Hypereal::SHmdSubmitFrameData& submitData)
 // -------------------------------------------------------------------------
 void Device::GetRenderTargetSize(uint& w, uint& h)
 {
- 	if (nullptr == VrGraphicsCxt)
+ 	if (nullptr == m_pVrGraphicsCxt)
  	{
  		w = 1200;
  		h = 1080;
  		return;
  	}
- 	VrGraphicsCxt->GetRenderTargetSize(HY_EYE_LEFT, w, h);
+ 	m_pVrGraphicsCxt->GetRenderTargetSize(HY_EYE_LEFT, w, h);
 //  	w = 1200;
 //  	h = 1080;
 }
@@ -1022,15 +764,13 @@ void Device::GetRenderTargetSize(uint& w, uint& h)
 // -------------------------------------------------------------------------
 void Device::GetMirrorImageView(EEyeType eye, void* resource, void** mirrorTextureView)
 {
-	/*VrGraphicsCxt->CopyMirrorTexture(resource,(uint) VrDeviceInfo.DeviceResolutionX/2, (uint)VrDeviceInfo.DeviceResolutionY);*/
-	//vr::VRCompositor()->GetMirrorTextureD3D11(static_cast<vr::EVREye>(eye), resource, mirrorTextureView);
 }
 
 // -------------------------------------------------------------------------
 void Device::OnSetupEyeTargets(ERenderAPI api, ERenderColorSpace colorSpace, void* leftEyeHandle, void* rightEyeHandle)
 {
-	RTDesc[EEyeType::eEyeType_LeftEye].m_texture = leftEyeHandle;
-	RTDesc[EEyeType::eEyeType_RightEye].m_texture = rightEyeHandle;
+	m_RTDesc[EEyeType::eEyeType_LeftEye].m_texture = leftEyeHandle;
+	m_RTDesc[EEyeType::eEyeType_RightEye].m_texture = rightEyeHandle;
 }
 
 // -------------------------------------------------------------------------
@@ -1048,23 +788,23 @@ void Device::OnDeleteOverlay(int id)
 
 void Device::RebuildPlayArea()
 {
-	if (PlayAreaVertices)
+	if (m_pPlayAreaVertices)
 	{
-		delete[] PlayAreaVertices;
-		PlayAreaVertices = nullptr;
+		delete[] m_pPlayAreaVertices;
+		m_pPlayAreaVertices = nullptr;
 	}
 
-	if (hySucceeded(VrDevice->GetIntValue(HY_PROPERTY_CHAPERONE_VERTEX_COUNT_INT, PlayAreaVertexCount)) && PlayAreaVertexCount != 0)
+	if (hySucceeded(m_pVrDevice->GetIntValue(HY_PROPERTY_CHAPERONE_VERTEX_COUNT_INT, m_nPlayAreaVertexCount)) && m_nPlayAreaVertexCount != 0)
 	{
-		PlayAreaVertices = new HyVec2[PlayAreaVertexCount];
-		HyResult r = VrDevice->GetFloatArray(HY_PROPERTY_CHAPERONE_VERTEX_VEC2_ARRAY, reinterpret_cast<float*>(PlayAreaVertices),(uint) PlayAreaVertexCount * 2);
+		m_pPlayAreaVertices = new HyVec2[m_nPlayAreaVertexCount];
+		HyResult r = m_pVrDevice->GetFloatArray(HY_PROPERTY_CHAPERONE_VERTEX_VEC2_ARRAY, reinterpret_cast<float*>(m_pPlayAreaVertices),(uint) m_nPlayAreaVertexCount * 2);
 
-		bPlayAreaValid = hySucceeded(r);
+		m_bPlayAreaValid = hySucceeded(r);
 
-		if (!bPlayAreaValid)
+		if (!m_bPlayAreaValid)
 		{
-			delete[] PlayAreaVertices;
-			PlayAreaVertices = nullptr;
+			delete[] m_pPlayAreaVertices;
+			m_pPlayAreaVertices = nullptr;
 		}
 	}
 }
@@ -1078,7 +818,7 @@ float Device::GetDistance(const HyVec2& P, const HyVec2& PA, const HyVec2& PB)
 
 void Device::CreateGraphicsContext(void* graphicsDevice)
 {
-	if (nullptr == VrDevice)
+	if (nullptr == m_pVrDevice)
 		return;
 
 	//graphic ctx should be ready
@@ -1087,17 +827,17 @@ void Device::CreateGraphicsContext(void* graphicsDevice)
 	graphicsAPI = HY_GRAPHICS_D3D11;
 
 	{
-		VrGraphicsCxtDesc.m_mirrorWidth = gEnv->pRenderer->GetWidth();
-		VrGraphicsCxtDesc.m_mirrorHeight = gEnv->pRenderer->GetHeight();
+		m_VrGraphicsCxtDesc.m_mirrorWidth = gEnv->pRenderer->GetWidth();
+		m_VrGraphicsCxtDesc.m_mirrorHeight = gEnv->pRenderer->GetHeight();
 	}
 
-	VrGraphicsCxtDesc.m_graphicsDevice = graphicsDevice;
-	VrGraphicsCxtDesc.m_graphicsAPI = graphicsAPI;
-	VrGraphicsCxtDesc.m_pixelFormat = HY_TEXTURE_R8G8B8A8_UNORM_SRGB;
-	VrGraphicsCxtDesc.m_pixelDensity = PixelDensity;
-	VrGraphicsCxtDesc.m_flags = 0;
+	m_VrGraphicsCxtDesc.m_graphicsDevice = graphicsDevice;
+	m_VrGraphicsCxtDesc.m_graphicsAPI = graphicsAPI;
+	m_VrGraphicsCxtDesc.m_pixelFormat = HY_TEXTURE_R8G8B8A8_UNORM_SRGB;
+	m_VrGraphicsCxtDesc.m_pixelDensity = m_fPixelDensity;
+	m_VrGraphicsCxtDesc.m_flags = 0;
 
-	HyResult hr = VrDevice->CreateGraphicsContext(VrGraphicsCxtDesc, &VrGraphicsCxt);
+	HyResult hr = m_pVrDevice->CreateGraphicsContext(m_VrGraphicsCxtDesc, &m_pVrGraphicsCxt);
 	if (!hySucceeded(hr))
 	{
 		gEnv->pLog->Log("[HMD][Hypereal] CreateGraphicsContext failed.");
@@ -1107,21 +847,21 @@ void Device::CreateGraphicsContext(void* graphicsDevice)
 
 void Device::ReleaseGraphicsContext()
 {
-	HY_RELEASE(VrGraphicsCxt);
+	HY_RELEASE(m_pVrGraphicsCxt);
 }
 
 void Device::CopyMirrorImage(void* pDstResource,uint nWidth,uint nHeight)
 {
-	if (VrGraphicsCxt)
+	if (m_pVrGraphicsCxt)
 	{
-		VrGraphicsCxt->CopyMirrorTexture(pDstResource, nWidth, nHeight);
+		m_pVrGraphicsCxt->CopyMirrorTexture(pDstResource, nWidth, nHeight);
 	}
 }
 
 
 void Device::CreateLayer(int id, void* overlayTextureHandle,bool bRecrate)
 {
-	if (nullptr == VrDevice || nullptr == VrGraphicsCxt)
+	if (nullptr == m_pVrDevice || nullptr == m_pVrGraphicsCxt)
 		return;
 
 	//remove old one with same id
@@ -1133,7 +873,7 @@ void Device::CreateLayer(int id, void* overlayTextureHandle,bool bRecrate)
 		m_mapOverlayers.erase(itFind);
 	}
 
-	HyViewLayer* pLayer = (HyViewLayer*)VrDevice->CreateClassInstance(HY_CLASS_VIEW_LAYER);
+	HyViewLayer* pLayer = (HyViewLayer*)m_pVrDevice->CreateClassInstance(HY_CLASS_VIEW_LAYER);
 
 	if (nullptr == pLayer)
 	{
@@ -1145,8 +885,6 @@ void Device::CreateLayer(int id, void* overlayTextureHandle,bool bRecrate)
 	newOverlayer.layerHandle = pLayer;
 
 	Matrix34 matPose = Matrix34::CreateTranslationMat(Vec3(0, 0, -m_hmdQuadDistance));
-
-	//Quat qRot( );
 
 	HyPose pose;
 	pose.m_position = Vec3ToHYVec3(matPose.GetTranslation());
@@ -1186,7 +924,7 @@ void Device::CreateLayer(int id, void* overlayTextureHandle,bool bRecrate)
 }
 void Device::DestroyLayer(int id)
 {
-	if (!VrDevice&&VrGraphicsCxt)
+	if (!m_pVrDevice&&m_pVrGraphicsCxt)
 		return;
 
 	//remove old one with same id
@@ -1202,7 +940,7 @@ void Device::DestroyLayer(int id)
 }
 void Device::SetShowLayer(int id,bool bShow)
 {
-	if (!VrDevice&&VrGraphicsCxt)
+	if (!m_pVrDevice&&m_pVrGraphicsCxt)
 		return;
 
 	MapOverlayer::iterator itFind = m_mapOverlayers.find(id);
