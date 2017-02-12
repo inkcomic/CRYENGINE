@@ -1,14 +1,14 @@
-1.��ȡ�ٷ�CE5.3�汾���棬����ȷ�ϻ�ȡ����CE5.3��Ӧ��SDK�⡣
-2.��ȡHypereal����CE5.3 Github�����Ϻ��CE5.3����Դ���롣������ļ������Ķ�����ο�github��������ʷ,����ȷ����ȡ������е���������SDK�����Code\SDKs�Ƿ����ص��˴���������SDK��
-3.��Դ����ĸ�Ŀ¼����cry_waf.exe
-4.��cry_waf.exeִ��֮�󵯳���gui�����У����option�˵������·�specs_toinclude_include_in_project_generation�У�ֻ����gamezero���̣����exit,ȷ��save�����˳���
-5.���벢������Solutions\CRYENGINE.sln������Visualstudio���롣
-6.TestHVRĿ¼��������֧�ֻ�������VR�۾����е�CryEngine FlowNode��
-7.����CE5.3Ŀǰû�и����༭��(Sandbox)Դ���룬����ʹ�ñ༭���༭����ֻ���ùٷ��༭����
-8.������ʹ����TestHVR\Game.cryproject���Ҽ�ѡ��switch engine version�������Զ�������͹ٷ�������л���
+1.获取官方CE5.3版本引擎，并且确认获取到了CE5.3对应的SDK库。
+2.获取Hypereal基于CE5.3 Github的整合后的CE5.3引擎源代码。具体的文件升级改动，请参考github的升级历史,并且确定获取完毕所有第三方依赖SDK，检查Code\SDKs是否下载到了大量第三方SDK。
+3.在源代码的根目录运行cry_waf.exe
+4.在cry_waf.exe执行之后弹出的gui界面中，点击option菜单，在下方specs_toinclude_include_in_project_generation中，只保留gamezero工程，点击exit,确认save并且退出。
+5.进入并且启动Solutions\CRYENGINE.sln，进行Visualstudio编译。
+6.TestHVR目录中制作了支持基本配置VR眼镜运行的CryEngine FlowNode。
+7.由于CE5.3目前没有给出编辑器(Sandbox)源代码，所以使用编辑器编辑场景只能用官方编辑器。
+8.例如我使用在TestHVR\Game.cryproject上右键选择switch engine version来进行自定义引擎和官方引擎的切换。
 
 
 
-ע��:
-1.CE5.3��ͨ��cryplugin.csv����plugins�����ã���ο��������ݽ��и���plugins��������
-2.system.cfg�ļ���sys_vr_support=0�ر�VR�۾�֧�֣�sys_vr_support=1�����۾�֧�֡�
+注意:
+1.CE5.3中通过cryplugin.csv进行plugins的配置，请参考其中内容进行各种plugins的增减。
+2.system.cfg文件中sys_vr_support=0关闭VR眼镜支持，sys_vr_support=1开启眼镜支持。
